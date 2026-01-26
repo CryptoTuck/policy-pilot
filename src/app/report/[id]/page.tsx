@@ -9,33 +9,21 @@ interface ReportPageProps {
   params: Promise<{ id: string }>;
 }
 
-function PolicyTabs({ activeTab, homeGrade, autoGrade }: {
-  activeTab: 'home' | 'auto';
-  homeGrade: boolean;
-  autoGrade: boolean;
-}) {
-  if (!homeGrade || !autoGrade) return null;
+function PolicyTabs({ hasHome, hasAuto }: { hasHome: boolean; hasAuto: boolean }) {
+  if (!hasHome || !hasAuto) return null;
 
   return (
     <div className="flex justify-center mb-6">
-      <div className="inline-flex rounded-lg border border-gray-200 bg-gray-100 p-1">
+      <div className="inline-flex rounded-full bg-gray-100 p-1">
         <a
           href="#home"
-          className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === 'home'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className="px-6 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-sm"
         >
           Home
         </a>
         <a
           href="#auto"
-          className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === 'auto'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
+          className="px-6 py-2 text-sm font-medium rounded-full text-gray-600 hover:text-gray-900"
         >
           Auto
         </a>
@@ -79,14 +67,14 @@ export default async function ReportPage({ params }: ReportPageProps) {
   const displayGrade = combinedGrade || homeGrade?.overallGrade || autoGrade?.overallGrade || 'N/A';
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <nav className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-lg flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </div>
             <span className="text-xl font-bold text-gray-900">Policy Pilot</span>
@@ -103,16 +91,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
         </div>
 
         {/* Policy Type Tabs */}
-        <PolicyTabs
-          activeTab="home"
-          homeGrade={!!homeGrade}
-          autoGrade={!!autoGrade}
-        />
+        <PolicyTabs hasHome={!!homeGrade} hasAuto={!!autoGrade} />
 
         {/* Overall Grade Header */}
         <div className="mb-8">
-          <p className="text-gray-500 text-sm">Policy Analysis</p>
-          <p className="text-blue-600 text-sm font-medium">Policy Pilot Report</p>
+          <p className="text-gray-500 text-sm">Policy Holder</p>
+          <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
             Overall Policy Grade: {displayGrade}
           </h1>
@@ -145,7 +129,15 @@ export default async function ReportPage({ params }: ReportPageProps) {
             {/* Deductible */}
             <section className="mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Deductible</h2>
-              <CoverageTable coverages={[homeGrade.deductibleGrade]} />
+              <CoverageTable
+                coverages={[homeGrade.deductibleGrade]}
+                columns={{
+                  name: 'Type',
+                  limit: 'Amount',
+                  score: 'Score',
+                  explanation: 'What It Means'
+                }}
+              />
 
               <SectionAnalysis
                 title="Deductibles"
@@ -208,7 +200,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
         )}
 
         {/* Footer Disclaimer */}
-        <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-100 rounded-lg">
+        <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg">
           <p>
             This report is for educational purposes only and does not constitute professional insurance advice.
             Consult with a licensed insurance agent for personalized recommendations.
