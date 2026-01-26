@@ -1,3 +1,5 @@
+import { DevButton } from '@/components/DevButton';
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8 sm:py-12">
@@ -30,6 +32,9 @@ export default function Home() {
         <p className="mt-5 sm:mt-6 text-xs sm:text-sm text-gray-500 px-2">
           Your personalized report link will be sent to you after submitting your policy information.
         </p>
+
+        {/* Dev mode test button */}
+        <DevButton />
       </div>
     </div>
   );
