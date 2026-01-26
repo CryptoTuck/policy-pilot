@@ -37,7 +37,8 @@ export function generateId(): string {
 
 export async function storeSubmission(submission: PolicySubmission): Promise<void> {
   if (redis) {
-    await redis.set(`${SUBMISSION_PREFIX}${submission.id}`, JSON.stringify(submission), {
+    // Upstash SDK auto-serializes objects
+    await redis.set(`${SUBMISSION_PREFIX}${submission.id}`, submission, {
       ex: TTL_SECONDS,
     });
   } else {
@@ -47,15 +48,17 @@ export async function storeSubmission(submission: PolicySubmission): Promise<voi
 
 export async function getSubmission(id: string): Promise<PolicySubmission | undefined> {
   if (redis) {
-    const data = await redis.get<string>(`${SUBMISSION_PREFIX}${id}`);
-    return data ? (typeof data === 'string' ? JSON.parse(data) : data) : undefined;
+    // Upstash SDK auto-deserializes objects
+    const data = await redis.get<PolicySubmission>(`${SUBMISSION_PREFIX}${id}`);
+    return data ?? undefined;
   }
   return memorySubmissions.get(id);
 }
 
 export async function storeReport(report: PolicyReport): Promise<void> {
   if (redis) {
-    await redis.set(`${REPORT_PREFIX}${report.id}`, JSON.stringify(report), {
+    // Upstash SDK auto-serializes objects
+    await redis.set(`${REPORT_PREFIX}${report.id}`, report, {
       ex: TTL_SECONDS,
     });
   } else {
@@ -65,8 +68,9 @@ export async function storeReport(report: PolicyReport): Promise<void> {
 
 export async function getReport(id: string): Promise<PolicyReport | undefined> {
   if (redis) {
-    const data = await redis.get<string>(`${REPORT_PREFIX}${id}`);
-    return data ? (typeof data === 'string' ? JSON.parse(data) : data) : undefined;
+    // Upstash SDK auto-deserializes objects
+    const data = await redis.get<PolicyReport>(`${REPORT_PREFIX}${id}`);
+    return data ?? undefined;
   }
   return memoryReports.get(id);
 }
