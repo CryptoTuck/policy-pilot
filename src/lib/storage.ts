@@ -3,8 +3,20 @@ import type { PolicyReport } from '@/types/grading';
 
 // In-memory storage for MVP
 // In production, replace with database (Postgres, Redis, etc.)
-const submissions = new Map<string, PolicySubmission>();
-const reports = new Map<string, PolicyReport>();
+
+// Use global to persist across hot reloads in development
+const globalForStorage = globalThis as unknown as {
+  submissions: Map<string, PolicySubmission> | undefined;
+  reports: Map<string, PolicyReport> | undefined;
+};
+
+const submissions = globalForStorage.submissions ?? new Map<string, PolicySubmission>();
+const reports = globalForStorage.reports ?? new Map<string, PolicyReport>();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForStorage.submissions = submissions;
+  globalForStorage.reports = reports;
+}
 
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
