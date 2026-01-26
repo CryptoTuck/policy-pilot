@@ -140,24 +140,27 @@ You must respond with valid JSON matching this structure:
     "standardCoverages": [
       {
         "name": "Coverage Name",
+        "limit": "$X or percentage - the actual coverage limit from the policy",
         "score": 1-5,
         "maxScore": 5,
-        "explanation": "Why this score was given",
+        "explanation": "Plain English explanation of what this coverage does and protects",
         "recommendation": "Optional suggestion if score < 4"
       }
     ],
     "deductibleGrade": {
-      "name": "Deductible",
+      "name": "All Perils Ded",
+      "limit": "$X or percentage - the actual deductible amount",
       "score": 1-5,
       "maxScore": 5,
-      "explanation": "Why this score was given"
+      "explanation": "Plain English explanation of what this deductible means for the policyholder"
     },
     "additionalCoverages": [
       {
         "name": "Coverage Name",
+        "limit": "$X if present, 'None' if not present",
         "present": true|false,
         "relevance": "low|situational|often_worth_reviewing",
-        "note": "Optional context"
+        "note": "Plain English explanation of what this coverage does"
       }
     ],
     "summary": "2-3 sentence overall assessment",

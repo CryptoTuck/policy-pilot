@@ -2,6 +2,7 @@ export type RiskTier = 'low' | 'moderate' | 'elevated';
 
 export interface CoverageGrade {
   name: string;
+  limit?: string; // e.g., "$350,000", "2% of Dwelling"
   score: number; // 1-5
   maxScore: 5;
   explanation: string;
@@ -10,6 +11,7 @@ export interface CoverageGrade {
 
 export interface AdditionalCoverageAssessment {
   name: string;
+  limit?: string; // e.g., "$25,000", "None"
   present: boolean;
   relevance: 'low' | 'situational' | 'often_worth_reviewing';
   note?: string;

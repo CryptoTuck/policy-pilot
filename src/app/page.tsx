@@ -1,16 +1,23 @@
-import { DevButton } from '@/components/DevButton';
+import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8 sm:py-12">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8 sm:py-12">
       <div className="max-w-2xl mx-auto text-center">
+        {/* Logo */}
+        <div className="w-20 h-20 bg-blue-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg mx-auto">
+          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </div>
+
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
           Policy Pilot
         </h1>
         <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8">
           AI-powered insurance policy analysis and grading
         </p>
-        <div className="bg-white rounded-xl shadow-lg p-5 sm:p-8">
+        <div className="bg-white rounded-xl shadow-[0_2px_20px_rgba(0,0,0,0.08)] p-5 sm:p-8">
           <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-5">
             How It Works
           </h2>
@@ -28,13 +35,18 @@ export default function Home() {
               <span className="text-sm sm:text-base pt-0.5 sm:pt-1">Receive a detailed report with grades and recommendations</span>
             </li>
           </ol>
+
+          {/* Get Started Button */}
+          <Link
+            href="/get-policy"
+            className="mt-6 sm:mt-8 w-full inline-block py-3 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold rounded-full text-base sm:text-lg transition-all shadow-lg hover:shadow-xl cursor-pointer"
+          >
+            Get Started
+          </Link>
         </div>
         <p className="mt-5 sm:mt-6 text-xs sm:text-sm text-gray-500 px-2">
           Your personalized report link will be sent to you after submitting your policy information.
         </p>
-
-        {/* Dev mode test button */}
-        <DevButton />
       </div>
     </div>
   );
