@@ -2,13 +2,15 @@ import { Redis } from '@upstash/redis';
 import type { PolicySubmission } from '@/types/policy';
 import type { PolicyReport } from '@/types/grading';
 
-// Initialize Redis client if environment variables are set
-const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-  ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  : null;
+// Initialize Redis client using environment variables
+let redis: Redis | null = null;
+try {
+  // Redis.fromEnv() automatically uses UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
+  redis = Redis.fromEnv();
+} catch {
+  // If env vars not set, redis stays null and we use in-memory fallback
+  console.log('Upstash Redis not configured, using in-memory storage');
+}
 
 // Fallback in-memory storage for local development
 const globalForStorage = globalThis as unknown as {
