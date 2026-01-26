@@ -109,14 +109,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
             {/* Standard Coverages */}
             <section className="mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                Standard Coverages{' '}
-                <span className="text-base font-normal text-gray-500">
-                  (Coverages that come with standard HOI policy)
-                </span>
+                Standard Coverages
               </h2>
-              <div className="mt-4">
-                <CoverageTable coverages={homeGrade.standardCoverages} />
-              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                Coverages that come with standard HOI policy
+              </p>
+              <CoverageTable coverages={homeGrade.standardCoverages} />
 
               <SectionAnalysis
                 title="Standard Coverage"
@@ -150,14 +148,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
             {/* Additional Coverages */}
             <section className="mb-6">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                Additional Coverages{' '}
-                <span className="text-base font-normal text-gray-500">
-                  (Optional endorsements)
-                </span>
+                Additional Coverages
               </h2>
-              <div className="mt-4">
-                <AdditionalCoverageTable coverages={homeGrade.additionalCoverages} />
-              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                Optional endorsements
+              </p>
+              <AdditionalCoverageTable coverages={homeGrade.additionalCoverages} />
 
               <SectionAnalysis
                 title="Additional Coverage"
