@@ -79,9 +79,9 @@ export async function GET() {
       contactName: 'Test User',
     };
 
-    storeSubmission(submission);
+    await storeSubmission(submission);
     const report = await gradePolicy(submission);
-    storeReport(report);
+    await storeReport(report);
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 

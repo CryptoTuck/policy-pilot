@@ -39,13 +39,13 @@ export async function POST(request: NextRequest) {
     };
 
     // Store the submission
-    storeSubmission(submission);
+    await storeSubmission(submission);
 
     // Grade the policy
     const report = await gradePolicy(submission);
 
     // Store the report
-    storeReport(report);
+    await storeReport(report);
 
     // Return the report URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

@@ -57,7 +57,7 @@ function calculateSectionScore(coverages: { score: number; maxScore: number }[])
 
 export default async function ReportPage({ params }: ReportPageProps) {
   const { id } = await params;
-  const report = getReport(id);
+  const report = await getReport(id);
 
   if (!report) {
     notFound();
