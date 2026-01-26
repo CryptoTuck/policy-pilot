@@ -3,13 +3,18 @@ import type { PolicySubmission } from '@/types/policy';
 import type { PolicyReport } from '@/types/grading';
 
 // Initialize Redis client using environment variables
+// Vercel KV uses KV_REST_API_URL and KV_REST_API_TOKEN
 let redis: Redis | null = null;
-try {
-  // Redis.fromEnv() automatically uses UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN
-  redis = Redis.fromEnv();
-} catch {
-  // If env vars not set, redis stays null and we use in-memory fallback
-  console.log('Upstash Redis not configured, using in-memory storage');
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+
+if (redisUrl && redisToken) {
+  redis = new Redis({
+    url: redisUrl,
+    token: redisToken,
+  });
+} else {
+  console.log('Redis not configured, using in-memory storage');
 }
 
 // Fallback in-memory storage for local development
