@@ -14,7 +14,13 @@ export const homeCoverageSchema = z.object({
   personalLiability: z.coerce.number().min(0).default(0),
   medicalPayments: z.coerce.number().min(0).default(0),
   deductible: z.coerce.number().min(0).default(0),
-});
+}).transform((data) => ({
+  ...data,
+  // Calculate percentage fields based on dwelling value
+  otherStructuresPercent: data.dwelling > 0 ? Math.round((data.otherStructures / data.dwelling) * 100) : 0,
+  personalPropertyPercent: data.dwelling > 0 ? Math.round((data.personalProperty / data.dwelling) * 100) : 0,
+  deductiblePercent: data.dwelling > 0 ? Math.round((data.deductible / data.dwelling) * 10000) / 100 : 0,
+}));
 
 export const homeAdditionalCoveragesSchema = z.object({
   waterBackup: z.union([z.boolean(), z.coerce.number()]).default(false),
@@ -23,7 +29,14 @@ export const homeAdditionalCoveragesSchema = z.object({
   ordinanceLaw: z.union([z.boolean(), z.coerce.number()]).default(false),
   identityTheft: z.union([z.boolean(), z.coerce.number()]).default(false),
   scheduledProperty: z.union([z.boolean(), z.coerce.number()]).default(false),
-}).default({});
+}).default({
+  waterBackup: false,
+  equipmentBreakdown: false,
+  serviceLine: false,
+  ordinanceLaw: false,
+  identityTheft: false,
+  scheduledProperty: false,
+});
 
 export const homePolicySchema = z.object({
   type: z.literal('home').default('home'),
