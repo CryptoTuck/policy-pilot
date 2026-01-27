@@ -15,7 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Policy Pilot",
   description: "Get your insurance policy graded",
-  themeColor: "#f3f4f6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -26,6 +25,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#f3f4f6",
 };
 
 export default function RootLayout({

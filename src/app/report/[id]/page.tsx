@@ -3,6 +3,7 @@ import { getReport } from '@/lib/storage';
 import { CoverageTable } from '@/components/CoverageTable';
 import { AdditionalCoverageTable } from '@/components/AdditionalCoverageTable';
 import { SectionAnalysis } from '@/components/SectionAnalysis';
+import { StickyCtaButton } from '@/components/StickyCtaButton';
 import Link from 'next/link';
 
 interface ReportPageProps {
@@ -47,6 +48,33 @@ function getGradeDescription(grade: string): string {
     default:
       return 'Coverage assessment complete';
   }
+}
+
+function AreasToReviewAlert({ areas }: { areas: string[] }) {
+  if (areas.length === 0) return null;
+
+  return (
+    <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 rounded-r-lg p-4 mb-6">
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0">
+          <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-red-800 font-semibold text-base mb-2">Areas That Need Your Attention</h3>
+          <ul className="space-y-1">
+            {areas.map((area, index) => (
+              <li key={index} className="text-red-700 text-sm flex items-start gap-2">
+                <span className="text-red-400 mt-0.5">•</span>
+                {area}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function calculateSectionScore(coverages: { score: number; maxScore: number }[]): { score: number; maxScore: number } {
@@ -94,7 +122,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
         <PolicyTabs hasHome={!!homeGrade} hasAuto={!!autoGrade} />
 
         {/* Overall Grade Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-gray-500 text-sm">Policy Holder</p>
           <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
@@ -102,6 +130,14 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </h1>
           <p className="text-gray-500 mt-1">{getGradeDescription(displayGrade)}</p>
         </div>
+
+        {/* Areas to Review Alert */}
+        <AreasToReviewAlert
+          areas={[
+            ...(homeGrade?.areasToReview || []),
+            ...(autoGrade?.areasToReview || [])
+          ]}
+        />
 
         {/* Home Policy Section */}
         {homeGrade && (
@@ -196,13 +232,16 @@ export default async function ReportPage({ params }: ReportPageProps) {
         )}
 
         {/* Footer Disclaimer */}
-        <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg">
+        <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg mb-24">
           <p>
             This report is for educational purposes only and does not constitute professional insurance advice.
             Consult with a licensed insurance agent for personalized recommendations.
           </p>
         </div>
       </main>
+
+      {/* Sticky CTA Button */}
+      <StickyCtaButton />
     </div>
   );
 }
