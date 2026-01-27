@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Policy Pilot",
   description: "Get your insurance policy graded",
-  themeColor: "#ffffff",
+  themeColor: "#f3f4f6",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -34,10 +34,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" style={{ backgroundColor: "#ffffff" }}>
+    <html lang="en" style={{ backgroundColor: "#f3f4f6" }}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        style={{ backgroundColor: "#ffffff" }}
+        style={{ backgroundColor: "#f3f4f6" }}
       >
         {children}
       </body>
