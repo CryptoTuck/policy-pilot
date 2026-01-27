@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { policySubmissionSchema } from '@/lib/validation';
-import { gradePolicy } from '@/lib/grader';
-import { generateId, storeSubmission, storeReport } from '@/lib/storage';
-import type { PolicySubmission } from '@/types/policy';
+import { gradeCanopyPolicy } from '@/lib/canopy-grader';
+import { generateId, storeReport } from '@/lib/storage';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,32 +15,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse and validate the incoming data
+    // Parse the incoming data
     const rawData = await request.json();
-    const validationResult = policySubmissionSchema.safeParse(rawData);
 
-    if (!validationResult.success) {
+    // Validate we have at least some coverage data
+    if (!rawData.autoCoverage && !rawData.homeCoverage) {
       return NextResponse.json(
-        {
-          error: 'Invalid policy data',
-          details: validationResult.error.issues
-        },
+        { error: 'At least one coverage type (autoCoverage or homeCoverage) must be provided' },
         { status: 400 }
       );
     }
 
-    // Create submission with generated ID
-    const submission: PolicySubmission = {
-      id: generateId(),
-      submittedAt: new Date().toISOString(),
-      ...validationResult.data,
-    };
+    const id = generateId();
 
-    // Store the submission
-    await storeSubmission(submission);
-
-    // Grade the policy
-    const report = await gradePolicy(submission);
+    // Grade the policy using OpenAI (pass data directly)
+    const report = await gradeCanopyPolicy(id, rawData);
 
     // Store the report
     await storeReport(report);
@@ -61,7 +48,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Webhook error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
