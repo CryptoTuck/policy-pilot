@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { DevButton } from '@/components/DevButton';
 
@@ -27,6 +28,8 @@ declare global {
 export default function GetPolicyPage() {
   const [handler, setHandler] = useState<CanopyHandler | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const router = useRouter();
 
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
 
@@ -39,6 +42,32 @@ export default function GetPolicyPage() {
       publicAlias,
       pullMetaData: {
         source: 'policy-pilot',
+      },
+      onSuccess: async (data) => {
+        setGenerating(true);
+        try {
+          const response = await fetch('/api/canopy', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to create report');
+          }
+
+          const payload: { reportId?: string } = await response.json();
+
+          if (payload.reportId) {
+            router.push(`/report/${payload.reportId}`);
+          } else {
+            throw new Error('Missing reportId');
+          }
+        } finally {
+          setGenerating(false);
+        }
       },
     });
 
@@ -64,7 +93,27 @@ export default function GetPolicyPage() {
         onReady={() => setSdkReady(true)}
       />
 
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
+        {generating && (
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10">
+            <svg className="animate-spin h-10 w-10 text-blue-500" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                fill="none"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
+            </svg>
+          </div>
+        )}
         <div className="bg-white rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.08)] max-w-md w-full p-6 sm:p-8">
           {/* Back Button */}
           <Link
@@ -99,7 +148,7 @@ export default function GetPolicyPage() {
             {/* CTA Button */}
             <button
               onClick={handleGetPolicy}
-              disabled={!handler}
+              disabled={!handler || generating}
               className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 disabled:from-blue-300 disabled:to-cyan-200 text-white font-semibold rounded-full text-lg transition-all shadow-lg hover:shadow-xl cursor-pointer disabled:cursor-not-allowed"
             >
               {!handler ? (
