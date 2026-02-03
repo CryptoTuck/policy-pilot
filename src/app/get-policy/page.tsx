@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
@@ -41,6 +41,7 @@ export default function GetPolicyPage() {
   const [pollingStatus, setPollingStatus] = useState<PollingStatus>('idle');
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [pollingError, setPollingError] = useState<string | null>(null);
+  const pollingStartedRef = useRef(false);
   const router = useRouter();
 
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
@@ -72,19 +73,19 @@ export default function GetPolicyPage() {
       pullMetadata: { sessionToken: token },
       onSuccess: () => {
         console.log('[Canopy] onSuccess fired', { sessionToken: token });
-        setPollingStatus('waiting');
-        setPollingError(null);
+        if (!pollingStartedRef.current) {
+          pollingStartedRef.current = true;
+          setPollingStatus('waiting');
+          setPollingError(null);
+        }
       },
       onExit: (payload) => {
         console.log('[Canopy] onExit fired', { sessionToken: token, payload });
-        const exitStatus = payload?.status || payload?.action || payload?.result || payload?.reason;
-        const isSuccessExit =
-          payload?.success === true ||
-          exitStatus === 'success' ||
-          exitStatus === 'done' ||
-          exitStatus === 'completed' ||
-          exitStatus === 'complete';
-        if (isSuccessExit) {
+        // Canopy v2 may not fire onSuccess and sends null payload on exit
+        // Start polling as fallback - if user cancelled, it will just timeout
+        if (!pollingStartedRef.current) {
+          console.log('[Canopy] Starting polling from onExit (fallback)');
+          pollingStartedRef.current = true;
           setPollingStatus('waiting');
           setPollingError(null);
         }
@@ -200,6 +201,7 @@ export default function GetPolicyPage() {
               {(pollingStatus === 'timeout' || pollingStatus === 'error') && (
                 <button
                   onClick={() => {
+                    pollingStartedRef.current = false;
                     setPollingStatus('idle');
                     setPollingError(null);
                     setSessionToken(null);
