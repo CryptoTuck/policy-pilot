@@ -42,6 +42,7 @@ export default function GetPolicyPage() {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [pollingError, setPollingError] = useState<string | null>(null);
   const pollingStartedRef = useRef(false);
+  const widgetOpenedAtRef = useRef<number | null>(null);
   const router = useRouter();
 
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
@@ -80,15 +81,27 @@ export default function GetPolicyPage() {
         }
       },
       onExit: (payload) => {
-        console.log('[Canopy] onExit fired', { sessionToken: token, payload });
-        // Canopy v2 may not fire onSuccess and sends null payload on exit
-        // Start polling as fallback - if user cancelled, it will just timeout
-        if (!pollingStartedRef.current) {
-          console.log('[Canopy] Starting polling from onExit (fallback)');
+        const openDuration = widgetOpenedAtRef.current 
+          ? Date.now() - widgetOpenedAtRef.current 
+          : 0;
+        console.log('[Canopy] onExit fired', { sessionToken: token, payload, openDuration });
+        
+        // Only start polling if:
+        // 1. onSuccess already fired (pollingStartedRef would be true, so this won't run)
+        // 2. OR widget was open long enough that user likely completed the flow (>15 seconds)
+        // This prevents showing loading when user just opens and immediately closes
+        const MIN_COMPLETION_TIME_MS = 15000; // 15 seconds minimum to complete flow
+        
+        if (!pollingStartedRef.current && openDuration >= MIN_COMPLETION_TIME_MS) {
+          console.log('[Canopy] Starting polling from onExit (user spent enough time)');
           pollingStartedRef.current = true;
           setPollingStatus('waiting');
           setPollingError(null);
+        } else if (!pollingStartedRef.current) {
+          console.log('[Canopy] Not starting polling - widget closed too quickly, likely cancelled');
         }
+        
+        widgetOpenedAtRef.current = null;
       },
     });
 
@@ -163,6 +176,8 @@ export default function GetPolicyPage() {
 
   const handleGetPolicy = () => {
     if (handler) {
+      widgetOpenedAtRef.current = Date.now();
+      console.log('[Canopy] Widget opened');
       handler.open();
     }
   };
@@ -202,6 +217,7 @@ export default function GetPolicyPage() {
                 <button
                   onClick={() => {
                     pollingStartedRef.current = false;
+                    widgetOpenedAtRef.current = null;
                     setPollingStatus('idle');
                     setPollingError(null);
                     setSessionToken(null);
