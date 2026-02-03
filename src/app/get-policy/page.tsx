@@ -84,21 +84,38 @@ export default function GetPolicyPage() {
         const openDuration = widgetOpenedAtRef.current 
           ? Date.now() - widgetOpenedAtRef.current 
           : 0;
-        console.log('[Canopy] onExit fired', { sessionToken: token, payload, openDuration });
         
-        // Only start polling if:
-        // 1. onSuccess already fired (pollingStartedRef would be true, so this won't run)
-        // 2. OR widget was open long enough that user likely completed the flow (>15 seconds)
-        // This prevents showing loading when user just opens and immediately closes
-        const MIN_COMPLETION_TIME_MS = 15000; // 15 seconds minimum to complete flow
+        // Log full payload for debugging - this tells us exactly what Canopy sends
+        console.log('[Canopy] onExit fired - FULL PAYLOAD:', JSON.stringify(payload, null, 2));
+        console.log('[Canopy] onExit context:', { 
+          sessionToken: token, 
+          openDuration,
+          pollingAlreadyStarted: pollingStartedRef.current 
+        });
         
-        if (!pollingStartedRef.current && openDuration >= MIN_COMPLETION_TIME_MS) {
-          console.log('[Canopy] Starting polling from onExit (user spent enough time)');
+        // Check if user successfully completed the flow based on payload values
+        // Canopy SDK should provide success indicators in the exit payload
+        const wasSuccessful = 
+          payload?.success === true ||
+          payload?.status === 'completed' ||
+          payload?.status === 'success' ||
+          payload?.result === 'success' ||
+          payload?.action === 'completed';
+        
+        if (!pollingStartedRef.current && wasSuccessful) {
+          console.log('[Canopy] User completed flow - starting polling (detected from onExit payload)');
           pollingStartedRef.current = true;
           setPollingStatus('waiting');
           setPollingError(null);
         } else if (!pollingStartedRef.current) {
-          console.log('[Canopy] Not starting polling - widget closed too quickly, likely cancelled');
+          // User closed without completing - log what we received for debugging
+          console.log('[Canopy] User did not complete flow. Exit payload values:', {
+            success: payload?.success,
+            status: payload?.status,
+            reason: payload?.reason,
+            action: payload?.action,
+            result: payload?.result
+          });
         }
         
         widgetOpenedAtRef.current = null;
