@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { gradeCanopyPolicy } from '@/lib/canopy-grader';
-import { generateId, storeReport } from '@/lib/storage';
+import { generateId, storeReport, storeReportByToken } from '@/lib/storage';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
 
     // Store the report
     await storeReport(report);
+
+    // If a session token was passed via Canopy pullMetaData, link it to this report
+    const sessionToken = rawData.MetaData?.sessionToken
+      || rawData.metadata?.sessionToken
+      || rawData.pullMetaData?.sessionToken;
+
+    if (sessionToken) {
+      await storeReportByToken(sessionToken, report.id);
+    }
 
     // Return the report URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

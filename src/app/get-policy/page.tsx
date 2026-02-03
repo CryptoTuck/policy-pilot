@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
@@ -16,58 +16,57 @@ declare global {
     CanopyConnect: {
       create: (options: {
         publicAlias: string;
-        consentToken?: string;
         pullMetaData?: Record<string, string>;
-        onSuccess?: (data: unknown) => void;
+        onSuccess?: () => void;
         onExit?: () => void;
       }) => CanopyHandler;
     };
   }
 }
 
+type PollingStatus = 'idle' | 'waiting' | 'error' | 'timeout';
+
 export default function GetPolicyPage() {
   const [handler, setHandler] = useState<CanopyHandler | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [pollingStatus, setPollingStatus] = useState<PollingStatus>('idle');
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [pollingError, setPollingError] = useState<string | null>(null);
   const router = useRouter();
 
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
+  const isWaiting = pollingStatus === 'waiting';
+  const isBlocked = isWaiting || pollingStatus === 'timeout';
+
+  const loadingMessage = useMemo(() => {
+    if (pollingStatus === 'timeout') {
+      return "We couldn't retrieve your policy data in time. Try again.";
+    }
+    if (pollingStatus === 'error') {
+      return pollingError || 'Something went wrong. Try again.';
+    }
+    return 'Retrieving your policy... This usually takes less than a minute.';
+  }, [pollingError, pollingStatus]);
 
   useEffect(() => {
     if (!sdkReady || !publicAlias) {
       return;
     }
 
+    // Generate a unique session token to correlate this user with their webhook report
+    const token = crypto.randomUUID();
+    setSessionToken(token);
+
     const canopyHandler = window.CanopyConnect.create({
       publicAlias,
-      pullMetaData: {
-        source: 'policy-pilot',
+      pullMetaData: { sessionToken: token },
+      onSuccess: () => {
+        setPollingStatus('waiting');
+        setPollingError(null);
       },
-      onSuccess: async (data) => {
-        setGenerating(true);
-        try {
-          const response = await fetch('/api/canopy', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to create report');
-          }
-
-          const payload: { reportId?: string } = await response.json();
-
-          if (payload.reportId) {
-            router.push(`/report/${payload.reportId}`);
-          } else {
-            throw new Error('Missing reportId');
-          }
-        } finally {
-          setGenerating(false);
-        }
+      onExit: () => {
+        // Only show loading if the user already completed (onSuccess fires first).
+        // If they just closed without completing, do nothing — no webhook will fire.
       },
     });
 
@@ -78,6 +77,65 @@ export default function GetPolicyPage() {
       canopyHandler.destroy();
     };
   }, [sdkReady, publicAlias]);
+
+  useEffect(() => {
+    if (pollingStatus !== 'waiting' || !sessionToken) {
+      return;
+    }
+
+    let isActive = true;
+    const startMs = Date.now();
+    const timeoutMs = 3 * 60 * 1000;
+
+    const poll = async () => {
+      try {
+        const response = await fetch(
+          `/api/webhook/latest?token=${encodeURIComponent(sessionToken)}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to check report status');
+        }
+
+        const payload: { status: 'pending' | 'complete'; reportId?: string } =
+          await response.json();
+
+        if (!isActive) {
+          return;
+        }
+
+        if (payload.status === 'complete' && payload.reportId) {
+          router.push(`/report/${payload.reportId}`);
+          return;
+        }
+
+        if (Date.now() - startMs >= timeoutMs) {
+          setPollingStatus('timeout');
+        }
+      } catch (error) {
+        if (!isActive) {
+          return;
+        }
+        setPollingStatus('error');
+        setPollingError(error instanceof Error ? error.message : 'Unexpected error');
+      }
+    };
+
+    poll();
+
+    const intervalId = window.setInterval(poll, 3000);
+    const timeoutId = window.setTimeout(() => {
+      if (isActive) {
+        setPollingStatus('timeout');
+      }
+    }, timeoutMs);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(intervalId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [sessionToken, pollingStatus, router]);
 
   const handleGetPolicy = () => {
     if (handler) {
@@ -94,24 +152,41 @@ export default function GetPolicyPage() {
       />
 
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
-        {generating && (
+        {pollingStatus !== 'idle' && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10">
-            <svg className="animate-spin h-10 w-10 text-blue-500" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-                fill="none"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+            <div className="bg-white shadow-xl rounded-2xl px-8 py-10 max-w-sm text-center">
+              {pollingStatus === 'waiting' && (
+                <svg className="animate-spin h-10 w-10 text-blue-500 mx-auto mb-6" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+              )}
+              <p className="text-gray-700 text-base sm:text-lg mb-6">{loadingMessage}</p>
+              {(pollingStatus === 'timeout' || pollingStatus === 'error') && (
+                <button
+                  onClick={() => {
+                    setPollingStatus('idle');
+                    setPollingError(null);
+                    setSessionToken(null);
+                  }}
+                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors"
+                >
+                  Try again
+                </button>
+              )}
+            </div>
           </div>
         )}
         <div className="bg-white rounded-2xl shadow-[0_2px_20px_rgba(0,0,0,0.08)] max-w-md w-full p-6 sm:p-8">
@@ -148,7 +223,7 @@ export default function GetPolicyPage() {
             {/* CTA Button */}
             <button
               onClick={handleGetPolicy}
-              disabled={!handler || generating}
+              disabled={!handler || isBlocked}
               className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 disabled:from-blue-300 disabled:to-cyan-200 text-white font-semibold rounded-full text-lg transition-all shadow-lg hover:shadow-xl cursor-pointer disabled:cursor-not-allowed"
             >
               {!handler ? (

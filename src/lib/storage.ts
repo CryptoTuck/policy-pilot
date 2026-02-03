@@ -21,19 +21,23 @@ if (redisUrl && redisToken) {
 const globalForStorage = globalThis as unknown as {
   submissions: Map<string, PolicySubmission> | undefined;
   reports: Map<string, PolicyReport> | undefined;
+  tokenToReport: Map<string, string> | undefined;
 };
 
 const memorySubmissions = globalForStorage.submissions ?? new Map<string, PolicySubmission>();
 const memoryReports = globalForStorage.reports ?? new Map<string, PolicyReport>();
+const memoryTokenToReport = globalForStorage.tokenToReport ?? new Map<string, string>();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForStorage.submissions = memorySubmissions;
   globalForStorage.reports = memoryReports;
+  globalForStorage.tokenToReport = memoryTokenToReport;
 }
 
 // Key prefixes for Redis
 const SUBMISSION_PREFIX = 'submission:';
 const REPORT_PREFIX = 'report:';
+const TOKEN_PREFIX = 'token:';
 
 // TTL for stored data (7 days in seconds)
 const TTL_SECONDS = 7 * 24 * 60 * 60;
@@ -80,6 +84,40 @@ export async function getReport(id: string): Promise<PolicyReport | undefined> {
     return data ?? undefined;
   }
   return memoryReports.get(id);
+}
+
+/**
+ * Store a mapping from a session token to a report ID.
+ * Called by the webhook after grading, using the token from pullMetaData.
+ */
+export async function storeReportByToken(token: string, reportId: string): Promise<void> {
+  if (redis) {
+    await redis.set(`${TOKEN_PREFIX}${token}`, reportId, {
+      ex: TTL_SECONDS,
+    });
+  } else {
+    memoryTokenToReport.set(token, reportId);
+  }
+}
+
+/**
+ * Look up a report by its session token.
+ * Called by the polling endpoint to find the user's specific report.
+ */
+export async function getReportByToken(token: string): Promise<PolicyReport | undefined> {
+  let reportId: string | null = null;
+
+  if (redis) {
+    reportId = await redis.get<string>(`${TOKEN_PREFIX}${token}`);
+  } else {
+    reportId = memoryTokenToReport.get(token) ?? null;
+  }
+
+  if (!reportId) {
+    return undefined;
+  }
+
+  return getReport(reportId);
 }
 
 // Clean up old entries (only needed for in-memory storage)
