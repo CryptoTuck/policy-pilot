@@ -80,44 +80,15 @@ export default function GetPolicyPage() {
           setPollingError(null);
         }
       },
-      onExit: (payload) => {
-        const openDuration = widgetOpenedAtRef.current 
-          ? Date.now() - widgetOpenedAtRef.current 
-          : 0;
-        
-        // Log full payload for debugging - this tells us exactly what Canopy sends
-        console.log('[Canopy] onExit fired - FULL PAYLOAD:', JSON.stringify(payload, null, 2));
-        console.log('[Canopy] onExit context:', { 
-          sessionToken: token, 
-          openDuration,
-          pollingAlreadyStarted: pollingStartedRef.current 
-        });
-        
-        // Check if user successfully completed the flow based on payload values
-        // Canopy SDK should provide success indicators in the exit payload
-        const wasSuccessful = 
-          payload?.success === true ||
-          payload?.status === 'completed' ||
-          payload?.status === 'success' ||
-          payload?.result === 'success' ||
-          payload?.action === 'completed';
-        
-        if (!pollingStartedRef.current && wasSuccessful) {
-          console.log('[Canopy] User completed flow - starting polling (detected from onExit payload)');
+      onExit: () => {
+        console.log('[Canopy] onExit fired', { sessionToken: token });
+        // Canopy doesn't provide completion status in onExit payload
+        // Start polling whenever widget closes - user can cancel if they didn't complete
+        if (!pollingStartedRef.current) {
           pollingStartedRef.current = true;
           setPollingStatus('waiting');
           setPollingError(null);
-        } else if (!pollingStartedRef.current) {
-          // User closed without completing - log what we received for debugging
-          console.log('[Canopy] User did not complete flow. Exit payload values:', {
-            success: payload?.success,
-            status: payload?.status,
-            reason: payload?.reason,
-            action: payload?.action,
-            result: payload?.result
-          });
         }
-        
         widgetOpenedAtRef.current = null;
       },
     });
@@ -242,6 +213,20 @@ export default function GetPolicyPage() {
                   className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors"
                 >
                   Try again
+                </button>
+              )}
+              {pollingStatus === 'waiting' && (
+                <button
+                  onClick={() => {
+                    pollingStartedRef.current = false;
+                    widgetOpenedAtRef.current = null;
+                    setPollingStatus('idle');
+                    setPollingError(null);
+                    setSessionToken(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 text-sm underline transition-colors mt-2"
+                >
+                  Didn't complete the form?
                 </button>
               )}
             </div>
