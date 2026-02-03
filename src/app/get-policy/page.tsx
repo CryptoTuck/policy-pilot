@@ -11,14 +11,23 @@ type CanopyHandler = {
   destroy: () => void;
 };
 
+type CanopyExitPayload = {
+  status?: string;
+  reason?: string;
+  action?: string;
+  result?: string;
+  success?: boolean;
+};
+
 declare global {
   interface Window {
     CanopyConnect: {
       create: (options: {
         publicAlias: string;
         pullMetaData?: Record<string, string>;
+        pullMetadata?: Record<string, string>;
         onSuccess?: () => void;
-        onExit?: () => void;
+        onExit?: (payload?: CanopyExitPayload) => void;
       }) => CanopyHandler;
     };
   }
@@ -60,13 +69,25 @@ export default function GetPolicyPage() {
     const canopyHandler = window.CanopyConnect.create({
       publicAlias,
       pullMetaData: { sessionToken: token },
+      pullMetadata: { sessionToken: token },
       onSuccess: () => {
+        console.log('[Canopy] onSuccess fired', { sessionToken: token });
         setPollingStatus('waiting');
         setPollingError(null);
       },
-      onExit: () => {
-        // Only show loading if the user already completed (onSuccess fires first).
-        // If they just closed without completing, do nothing — no webhook will fire.
+      onExit: (payload) => {
+        console.log('[Canopy] onExit fired', { sessionToken: token, payload });
+        const exitStatus = payload?.status || payload?.action || payload?.result || payload?.reason;
+        const isSuccessExit =
+          payload?.success === true ||
+          exitStatus === 'success' ||
+          exitStatus === 'done' ||
+          exitStatus === 'completed' ||
+          exitStatus === 'complete';
+        if (isSuccessExit) {
+          setPollingStatus('waiting');
+          setPollingError(null);
+        }
       },
     });
 
@@ -89,6 +110,7 @@ export default function GetPolicyPage() {
 
     const poll = async () => {
       try {
+        console.log('[Canopy] polling for report', { sessionToken });
         const response = await fetch(
           `/api/webhook/latest?token=${encodeURIComponent(sessionToken)}`
         );
@@ -99,6 +121,7 @@ export default function GetPolicyPage() {
 
         const payload: { status: 'pending' | 'complete'; reportId?: string } =
           await response.json();
+        console.log('[Canopy] poll response', payload);
 
         if (!isActive) {
           return;

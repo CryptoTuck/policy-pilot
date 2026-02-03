@@ -6,15 +6,18 @@ export async function GET(request: NextRequest) {
   const token = searchParams.get('token');
 
   if (!token) {
+    console.warn('[Webhook latest] missing token');
     return NextResponse.json(
       { status: 'error', message: 'Missing token parameter' },
       { status: 400 }
     );
   }
 
+  console.log('[Webhook latest] lookup', { token });
   const report = await getReportByToken(token);
 
   if (!report) {
+    console.log('[Webhook latest] pending', { token });
     return NextResponse.json({ status: 'pending' });
   }
 

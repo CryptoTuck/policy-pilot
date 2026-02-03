@@ -17,6 +17,13 @@ export async function POST(request: NextRequest) {
 
     // Parse the incoming data
     const rawData = await request.json();
+    console.log('[Webhook] payload received', {
+      keys: Object.keys(rawData ?? {}),
+      metaDataKeys: Object.keys(rawData?.MetaData ?? {}),
+      metadataKeys: Object.keys(rawData?.metadata ?? {}),
+      pullMetaDataKeys: Object.keys(rawData?.pullMetaData ?? {}),
+      pullMetadataKeys: Object.keys(rawData?.pullMetadata ?? {}),
+    });
 
     // Validate we have at least some coverage data
     if (!rawData.autoCoverage && !rawData.homeCoverage) {
@@ -37,10 +44,14 @@ export async function POST(request: NextRequest) {
     // If a session token was passed via Canopy pullMetaData, link it to this report
     const sessionToken = rawData.MetaData?.sessionToken
       || rawData.metadata?.sessionToken
-      || rawData.pullMetaData?.sessionToken;
+      || rawData.pullMetaData?.sessionToken
+      || rawData.pullMetadata?.sessionToken;
 
     if (sessionToken) {
+      console.log('[Webhook] session token linked', { sessionToken, reportId: report.id });
       await storeReportByToken(sessionToken, report.id);
+    } else {
+      console.warn('[Webhook] session token missing');
     }
 
     // Return the report URL
