@@ -31,6 +31,7 @@ export default function GetPolicyPage() {
   const [pollingStatus, setPollingStatus] = useState<PollingStatus>('idle');
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [pollingError, setPollingError] = useState<string | null>(null);
+  const [widgetOpen, setWidgetOpen] = useState(false);
   const [exitTriggered, setExitTriggered] = useState(false);
   const router = useRouter();
   const handlerRef = useRef<CanopyHandler | null>(null);
@@ -39,6 +40,7 @@ export default function GetPolicyPage() {
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
   const isWaiting = pollingStatus === 'waiting';
   const isBlocked = isWaiting || pollingStatus === 'timeout' || pollingStatus === 'error';
+  const showOverlay = pollingStatus !== 'idle' && !widgetOpen;
 
   const loadingMessage = useMemo(() => {
     if (pollingStatus === 'timeout') {
@@ -67,7 +69,7 @@ export default function GetPolicyPage() {
 
     let isActive = true;
     const startMs = Date.now();
-    const timeoutMs = exitTriggered ? 60 * 1000 : 3 * 60 * 1000;
+    const timeoutMs = exitTriggered ? 60 * 1000 : 10 * 60 * 1000;
 
     const poll = async () => {
       try {
@@ -130,8 +132,9 @@ export default function GetPolicyPage() {
     const token = crypto.randomUUID();
     setSessionToken(token);
     setPollingError(null);
-    setPollingStatus('idle');
+    setPollingStatus('waiting');
     setExitTriggered(false);
+    setWidgetOpen(true);
 
     if (handlerRef.current) {
       handlerRef.current.destroy();
@@ -150,10 +153,11 @@ export default function GetPolicyPage() {
         setPollingError(null);
       },
       onExit: () => {
+        setWidgetOpen(false);
         if (completedRef.current) {
           return;
         }
-        // User closed without completing. Reset state so they can try again.
+        // User closed without completing. Keep polling briefly in case a webhook still arrives.
         setExitTriggered(true);
         setPollingStatus('waiting');
         setPollingError(null);
@@ -173,7 +177,7 @@ export default function GetPolicyPage() {
       />
 
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative">
-        {pollingStatus !== 'idle' && (
+        {showOverlay && (
           <div className="absolute inset-0 bg-white/70 backdrop-blur-sm flex items-center justify-center z-10">
             <div className="bg-white shadow-xl rounded-2xl px-8 py-10 max-w-sm text-center">
               {pollingStatus === 'waiting' && (
@@ -195,19 +199,18 @@ export default function GetPolicyPage() {
                 </svg>
               )}
               <p className="text-gray-700 text-base sm:text-lg mb-6">{loadingMessage}</p>
-              {(pollingStatus === 'timeout' || pollingStatus === 'error' || exitTriggered) && (
-                <button
-                  onClick={() => {
-                    setPollingStatus('idle');
-                    setPollingError(null);
-                    setSessionToken(null);
-                    setExitTriggered(false);
-                  }}
-                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors"
-                >
-                  Try again
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  setPollingStatus('idle');
+                  setPollingError(null);
+                  setSessionToken(null);
+                  setExitTriggered(false);
+                  setWidgetOpen(false);
+                }}
+                className="text-sm text-blue-600 hover:text-blue-700 underline underline-offset-4"
+              >
+                Didn't complete the form? Start over
+              </button>
             </div>
           </div>
         )}
