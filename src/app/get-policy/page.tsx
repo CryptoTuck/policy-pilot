@@ -31,6 +31,7 @@ export default function GetPolicyPage() {
   const [pollingStatus, setPollingStatus] = useState<PollingStatus>('idle');
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [pollingError, setPollingError] = useState<string | null>(null);
+  const [exitTriggered, setExitTriggered] = useState(false);
   const router = useRouter();
   const handlerRef = useRef<CanopyHandler | null>(null);
   const completedRef = useRef(false);
@@ -46,8 +47,11 @@ export default function GetPolicyPage() {
     if (pollingStatus === 'error') {
       return pollingError || 'Something went wrong. Try again.';
     }
+    if (exitTriggered) {
+      return "We didn't get a completion signal. If you finished, we'll keep checking for about a minute.";
+    }
     return 'Retrieving your policy... This usually takes less than a minute.';
-  }, [pollingError, pollingStatus]);
+  }, [exitTriggered, pollingError, pollingStatus]);
 
   useEffect(() => {
     return () => {
@@ -63,7 +67,7 @@ export default function GetPolicyPage() {
 
     let isActive = true;
     const startMs = Date.now();
-    const timeoutMs = 3 * 60 * 1000;
+    const timeoutMs = exitTriggered ? 60 * 1000 : 3 * 60 * 1000;
 
     const poll = async () => {
       try {
@@ -113,7 +117,7 @@ export default function GetPolicyPage() {
       window.clearInterval(intervalId);
       window.clearTimeout(timeoutId);
     };
-  }, [sessionToken, pollingStatus, router]);
+  }, [exitTriggered, sessionToken, pollingStatus, router]);
 
   const handleGetPolicy = () => {
     if (!sdkReady || !window.CanopyConnect || !publicAlias) {
@@ -127,6 +131,7 @@ export default function GetPolicyPage() {
     setSessionToken(token);
     setPollingError(null);
     setPollingStatus('idle');
+    setExitTriggered(false);
 
     if (handlerRef.current) {
       handlerRef.current.destroy();
@@ -140,6 +145,7 @@ export default function GetPolicyPage() {
       pullMetaData: { sessionToken: token },
       onSuccess: () => {
         completedRef.current = true;
+        setExitTriggered(false);
         setPollingStatus('waiting');
         setPollingError(null);
       },
@@ -148,9 +154,9 @@ export default function GetPolicyPage() {
           return;
         }
         // User closed without completing. Reset state so they can try again.
-        setPollingStatus('idle');
+        setExitTriggered(true);
+        setPollingStatus('waiting');
         setPollingError(null);
-        setSessionToken(null);
       },
     });
 
@@ -189,12 +195,13 @@ export default function GetPolicyPage() {
                 </svg>
               )}
               <p className="text-gray-700 text-base sm:text-lg mb-6">{loadingMessage}</p>
-              {(pollingStatus === 'timeout' || pollingStatus === 'error') && (
+              {(pollingStatus === 'timeout' || pollingStatus === 'error' || exitTriggered) && (
                 <button
                   onClick={() => {
                     setPollingStatus('idle');
                     setPollingError(null);
                     setSessionToken(null);
+                    setExitTriggered(false);
                   }}
                   className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors"
                 >
