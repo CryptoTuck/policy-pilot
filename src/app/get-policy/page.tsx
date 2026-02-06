@@ -69,7 +69,7 @@ export default function GetPolicyPage() {
 
     let isActive = true;
     const startMs = Date.now();
-    const timeoutMs = exitTriggered ? 60 * 1000 : 10 * 60 * 1000;
+    const timeoutMs = 10 * 60 * 1000;
 
     const poll = async () => {
       try {
