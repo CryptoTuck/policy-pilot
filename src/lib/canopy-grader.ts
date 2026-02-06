@@ -6,6 +6,8 @@ interface CanopyData {
   autoCoverage?: string;
   homeCoverage?: string;
   homeDeducatable?: string;
+  homeDeductable?: string;
+  homeDeductible?: string;
   // Allow any additional fields Canopy might send
   [key: string]: unknown;
 }
@@ -63,8 +65,10 @@ function createCanopyGradingPrompt(data: CanopyData): string {
     prompt += `## Home Insurance Coverage\n${data.homeCoverage}\n\n`;
   }
 
-  if (data.homeDeducatable) {
-    prompt += `## Home Deductible\n${data.homeDeducatable}\n\n`;
+  const deductibleText =
+    data.homeDeducatable || data.homeDeductable || data.homeDeductible;
+  if (deductibleText) {
+    prompt += `## Home Deductible\n${deductibleText}\n\n`;
   }
 
   if (data.autoCoverage) {
@@ -73,7 +77,7 @@ function createCanopyGradingPrompt(data: CanopyData): string {
 
   // Include any additional fields that might be useful
   const additionalFields = Object.entries(data).filter(
-    ([key]) => !['autoCoverage', 'homeCoverage', 'homeDeducatable'].includes(key)
+    ([key]) => !['autoCoverage', 'homeCoverage', 'homeDeducatable', 'homeDeductable', 'homeDeductible'].includes(key)
   );
 
   if (additionalFields.length > 0) {

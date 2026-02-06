@@ -11,23 +11,14 @@ type CanopyHandler = {
   destroy: () => void;
 };
 
-type CanopyExitPayload = {
-  status?: string;
-  reason?: string;
-  action?: string;
-  result?: string;
-  success?: boolean;
-};
-
 declare global {
   interface Window {
     CanopyConnect: {
       create: (options: {
         publicAlias: string;
         pullMetaData?: Record<string, string>;
-        pullMetadata?: Record<string, string>;
         onSuccess?: () => void;
-        onExit?: (payload?: CanopyExitPayload) => void;
+        onExit?: () => void;
       }) => CanopyHandler;
     };
   }
@@ -36,18 +27,17 @@ declare global {
 type PollingStatus = 'idle' | 'waiting' | 'error' | 'timeout';
 
 export default function GetPolicyPage() {
-  const [handler, setHandler] = useState<CanopyHandler | null>(null);
   const [sdkReady, setSdkReady] = useState(false);
   const [pollingStatus, setPollingStatus] = useState<PollingStatus>('idle');
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [pollingError, setPollingError] = useState<string | null>(null);
-  const pollingStartedRef = useRef(false);
-  const widgetOpenedAtRef = useRef<number | null>(null);
   const router = useRouter();
+  const handlerRef = useRef<CanopyHandler | null>(null);
+  const completedRef = useRef(false);
 
   const publicAlias = process.env.NEXT_PUBLIC_CANOPY_PUBLIC_ALIAS || 'your-public-alias';
   const isWaiting = pollingStatus === 'waiting';
-  const isBlocked = isWaiting || pollingStatus === 'timeout';
+  const isBlocked = isWaiting || pollingStatus === 'timeout' || pollingStatus === 'error';
 
   const loadingMessage = useMemo(() => {
     if (pollingStatus === 'timeout') {
@@ -60,46 +50,11 @@ export default function GetPolicyPage() {
   }, [pollingError, pollingStatus]);
 
   useEffect(() => {
-    if (!sdkReady || !publicAlias) {
-      return;
-    }
-
-    // Generate a unique session token to correlate this user with their webhook report
-    const token = crypto.randomUUID();
-    setSessionToken(token);
-
-    const canopyHandler = window.CanopyConnect.create({
-      publicAlias,
-      pullMetaData: { sessionToken: token },
-      pullMetadata: { sessionToken: token },
-      onSuccess: () => {
-        console.log('[Canopy] onSuccess fired', { sessionToken: token });
-        if (!pollingStartedRef.current) {
-          pollingStartedRef.current = true;
-          setPollingStatus('waiting');
-          setPollingError(null);
-        }
-      },
-      onExit: () => {
-        console.log('[Canopy] onExit fired', { sessionToken: token });
-        // Canopy doesn't provide completion status in onExit payload
-        // Start polling whenever widget closes - user can cancel if they didn't complete
-        if (!pollingStartedRef.current) {
-          pollingStartedRef.current = true;
-          setPollingStatus('waiting');
-          setPollingError(null);
-        }
-        widgetOpenedAtRef.current = null;
-      },
-    });
-
-    setHandler(canopyHandler);
-
     return () => {
-      setHandler(null);
-      canopyHandler.destroy();
+      handlerRef.current?.destroy();
+      handlerRef.current = null;
     };
-  }, [sdkReady, publicAlias]);
+  }, []);
 
   useEffect(() => {
     if (pollingStatus !== 'waiting' || !sessionToken) {
@@ -112,7 +67,6 @@ export default function GetPolicyPage() {
 
     const poll = async () => {
       try {
-        console.log('[Canopy] polling for report', { sessionToken });
         const response = await fetch(
           `/api/webhook/latest?token=${encodeURIComponent(sessionToken)}`
         );
@@ -123,7 +77,6 @@ export default function GetPolicyPage() {
 
         const payload: { status: 'pending' | 'complete'; reportId?: string } =
           await response.json();
-        console.log('[Canopy] poll response', payload);
 
         if (!isActive) {
           return;
@@ -163,11 +116,46 @@ export default function GetPolicyPage() {
   }, [sessionToken, pollingStatus, router]);
 
   const handleGetPolicy = () => {
-    if (handler) {
-      widgetOpenedAtRef.current = Date.now();
-      console.log('[Canopy] Widget opened');
-      handler.open();
+    if (!sdkReady || !window.CanopyConnect || !publicAlias) {
+      setPollingStatus('error');
+      setPollingError('Canopy Connect is still loading. Please try again.');
+      return;
     }
+
+    // Generate a unique session token to correlate this user with their webhook report
+    const token = crypto.randomUUID();
+    setSessionToken(token);
+    setPollingError(null);
+    setPollingStatus('idle');
+
+    if (handlerRef.current) {
+      handlerRef.current.destroy();
+      handlerRef.current = null;
+    }
+
+    completedRef.current = false;
+
+    const canopyHandler = window.CanopyConnect.create({
+      publicAlias,
+      pullMetaData: { sessionToken: token },
+      onSuccess: () => {
+        completedRef.current = true;
+        setPollingStatus('waiting');
+        setPollingError(null);
+      },
+      onExit: () => {
+        if (completedRef.current) {
+          return;
+        }
+        // User closed without completing. Reset state so they can try again.
+        setPollingStatus('idle');
+        setPollingError(null);
+        setSessionToken(null);
+      },
+    });
+
+    handlerRef.current = canopyHandler;
+    canopyHandler.open();
   };
 
   return (
@@ -204,8 +192,6 @@ export default function GetPolicyPage() {
               {(pollingStatus === 'timeout' || pollingStatus === 'error') && (
                 <button
                   onClick={() => {
-                    pollingStartedRef.current = false;
-                    widgetOpenedAtRef.current = null;
                     setPollingStatus('idle');
                     setPollingError(null);
                     setSessionToken(null);
@@ -213,20 +199,6 @@ export default function GetPolicyPage() {
                   className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-full transition-colors"
                 >
                   Try again
-                </button>
-              )}
-              {pollingStatus === 'waiting' && (
-                <button
-                  onClick={() => {
-                    pollingStartedRef.current = false;
-                    widgetOpenedAtRef.current = null;
-                    setPollingStatus('idle');
-                    setPollingError(null);
-                    setSessionToken(null);
-                  }}
-                  className="text-gray-500 hover:text-gray-700 text-sm underline transition-colors mt-2"
-                >
-                  Didn't complete the form?
                 </button>
               )}
             </div>
@@ -266,10 +238,10 @@ export default function GetPolicyPage() {
             {/* CTA Button */}
             <button
               onClick={handleGetPolicy}
-              disabled={!handler || isBlocked}
+              disabled={!sdkReady || isBlocked}
               className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 disabled:from-blue-300 disabled:to-cyan-200 text-white font-semibold rounded-full text-lg transition-all shadow-lg hover:shadow-xl cursor-pointer disabled:cursor-not-allowed"
             >
-              {!handler ? (
+              {!sdkReady ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
