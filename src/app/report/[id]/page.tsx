@@ -231,16 +231,33 @@ export default async function ReportPage({ params }: ReportPageProps) {
               <section key={idx} className={`mb-8 ${idx > 0 ? 'pt-6 border-t border-gray-100' : ''}`}>
                 {/* Vehicle/Policy Header */}
                 {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
-                    <h3 className="text-lg font-bold text-gray-900">
-                      {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
-                    </h3>
-                    {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
-                      <p className="text-sm text-gray-600">Policy: {autoPolicy.policyNumber}</p>
-                    )}
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-sm text-gray-500">Grade:</span>
-                      <span className="text-2xl font-bold text-blue-600">{autoPolicy.overallGrade}</span>
+                  <div className="mb-6 p-5 bg-white border border-gray-200 rounded-xl shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7h12m0 0l-4-4m4 4l-4 4m-8 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                          <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">Vehicle</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">
+                          {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
+                        </h3>
+                        {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
+                          <p className="text-sm text-gray-500 mt-1">Policy #{autoPolicy.policyNumber}</p>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white ${
+                          autoPolicy.overallGrade === 'A' ? 'bg-green-500' :
+                          autoPolicy.overallGrade === 'B' ? 'bg-blue-500' :
+                          autoPolicy.overallGrade === 'C' ? 'bg-amber-500' :
+                          autoPolicy.overallGrade === 'D' ? 'bg-orange-500' : 'bg-red-500'
+                        }`}>
+                          {autoPolicy.overallGrade}
+                        </div>
+                        <span className="text-xs text-gray-400 mt-1 font-medium">Grade</span>
+                      </div>
                     </div>
                   </div>
                 )}
