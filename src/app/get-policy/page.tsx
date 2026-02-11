@@ -49,11 +49,8 @@ export default function GetPolicyPage() {
     if (pollingStatus === 'error') {
       return pollingError || 'Something went wrong. Try again.';
     }
-    if (exitTriggered) {
-      return "We didn't get a completion signal. If you finished, we'll keep checking for about a minute.";
-    }
-    return 'Retrieving your policy... This usually takes less than a minute.';
-  }, [exitTriggered, pollingError, pollingStatus]);
+    return 'Gathering your policy data...';
+  }, [pollingError, pollingStatus]);
 
   useEffect(() => {
     return () => {
@@ -209,7 +206,7 @@ export default function GetPolicyPage() {
                 }}
                 className="text-sm text-blue-600 hover:text-blue-700 underline underline-offset-4"
               >
-                Didn't complete the form? Start over
+                Didn't complete the form? Close and start over
               </button>
             </div>
           </div>
