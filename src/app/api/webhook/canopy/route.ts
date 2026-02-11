@@ -224,7 +224,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 3: Store parsed policies and coverages in Supabase
-    const formattedByType: Record<string, { coverage: string; deductible: string }> = {};
+    const formattedByType: Record<string, Array<{ coverage: string; deductible: string; policyNumber?: string; carrier?: string; vehicles?: Array<{ year?: number; make?: string; model?: string }> }>> = {};
     
     for (const policy of parsedData.policies) {
       const policyRecord = await createPolicy(
@@ -287,13 +287,7 @@ export async function POST(request: NextRequest) {
       if (!formattedByType[typeKey]) {
         formattedByType[typeKey] = [];
       }
-      (formattedByType[typeKey] as Array<{
-        coverage: string;
-        deductible: string;
-        policyNumber?: string;
-        carrier?: string;
-        vehicles?: Array<{ year?: number; make?: string; model?: string }>;
-      }>).push({
+      formattedByType[typeKey].push({
         coverage: formatted.coverageString,
         deductible: formatted.deductibleString,
         policyNumber: policy.policyNumber,
