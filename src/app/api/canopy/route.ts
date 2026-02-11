@@ -1,6 +1,73 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { gradeCanopyPolicy } from '@/lib/canopy-grader';
-import { generateId, storeReport } from '@/lib/storage';
+import { generateId, storeReport, storeReportByToken } from '@/lib/storage';
+
+type UnknownRecord = Record<string, unknown>;
+
+function tryParseJson(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function extractTokenFromObject(candidate: unknown): string | undefined {
+  if (!candidate) return undefined;
+
+  if (typeof candidate === 'string') {
+    const parsed = tryParseJson(candidate);
+    if (parsed && typeof parsed === 'object') {
+      return extractTokenFromObject(parsed);
+    }
+    return undefined;
+  }
+
+  if (typeof candidate === 'object') {
+    const record = candidate as UnknownRecord;
+    const token =
+      (typeof record.sessionToken === 'string' && record.sessionToken) ||
+      (typeof record.session_token === 'string' && record.session_token);
+    return token || undefined;
+  }
+
+  return undefined;
+}
+
+function findSessionToken(payload: unknown): string | undefined {
+  if (!payload || typeof payload !== 'object') return undefined;
+
+  const record = payload as UnknownRecord;
+  const possibleRoots: unknown[] = [
+    record,
+    record.data,
+    record.payload,
+  ];
+
+  const metadataKeys = [
+    'pullMetaData',
+    'pullMetadata',
+    'pull_meta_data',
+    'metadata',
+    'metaData',
+    'MetaData',
+  ];
+
+  for (const root of possibleRoots) {
+    if (!root || typeof root !== 'object') continue;
+    const rootRecord = root as UnknownRecord;
+
+    for (const key of metadataKeys) {
+      const token = extractTokenFromObject(rootRecord[key]);
+      if (token) return token;
+    }
+
+    const directToken = extractTokenFromObject(rootRecord);
+    if (directToken) return directToken;
+  }
+
+  return undefined;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +100,13 @@ export async function POST(request: NextRequest) {
 
     // Store the report
     await storeReport(report);
+
+    const sessionToken = findSessionToken(rawData);
+    if (sessionToken) {
+      await storeReportByToken(sessionToken, report.id);
+    } else {
+      console.warn('Canopy payload missing session token; report not linked to polling.');
+    }
 
     // Return the report URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

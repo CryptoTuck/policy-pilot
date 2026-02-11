@@ -2,6 +2,73 @@ import { NextRequest, NextResponse } from 'next/server';
 import { gradeCanopyPolicy } from '@/lib/canopy-grader';
 import { generateId, storeReport, storeReportByToken } from '@/lib/storage';
 
+type UnknownRecord = Record<string, unknown>;
+
+function tryParseJson(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+function extractTokenFromObject(candidate: unknown): string | undefined {
+  if (!candidate) return undefined;
+
+  if (typeof candidate === 'string') {
+    const parsed = tryParseJson(candidate);
+    if (parsed && typeof parsed === 'object') {
+      return extractTokenFromObject(parsed);
+    }
+    return undefined;
+  }
+
+  if (typeof candidate === 'object') {
+    const record = candidate as UnknownRecord;
+    const token =
+      (typeof record.sessionToken === 'string' && record.sessionToken) ||
+      (typeof record.session_token === 'string' && record.session_token);
+    return token || undefined;
+  }
+
+  return undefined;
+}
+
+function findSessionToken(payload: unknown): string | undefined {
+  if (!payload || typeof payload !== 'object') return undefined;
+
+  const record = payload as UnknownRecord;
+  const possibleRoots: unknown[] = [
+    record,
+    record.data,
+    record.payload,
+  ];
+
+  const metadataKeys = [
+    'pullMetaData',
+    'pullMetadata',
+    'pull_meta_data',
+    'metadata',
+    'metaData',
+    'MetaData',
+  ];
+
+  for (const root of possibleRoots) {
+    if (!root || typeof root !== 'object') continue;
+    const rootRecord = root as UnknownRecord;
+
+    for (const key of metadataKeys) {
+      const token = extractTokenFromObject(rootRecord[key]);
+      if (token) return token;
+    }
+
+    const directToken = extractTokenFromObject(rootRecord);
+    if (directToken) return directToken;
+  }
+
+  return undefined;
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Verify webhook secret (optional but recommended)
@@ -17,13 +84,6 @@ export async function POST(request: NextRequest) {
 
     // Parse the incoming data
     const rawData = await request.json();
-    console.log('[Webhook] payload received', {
-      keys: Object.keys(rawData ?? {}),
-      metaDataKeys: Object.keys(rawData?.MetaData ?? {}),
-      metadataKeys: Object.keys(rawData?.metadata ?? {}),
-      pullMetaDataKeys: Object.keys(rawData?.pullMetaData ?? {}),
-      pullMetadataKeys: Object.keys(rawData?.pullMetadata ?? {}),
-    });
 
     // Validate we have at least some coverage data
     if (!rawData.autoCoverage && !rawData.homeCoverage) {
@@ -42,16 +102,12 @@ export async function POST(request: NextRequest) {
     await storeReport(report);
 
     // If a session token was passed via Canopy pullMetaData, link it to this report
-    const sessionToken = rawData.MetaData?.sessionToken
-      || rawData.metadata?.sessionToken
-      || rawData.pullMetaData?.sessionToken
-      || rawData.pullMetadata?.sessionToken;
+    const sessionToken = findSessionToken(rawData);
 
     if (sessionToken) {
-      console.log('[Webhook] session token linked', { sessionToken, reportId: report.id });
       await storeReportByToken(sessionToken, report.id);
     } else {
-      console.warn('[Webhook] session token missing');
+      console.warn('Webhook payload missing session token; report not linked to polling.');
     }
 
     // Return the report URL
