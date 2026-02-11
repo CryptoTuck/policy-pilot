@@ -101,33 +101,49 @@ Phrase as: "Most modern policies include..."
 
 ## PART 2: LOSS OF VALUE FROM NOT BUNDLING
 
+### BUNDLING CONTEXT
+Common bundle combinations that carriers discount:
+- **Home + Auto** — Most common, 10-25% discount typical
+- **Renters + Auto** — Very common, 5-15% discount typical
+- **Home + Auto + Umbrella** — Maximum efficiency
+- **Renters + Auto** is a valid bundle — do NOT say renters can't be bundled
+
 ### 1. STRUCTURAL SIGNALS THAT BUNDLE IS MISSING
 You don't need to know the carriers—you infer from the structure.
 
 **Red Flags (policies optimized separately):**
-- Auto liability ≥ 100/300 BUT Home liability = $100k
-- Home at strong limits BUT Auto at state minimums
+- Auto liability ≥ 100/300 BUT Home/Renters liability = $100k
+- Home/Renters at strong limits BUT Auto at state minimums
 - Different deductible philosophies (high on one, low on other with no clear reason)
 - Mismatched coverage tiers across policies
+- Renters liability doesn't match auto liability (both should be aligned)
 
 **Output:** "Your policies appear to be optimized separately rather than together."
 
-### 2. PORTFOLIO EFFICIENCY SCORE
+### 2. BUNDLE DETECTION
+When analyzing multiple policy types:
+- If Home + Auto present → Check if bundled (liability alignment is key signal)
+- If Renters + Auto present → Check if bundled (renters/auto bundles are common and valuable)
+- If only one policy type → Cannot determine bundle status, set isBundled to null/unknown
+
+### 3. PORTFOLIO EFFICIENCY SCORE
 Carriers reward consistency, not perfection.
 
 **Factors that REDUCE efficiency:**
-- Liability mismatch > 2x between home and auto
+- Liability mismatch > 2x between home/renters and auto
 - UM/UIM doesn't match BI
 - One vehicle with full coverage, another with liability-only (similar value)
 - High deductible + low liability combination
 - Missing standard endorsements that most bundled policies include
+- Renters liability at $100k but auto at $300k (or vice versa)
 
 **Factors that INCREASE efficiency:**
-- Liability aligned across home and auto
+- Liability aligned across home/renters and auto
 - UM/UIM matches BI limits
 - Consistent deductible philosophy
 - Standard endorsements present
 - Coverage tiers consistent across vehicles
+- Both policies appear structured by same carrier logic
 
 ---
 
