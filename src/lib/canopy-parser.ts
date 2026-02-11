@@ -25,13 +25,18 @@ export interface RawCanopyPolicy {
     name?: string;
   } | string;
   policy_number?: string;
+  status?: string;
   effective_date?: string;
   expiration_date?: string;
+  renewal_date?: string;
   premium?: number;
-  
+  paid_in_full?: boolean;
+  amount_due?: number;
+  amount_paid?: number;
+
   // Home/Renters policies have dwellings
   dwellings?: RawCanopyCoverage[];
-  
+
   // Auto policies have vehicles
   vehicles?: RawCanopyVehicle[];
 }
@@ -51,6 +56,8 @@ export interface RawCanopyVehicle {
   make?: string;
   model?: string;
   vin?: string;
+  vehicle_type?: string;
+  uses?: string;
   coverages?: RawCanopyCoverage[];
 }
 
@@ -60,9 +67,14 @@ export interface ParsedPolicy {
   sourceIndex: number;
   carrier?: string;
   policyNumber?: string;
+  status?: string;
   effectiveDate?: string;
   expirationDate?: string;
+  renewalDate?: string;
   premiumCents?: number;
+  paidInFull?: boolean;
+  amountDueCents?: number;
+  amountPaidCents?: number;
   vehicleCount?: number;
   coverages: ParsedCoverage[];
   vehicles?: ParsedVehicle[];
@@ -85,6 +97,8 @@ export interface ParsedVehicle {
   make?: string;
   model?: string;
   vin?: string;
+  vehicleType?: string;
+  uses?: string;
 }
 
 export interface ParsedCanopyData {
@@ -181,6 +195,8 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
         make: vehicle.make,
         model: vehicle.model,
         vin: vehicle.vin,
+        vehicleType: vehicle.vehicle_type,
+        uses: vehicle.uses,
       });
 
       // Parse coverages for this vehicle
@@ -215,9 +231,14 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
     sourceIndex: index,
     carrier,
     policyNumber: raw.policy_number,
+    status: raw.status,
     effectiveDate: raw.effective_date,
     expirationDate: raw.expiration_date,
+    renewalDate: raw.renewal_date,
     premiumCents: raw.premium ? Math.round(raw.premium * 100) : undefined,
+    paidInFull: raw.paid_in_full,
+    amountDueCents: raw.amount_due ? Math.round(raw.amount_due * 100) : undefined,
+    amountPaidCents: raw.amount_paid ? Math.round(raw.amount_paid * 100) : undefined,
     vehicleCount,
     coverages,
     vehicles: vehicles.length > 0 ? vehicles : undefined,

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseCanopyData, formatCoverages, type ParsedCanopyData } from '@/lib/canopy-parser';
-import { 
-  createSubmission, 
-  updateSubmissionStatus, 
-  createPolicy, 
+import {
+  createSubmission,
+  updateSubmissionStatus,
+  createPolicy,
   createCoverages,
+  createVehicles,
   createGradingResult,
   type Submission,
   type Policy,
