@@ -64,12 +64,46 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Extract customer info from metadata if available
-    const customerEmail = extractMetadata(rawData, 'Pull Account Email');
-    const customerFirstName = extractMetadata(rawData, 'Pull First Name');
-    const customerLastName = extractMetadata(rawData, 'Pull Last Name');
-    const customerPhone = extractMetadata(rawData, 'Pull Phone');
-    const sessionToken = extractMetadata(rawData, 'sessionToken');
+    // Extract customer info - check both raw Canopy format and flattened Zapier format
+    const pull = rawData.pull as Record<string, unknown> | undefined;
+    const metaData = (rawData.meta_data || rawData.metadata || rawData.MetaData) as Record<string, unknown> | undefined;
+    
+    // Customer email: pull.account_email or flattened
+    const customerEmail = 
+      (pull?.account_email as string) || 
+      (pull?.email as string) ||
+      extractMetadata(rawData, 'Pull Account Email') ||
+      extractMetadata(rawData, 'account_email');
+    
+    // Customer first name: pull.first_name or flattened
+    const customerFirstName = 
+      (pull?.first_name as string) || 
+      extractMetadata(rawData, 'Pull First Name');
+    
+    // Customer last name: pull.last_name or flattened  
+    const customerLastName = 
+      (pull?.last_name as string) || 
+      extractMetadata(rawData, 'Pull Last Name');
+    
+    // Customer phone: pull.phone or pull.mobile_phone or flattened
+    const customerPhone = 
+      (pull?.phone as string) || 
+      (pull?.mobile_phone as string) ||
+      extractMetadata(rawData, 'Pull Phone');
+    
+    // Session token: in meta_data or pullMetaData
+    const sessionToken = 
+      (metaData?.sessionToken as string) ||
+      extractMetadata(rawData, 'sessionToken') ||
+      extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'sessionToken');
+    
+    console.log('[Canopy Webhook] Extracted customer info:', { 
+      email: customerEmail, 
+      firstName: customerFirstName,
+      lastName: customerLastName,
+      phone: customerPhone, 
+      hasSessionToken: !!sessionToken 
+    });
 
     // Step 1: Store raw data in Supabase
     const submission = await createSubmission(rawData, customerEmail, customerFirstName, customerLastName, customerPhone);
