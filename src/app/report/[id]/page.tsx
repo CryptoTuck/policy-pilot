@@ -4,6 +4,7 @@ import { CoverageTable } from '@/components/CoverageTable';
 import { AdditionalCoverageTable } from '@/components/AdditionalCoverageTable';
 import { SectionAnalysis } from '@/components/SectionAnalysis';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
+import { CarrierAnalysis } from '@/components/CarrierAnalysis';
 import Link from 'next/link';
 
 interface ReportPageProps {
@@ -98,7 +99,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
     notFound();
   }
 
-  const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade } = report;
+  const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade, carrierAnalysis } = report;
   const displayGrade = combinedGrade || homeGrade?.overallGrade || autoGrade?.overallGrade || rentersGrade?.overallGrade || 'N/A';
   
   // Handle multiple auto policies
@@ -149,6 +150,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
             ...(rentersGrade?.areasToReview || [])
           ]}
         />
+
+        {/* Carrier-Aligned Analysis */}
+        {carrierAnalysis && <CarrierAnalysis analysis={carrierAnalysis} />}
 
         {/* Home Policy Section */}
         {homeGrade && (

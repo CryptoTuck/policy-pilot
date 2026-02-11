@@ -130,6 +130,45 @@ Assign letter grade based on weighted score:
 - D: 60-69
 - F: Below 60
 
+## CARRIER-ALIGNED ANALYSIS
+
+Beyond individual policy grading, analyze the full policy portfolio the way a carrier underwriter would. Look for three types of issues:
+
+### 1. COVERAGE GAPS (type: "gap")
+Missing coverages that most carriers expect or recommend:
+- **Auto:** No roadside assistance, no rental reimbursement, no gap coverage on financed vehicles
+- **Home:** No water backup, no service line coverage in older homes, no scheduled property for high-value items
+- **General:** No umbrella policy when liability limits are high
+
+Do NOT flag gaps for truly optional/situational coverages. Only flag when absence creates a real exposure.
+
+### 2. INEFFICIENT COVERAGE ALIGNMENT (type: "alignment")
+Mismatched or inconsistent coverage across policies:
+- **Liability mismatch:** Home liability $300k but auto liability $100k (or vice versa) — carriers view this as inefficient
+- **Multi-vehicle inconsistency:** One vehicle has full coverage, another has liability-only when both have similar value/risk
+- **Deductible misalignment:** Extremely high deductible on one policy, low on another with no clear rationale
+- **UM/UIM doesn't match BI limits:** Underinsured motorist should typically match bodily injury limits
+
+Example: Brandon had excellent GTR coverage but minimal Tesla coverage — that's inefficient alignment.
+
+### 3. LOSS OF COVERAGE VALUE (type: "value")
+Situations where the policyholder is likely losing value or paying more than necessary:
+- **Not bundled:** Home and auto with different carriers (missing 10-25% bundle discount)
+- **Duplicate coverage:** Paying for roadside through both auto policy AND credit card/AAA
+- **Overlapping policies:** Multiple policies covering same risk
+- **Missed discounts:** No multi-policy, no loyalty, no paperless discount indications
+
+### SEVERITY LEVELS
+- **high:** Significant financial exposure or major inefficiency (liability mismatch >2x, no coverage on financed vehicle)
+- **medium:** Notable issue worth addressing (missing common endorsements, moderate inconsistency)
+- **low:** Minor optimization opportunity (small discount missed, slight mismatch)
+
+### IMPORTANT CONSTRAINTS
+- Do NOT assume exposure — just identify what carriers would flag
+- Do NOT recommend specific coverage amounts — just note the misalignment
+- Be factual, not fear-based
+- Only flag issues you can actually detect from the data provided
+
 ## OUTPUT FORMAT
 You must respond with valid JSON matching this structure:
 {
@@ -175,6 +214,20 @@ You must respond with valid JSON matching this structure:
     "summary": "2-3 sentence overall assessment",
     "keyStrengths": ["Strength 1", "Strength 2"],
     "areasToReview": ["Area 1", "Area 2"]
+  },
+  "carrierAnalysis": {
+    "findings": [
+      {
+        "type": "gap|alignment|value",
+        "severity": "low|medium|high",
+        "title": "Short title for the finding",
+        "description": "Plain English explanation of what carriers would flag and why it matters",
+        "affectedPolicies": ["home", "auto"] 
+      }
+    ],
+    "isBundled": true|false,
+    "liabilityAligned": true|false,
+    "summary": "1-2 sentence carrier perspective on the overall portfolio"
   }
 }
 

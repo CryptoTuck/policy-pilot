@@ -1,6 +1,6 @@
 import { getOpenAIClient } from './openai';
 import { POLICY_GRADING_SYSTEM_PROMPT } from './grading-prompt';
-import type { PolicyReport, HomePolicyGrade, AutoPolicyGrade } from '@/types/grading';
+import type { PolicyReport, HomePolicyGrade, AutoPolicyGrade, CarrierAlignmentAnalysis } from '@/types/grading';
 
 interface CanopyData {
   autoCoverage?: string;
@@ -35,6 +35,7 @@ export async function gradeCanopyPolicy(id: string, canopyData: CanopyData): Pro
   const gradeResult = JSON.parse(content) as {
     homeGrade?: HomePolicyGrade;
     autoGrade?: AutoPolicyGrade;
+    carrierAnalysis?: CarrierAlignmentAnalysis;
   };
 
   // Calculate combined grade if both policies present
@@ -55,6 +56,7 @@ export async function gradeCanopyPolicy(id: string, canopyData: CanopyData): Pro
     autoGrade: gradeResult.autoGrade,
     combinedGrade,
     combinedScore,
+    carrierAnalysis: gradeResult.carrierAnalysis,
   };
 }
 

@@ -52,6 +52,21 @@ export interface RentersPolicyGrade {
   areasToReview: string[];
 }
 
+export interface CarrierAlignmentFinding {
+  type: 'gap' | 'alignment' | 'value';
+  severity: 'low' | 'medium' | 'high';
+  title: string;
+  description: string;
+  affectedPolicies: string[]; // e.g., ['home', 'auto'] or ['auto-1', 'auto-2']
+}
+
+export interface CarrierAlignmentAnalysis {
+  findings: CarrierAlignmentFinding[];
+  isBundled: boolean;
+  liabilityAligned: boolean;
+  summary: string;
+}
+
 export interface PolicyReport {
   id: string;
   generatedAt: string;
@@ -61,4 +76,5 @@ export interface PolicyReport {
   rentersGrade?: RentersPolicyGrade;
   combinedGrade?: string;
   combinedScore?: number;
+  carrierAnalysis?: CarrierAlignmentAnalysis;
 }
