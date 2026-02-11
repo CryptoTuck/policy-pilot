@@ -231,7 +231,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
               <section key={idx} className={`mb-8 ${idx > 0 ? 'pt-6 border-t border-gray-100' : ''}`}>
                 {/* Vehicle/Policy Header */}
                 {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
-                  <div className="mb-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg">
+                  <div className="mb-6">
                     <p className="text-gray-500 text-sm">Vehicle</p>
                     <h3 className="text-2xl font-bold text-gray-900 mt-1">
                       {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}: <span className="text-blue-600">{autoPolicy.overallGrade}</span>
