@@ -23,7 +23,8 @@ export interface Submission {
   id: string;
   created_at: string;
   customer_email: string | null;
-  customer_name: string | null;
+  customer_first_name: string | null;
+  customer_last_name: string | null;
   raw_canopy_data: Record<string, unknown>;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   error_message: string | null;
@@ -97,19 +98,21 @@ export interface GradingResult {
 // Helper functions for database operations
 
 export async function createSubmission(
-  rawData: Record<string, unknown>, 
-  customerEmail?: string, 
-  customerName?: string,
+  rawData: Record<string, unknown>,
+  customerEmail?: string,
+  customerFirstName?: string,
+  customerLastName?: string,
   customerPhone?: string,
 ): Promise<Submission> {
   const supabase = getSupabaseClient();
-  
+
   const { data, error } = await supabase
     .from('submissions')
     .insert({
       raw_canopy_data: rawData,
       customer_email: customerEmail ?? null,
-      customer_name: customerName ?? null,
+      customer_first_name: customerFirstName ?? null,
+      customer_last_name: customerLastName ?? null,
       customer_phone: customerPhone ?? null,
       status: 'pending',
     })

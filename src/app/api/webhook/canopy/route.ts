@@ -66,12 +66,13 @@ export async function POST(request: NextRequest) {
 
     // Extract customer info from metadata if available
     const customerEmail = extractMetadata(rawData, 'Pull Account Email');
-    const customerName = `${extractMetadata(rawData, 'Pull First Name') || ''} ${extractMetadata(rawData, 'Pull Last Name') || ''}`.trim();
+    const customerFirstName = extractMetadata(rawData, 'Pull First Name');
+    const customerLastName = extractMetadata(rawData, 'Pull Last Name');
     const customerPhone = extractMetadata(rawData, 'Pull Phone');
     const sessionToken = extractMetadata(rawData, 'sessionToken');
 
     // Step 1: Store raw data in Supabase
-    const submission = await createSubmission(rawData, customerEmail, customerName, customerPhone);
+    const submission = await createSubmission(rawData, customerEmail, customerFirstName, customerLastName, customerPhone);
     submissionId = submission.id;
     console.log('[Canopy Webhook] Created submission:', submissionId);
 
