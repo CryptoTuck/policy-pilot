@@ -435,11 +435,13 @@ export async function getSubmissionWithDetails(id: string): Promise<{
 export async function getSubmissionBySessionToken(token: string): Promise<Submission | null> {
   const supabase = getSupabaseClient();
   
-  // Look up by session_token field
+  // Look up by session_token field - ONLY return if status is 'completed'
+  // This ensures the frontend doesn't redirect until grading is done
   const { data, error } = await supabase
     .from('submissions')
     .select('*')
     .eq('session_token', token)
+    .eq('status', 'completed')
     .single();
 
   if (error && error.code !== 'PGRST116') throw error;
