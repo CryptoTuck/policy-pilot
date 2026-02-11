@@ -263,10 +263,6 @@ export default async function ReportPage({ params }: ReportPageProps) {
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
               Renters Policy Analysis
             </h2>
-            <div className="mb-4">
-              <span className="text-3xl font-bold text-blue-600">{rentersGrade.overallGrade}</span>
-              <span className="ml-2 text-gray-500">Overall Grade</span>
-            </div>
 
             <section className="mb-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
