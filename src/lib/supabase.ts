@@ -25,12 +25,72 @@ export interface Submission {
   customer_email: string | null;
   customer_first_name: string | null;
   customer_last_name: string | null;
+  customer_phone: string | null;
+  insurance_provider: string | null;
+  insurance_provider_friendly: string | null;
+  session_token: string | null;
+  primary_address: Record<string, unknown> | null;
+  canopy_pull_id: string | null;
   raw_canopy_data: Record<string, unknown>;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   error_message: string | null;
   grading_result: Record<string, unknown> | null;
   formatted_output: Record<string, unknown> | null;
   processed_at: string | null;
+}
+
+export interface Driver {
+  id: string;
+  submission_id: string;
+  policy_id: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  full_name: string | null;
+  gender: string | null;
+  age: number | null;
+  marital_status: string | null;
+  drivers_license: string | null;
+  date_of_birth: string | null;
+  is_excluded: boolean;
+  canopy_driver_id: string | null;
+}
+
+export interface Document {
+  id: string;
+  submission_id: string;
+  policy_id: string | null;
+  title: string | null;
+  document_type: string | null;
+  date_added: string | null;
+  file_url: string | null;
+  mime_type: string | null;
+  canopy_document_id: string | null;
+  canopy_policy_id: string | null;
+}
+
+export interface Agent {
+  id: string;
+  submission_id: string;
+  agency_name: string | null;
+  agent_full_name: string | null;
+  phone_number: string | null;
+  email: string | null;
+  address: Record<string, unknown> | null;
+  canopy_agent_id: string | null;
+}
+
+export interface Address {
+  id: string;
+  submission_id: string;
+  full_address: string | null;
+  street1: string | null;
+  street2: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  country: string | null;
+  address_nature: string | null;
+  canopy_address_id: string | null;
 }
 
 export interface Policy {
@@ -97,23 +157,35 @@ export interface GradingResult {
 
 // Helper functions for database operations
 
-export async function createSubmission(
-  rawData: Record<string, unknown>,
-  customerEmail?: string,
-  customerFirstName?: string,
-  customerLastName?: string,
-  customerPhone?: string,
-): Promise<Submission> {
+export interface CreateSubmissionParams {
+  rawData: Record<string, unknown>;
+  customerEmail?: string;
+  customerFirstName?: string;
+  customerLastName?: string;
+  customerPhone?: string;
+  insuranceProvider?: string;
+  insuranceProviderFriendly?: string;
+  sessionToken?: string;
+  primaryAddress?: Record<string, unknown>;
+  canopyPullId?: string;
+}
+
+export async function createSubmission(params: CreateSubmissionParams): Promise<Submission> {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
     .from('submissions')
     .insert({
-      raw_canopy_data: rawData,
-      customer_email: customerEmail ?? null,
-      customer_first_name: customerFirstName ?? null,
-      customer_last_name: customerLastName ?? null,
-      customer_phone: customerPhone ?? null,
+      raw_canopy_data: params.rawData,
+      customer_email: params.customerEmail ?? null,
+      customer_first_name: params.customerFirstName ?? null,
+      customer_last_name: params.customerLastName ?? null,
+      customer_phone: params.customerPhone ?? null,
+      insurance_provider: params.insuranceProvider ?? null,
+      insurance_provider_friendly: params.insuranceProviderFriendly ?? null,
+      session_token: params.sessionToken ?? null,
+      primary_address: params.primaryAddress ?? null,
+      canopy_pull_id: params.canopyPullId ?? null,
       status: 'pending',
     })
     .select()
@@ -363,13 +435,165 @@ export async function getSubmissionWithDetails(id: string): Promise<{
 export async function getSubmissionBySessionToken(token: string): Promise<Submission | null> {
   const supabase = getSupabaseClient();
   
-  // Look up by customer_email (where we store session tokens temporarily)
+  // Look up by session_token field
   const { data, error } = await supabase
     .from('submissions')
     .select('*')
-    .eq('customer_email', token)
+    .eq('session_token', token)
     .single();
 
   if (error && error.code !== 'PGRST116') throw error;
   return data as Submission | null;
+}
+
+// Create drivers for a submission/policy
+export async function createDrivers(
+  submissionId: string,
+  policyId: string | null,
+  drivers: Array<{
+    first_name?: string;
+    last_name?: string;
+    full_name?: string;
+    gender?: string;
+    age?: number;
+    marital_status?: string;
+    drivers_license?: string;
+    date_of_birth?: string;
+    is_excluded?: boolean;
+    canopy_driver_id?: string;
+  }>
+): Promise<Driver[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = drivers.map(d => ({
+    submission_id: submissionId,
+    policy_id: policyId,
+    first_name: d.first_name ?? null,
+    last_name: d.last_name ?? null,
+    full_name: d.full_name ?? `${d.first_name || ''} ${d.last_name || ''}`.trim() || null,
+    gender: d.gender ?? null,
+    age: d.age ?? null,
+    marital_status: d.marital_status ?? null,
+    drivers_license: d.drivers_license ?? null,
+    date_of_birth: d.date_of_birth ?? null,
+    is_excluded: d.is_excluded ?? false,
+    canopy_driver_id: d.canopy_driver_id ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('drivers')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as Driver[];
+}
+
+// Create documents for a submission
+export async function createDocuments(
+  submissionId: string,
+  documents: Array<{
+    policy_id?: string;
+    title?: string;
+    document_type?: string;
+    date_added?: string;
+    file_url?: string;
+    mime_type?: string;
+    canopy_document_id?: string;
+    canopy_policy_id?: string;
+  }>
+): Promise<Document[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = documents.map(d => ({
+    submission_id: submissionId,
+    policy_id: d.policy_id ?? null,
+    title: d.title ?? null,
+    document_type: d.document_type ?? null,
+    date_added: d.date_added ?? null,
+    file_url: d.file_url ?? null,
+    mime_type: d.mime_type ?? null,
+    canopy_document_id: d.canopy_document_id ?? null,
+    canopy_policy_id: d.canopy_policy_id ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('documents')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as Document[];
+}
+
+// Create agents for a submission
+export async function createAgents(
+  submissionId: string,
+  agents: Array<{
+    agency_name?: string;
+    agent_full_name?: string;
+    phone_number?: string;
+    email?: string;
+    address?: Record<string, unknown>;
+    canopy_agent_id?: string;
+  }>
+): Promise<Agent[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = agents.map(a => ({
+    submission_id: submissionId,
+    agency_name: a.agency_name ?? null,
+    agent_full_name: a.agent_full_name ?? null,
+    phone_number: a.phone_number ?? null,
+    email: a.email ?? null,
+    address: a.address ?? null,
+    canopy_agent_id: a.canopy_agent_id ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('agents')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as Agent[];
+}
+
+// Create addresses for a submission
+export async function createAddresses(
+  submissionId: string,
+  addresses: Array<{
+    full_address?: string;
+    street1?: string;
+    street2?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+    address_nature?: string;
+    canopy_address_id?: string;
+  }>
+): Promise<Address[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = addresses.map(a => ({
+    submission_id: submissionId,
+    full_address: a.full_address ?? null,
+    street1: a.street1 ?? null,
+    street2: a.street2 ?? null,
+    city: a.city ?? null,
+    state: a.state ?? null,
+    zip: a.zip ?? null,
+    country: a.country ?? null,
+    address_nature: a.address_nature ?? null,
+    canopy_address_id: a.canopy_address_id ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('addresses')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as Address[];
 }

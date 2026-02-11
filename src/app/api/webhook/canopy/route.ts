@@ -7,6 +7,10 @@ import {
   createCoverages,
   createVehicles,
   createGradingResult,
+  createDrivers,
+  createDocuments,
+  createAgents,
+  createAddresses,
 } from '@/lib/supabase';
 import { getOpenAIClient } from '@/lib/openai';
 import { POLICY_GRADING_SYSTEM_PROMPT } from '@/lib/grading-prompt';
@@ -97,18 +101,110 @@ export async function POST(request: NextRequest) {
       extractMetadata(rawData, 'sessionToken') ||
       extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'sessionToken');
     
+    // Insurance provider
+    const insuranceProvider = pull?.insurance_provider_name as string | undefined;
+    const insuranceProviderFriendly = pull?.insurance_provider_friendly_name as string | undefined;
+    
+    // Primary address
+    const primaryAddress = pull?.primaryAddress as Record<string, unknown> | undefined;
+    
+    // Canopy pull ID
+    const canopyPullId = (pull?.pull_id as string) || (rawData.pull_id as string) || (rawData.id as string);
+    
     console.log('[Canopy Webhook] Extracted customer info:', { 
       email: customerEmail, 
       firstName: customerFirstName,
       lastName: customerLastName,
       phone: customerPhone, 
-      hasSessionToken: !!sessionToken 
+      insuranceProvider: insuranceProviderFriendly,
+      hasSessionToken: !!sessionToken,
+      canopyPullId,
     });
 
     // Step 1: Store raw data in Supabase
-    const submission = await createSubmission(rawData, customerEmail, customerFirstName, customerLastName, customerPhone);
+    const submission = await createSubmission({
+      rawData,
+      customerEmail,
+      customerFirstName,
+      customerLastName,
+      customerPhone,
+      insuranceProvider,
+      insuranceProviderFriendly,
+      sessionToken,
+      primaryAddress,
+      canopyPullId,
+    });
     submissionId = submission.id;
     console.log('[Canopy Webhook] Created submission:', submissionId);
+    
+    // Store drivers if present
+    const drivers = pull?.drivers as Array<Record<string, unknown>> | undefined;
+    if (drivers && Array.isArray(drivers) && drivers.length > 0) {
+      await createDrivers(submissionId, null, drivers.map(d => ({
+        first_name: d.first_name as string,
+        last_name: d.last_name as string,
+        gender: d.gender as string,
+        age: d.age as number,
+        marital_status: d.marital_status as string,
+        drivers_license: d.drivers_license as string,
+        date_of_birth: d.date_of_birth_str as string,
+        is_excluded: d.is_excluded as boolean,
+        canopy_driver_id: d.driver_id as string,
+      })));
+      console.log('[Canopy Webhook] Stored', drivers.length, 'drivers');
+    }
+    
+    // Store documents if present
+    const documents = pull?.documents as Record<string, Record<string, unknown>> | undefined;
+    if (documents && typeof documents === 'object') {
+      const docList = Object.values(documents).filter(d => d && typeof d === 'object');
+      if (docList.length > 0) {
+        await createDocuments(submissionId, docList.map(d => ({
+          title: d.title as string,
+          document_type: d.document_type as string,
+          date_added: d.date_added as string,
+          file_url: d.file as string,
+          mime_type: d.mime_type as string,
+          canopy_document_id: d.document_id as string,
+          canopy_policy_id: d.policy_id as string,
+        })));
+        console.log('[Canopy Webhook] Stored', docList.length, 'documents');
+      }
+    }
+    
+    // Store agents if present
+    const agents = pull?.agents as Array<Record<string, unknown>> | undefined;
+    if (agents && Array.isArray(agents) && agents.length > 0) {
+      await createAgents(submissionId, agents.map(a => ({
+        agency_name: a.agency_name as string,
+        agent_full_name: a.agent_full_name as string,
+        phone_number: a.phone_number as string,
+        email: a.email as string,
+        address: a.address as Record<string, unknown>,
+        canopy_agent_id: a.agent_info_id as string,
+      })));
+      console.log('[Canopy Webhook] Stored', agents.length, 'agents');
+    }
+    
+    // Store addresses if present
+    const addresses = pull?.addresses as Record<string, Record<string, unknown>> | undefined;
+    if (addresses && typeof addresses === 'object') {
+      const addrList = Object.values(addresses).filter(a => a && typeof a === 'object');
+      if (addrList.length > 0) {
+        await createAddresses(submissionId, addrList.map(a => ({
+          full_address: a.full_address as string,
+          street1: a.street1 as string,
+          street2: a.street2 as string,
+          city: a.city as string,
+          state: a.state as string,
+          zip: a.zip as string,
+          country: a.country as string,
+          address_nature: a.address_nature as string,
+          canopy_address_id: a.address_id as string,
+        })));
+        console.log('[Canopy Webhook] Stored', addrList.length, 'addresses');
+      }
+    }
 
     // Update status to processing
     await updateSubmissionStatus(submissionId, 'processing');
