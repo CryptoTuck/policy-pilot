@@ -37,6 +37,19 @@ export interface AutoPolicyGrade {
   summary: string;
   keyStrengths: string[];
   areasToReview: string[];
+  // For multiple auto policies, store individual policy details
+  vehicleInfo?: string; // e.g., "2024 TESLA Model Y"
+  policyNumber?: string;
+}
+
+export interface RentersPolicyGrade {
+  overallGrade: string; // A, B, C, D, F
+  overallScore: number; // 0-100
+  riskTier: RiskTier;
+  standardCoverages: CoverageGrade[];
+  summary: string;
+  keyStrengths: string[];
+  areasToReview: string[];
 }
 
 export interface PolicyReport {
@@ -44,6 +57,8 @@ export interface PolicyReport {
   generatedAt: string;
   homeGrade?: HomePolicyGrade;
   autoGrade?: AutoPolicyGrade;
+  autoGrades?: AutoPolicyGrade[]; // For multiple auto policies
+  rentersGrade?: RentersPolicyGrade;
   combinedGrade?: string;
   combinedScore?: number;
 }

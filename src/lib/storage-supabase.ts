@@ -7,7 +7,7 @@
  */
 
 import { getSupabaseClient, getSubmissionWithDetails, getSubmissionBySessionToken } from './supabase';
-import type { PolicyReport, HomePolicyGrade, AutoPolicyGrade } from '@/types/grading';
+import type { PolicyReport, HomePolicyGrade, AutoPolicyGrade, RentersPolicyGrade } from '@/types/grading';
 
 /**
  * Check if Supabase is configured
@@ -36,7 +36,8 @@ export async function getReportFromSupabase(id: string): Promise<PolicyReport | 
     const openaiResponse = gradingResult?.openai_response as {
       homeGrade?: HomePolicyGrade;
       autoGrade?: AutoPolicyGrade;
-      rentersGrade?: HomePolicyGrade;
+      autoGrades?: AutoPolicyGrade[];
+      rentersGrade?: RentersPolicyGrade;
     } | undefined;
 
     // Calculate combined grade
@@ -53,6 +54,8 @@ export async function getReportFromSupabase(id: string): Promise<PolicyReport | 
       generatedAt: submission.processed_at || submission.created_at,
       homeGrade: openaiResponse?.homeGrade,
       autoGrade: openaiResponse?.autoGrade,
+      autoGrades: openaiResponse?.autoGrades,
+      rentersGrade: openaiResponse?.rentersGrade,
       combinedGrade,
       combinedScore,
     };

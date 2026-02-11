@@ -10,24 +10,31 @@ interface ReportPageProps {
   params: Promise<{ id: string }>;
 }
 
-function PolicyTabs({ hasHome, hasAuto }: { hasHome: boolean; hasAuto: boolean }) {
-  if (!hasHome || !hasAuto) return null;
+function PolicyTabs({ hasHome, hasAuto, hasRenters }: { hasHome: boolean; hasAuto: boolean; hasRenters: boolean }) {
+  const tabs = [
+    hasHome && { id: 'home', label: 'Home' },
+    hasAuto && { id: 'auto', label: 'Auto' },
+    hasRenters && { id: 'renters', label: 'Renters' },
+  ].filter(Boolean) as { id: string; label: string }[];
+
+  if (tabs.length <= 1) return null;
 
   return (
     <div className="flex justify-center mb-6">
       <div className="inline-flex rounded-full bg-gray-100 p-1">
-        <a
-          href="#home"
-          className="px-6 py-2 text-sm font-medium rounded-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-sm"
-        >
-          Home
-        </a>
-        <a
-          href="#auto"
-          className="px-6 py-2 text-sm font-medium rounded-full text-gray-600 hover:text-gray-900"
-        >
-          Auto
-        </a>
+        {tabs.map((tab, idx) => (
+          <a
+            key={tab.id}
+            href={`#${tab.id}`}
+            className={`px-6 py-2 text-sm font-medium rounded-full ${
+              idx === 0
+                ? 'bg-gradient-to-r from-blue-500 to-cyan-400 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            {tab.label}
+          </a>
+        ))}
       </div>
     </div>
   );
@@ -91,8 +98,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
     notFound();
   }
 
-  const { homeGrade, autoGrade, combinedGrade } = report;
-  const displayGrade = combinedGrade || homeGrade?.overallGrade || autoGrade?.overallGrade || 'N/A';
+  const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade } = report;
+  const displayGrade = combinedGrade || homeGrade?.overallGrade || autoGrade?.overallGrade || rentersGrade?.overallGrade || 'N/A';
+  
+  // Handle multiple auto policies
+  const autoPolicies = autoGrades && autoGrades.length > 0 ? autoGrades : (autoGrade ? [autoGrade] : []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -119,7 +129,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
         </div>
 
         {/* Policy Type Tabs */}
-        <PolicyTabs hasHome={!!homeGrade} hasAuto={!!autoGrade} />
+        <PolicyTabs hasHome={!!homeGrade} hasAuto={autoPolicies.length > 0} hasRenters={!!rentersGrade} />
 
         {/* Overall Grade Header */}
         <div className="mb-6">
@@ -135,7 +145,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
         <AreasToReviewAlert
           areas={[
             ...(homeGrade?.areasToReview || []),
-            ...(autoGrade?.areasToReview || [])
+            ...autoPolicies.flatMap(a => a.areasToReview || []),
+            ...(rentersGrade?.areasToReview || [])
           ]}
         />
 
@@ -205,27 +216,69 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </div>
         )}
 
-        {/* Auto Policy Section */}
-        {autoGrade && (
+        {/* Auto Policy Section(s) */}
+        {autoPolicies.length > 0 && (
           <div id="auto" className={homeGrade ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
-            {homeGrade && (
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-                Auto Policy Analysis
-              </h2>
-            )}
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+              Auto Policy Analysis
+            </h2>
 
-            {/* Auto Coverages */}
+            {autoPolicies.map((autoPolicy, idx) => (
+              <section key={idx} className={`mb-8 ${idx > 0 ? 'pt-6 border-t border-gray-100' : ''}`}>
+                {/* Vehicle/Policy Header */}
+                {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
+                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
+                    </h3>
+                    {autoPolicy.policyNumber && (
+                      <p className="text-sm text-gray-600">Policy: {autoPolicy.policyNumber}</p>
+                    )}
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-2xl font-bold text-blue-600">{autoPolicy.overallGrade}</span>
+                      <span className="text-sm text-gray-500">Grade</span>
+                    </div>
+                  </div>
+                )}
+
+                <h4 className="text-xl font-bold text-gray-900 mb-4">
+                  {autoPolicies.length > 1 ? 'Coverages' : 'Auto Coverages'}
+                </h4>
+                <CoverageTable coverages={autoPolicy.standardCoverages} />
+
+                <SectionAnalysis
+                  title={autoPolicies.length > 1 ? `${autoPolicy.vehicleInfo || `Policy ${idx + 1}`} Coverage` : 'Auto Coverage'}
+                  score={calculateSectionScore(autoPolicy.standardCoverages).score}
+                  maxScore={calculateSectionScore(autoPolicy.standardCoverages).maxScore}
+                  analysis={autoPolicy.summary}
+                />
+              </section>
+            ))}
+          </div>
+        )}
+
+        {/* Renters Policy Section */}
+        {rentersGrade && (
+          <div id="renters" className={(homeGrade || autoPolicies.length > 0) ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+              Renters Policy Analysis
+            </h2>
+            <div className="mb-4">
+              <span className="text-3xl font-bold text-blue-600">{rentersGrade.overallGrade}</span>
+              <span className="ml-2 text-gray-500">Overall Grade</span>
+            </div>
+
             <section className="mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-                Auto Coverages
-              </h2>
-              <CoverageTable coverages={autoGrade.standardCoverages} />
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Renters Coverages
+              </h3>
+              <CoverageTable coverages={rentersGrade.standardCoverages} />
 
               <SectionAnalysis
-                title="Auto Coverage"
-                score={calculateSectionScore(autoGrade.standardCoverages).score}
-                maxScore={calculateSectionScore(autoGrade.standardCoverages).maxScore}
-                analysis={autoGrade.summary}
+                title="Renters Coverage"
+                score={calculateSectionScore(rentersGrade.standardCoverages).score}
+                maxScore={calculateSectionScore(rentersGrade.standardCoverages).maxScore}
+                analysis={rentersGrade.summary}
               />
             </section>
           </div>
