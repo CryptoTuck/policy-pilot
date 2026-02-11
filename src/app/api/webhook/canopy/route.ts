@@ -281,10 +281,25 @@ export async function POST(request: NextRequest) {
 
       // Format coverages for this policy
       const formatted = formatCoverages(policy);
-      formattedByType[policy.type] = {
+      
+      // Handle multiple policies of the same type (e.g., 2 auto policies)
+      const typeKey = policy.type;
+      if (!formattedByType[typeKey]) {
+        formattedByType[typeKey] = [];
+      }
+      (formattedByType[typeKey] as Array<{
+        coverage: string;
+        deductible: string;
+        policyNumber?: string;
+        carrier?: string;
+        vehicles?: Array<{ year?: number; make?: string; model?: string }>;
+      }>).push({
         coverage: formatted.coverageString,
         deductible: formatted.deductibleString,
-      };
+        policyNumber: policy.policyNumber,
+        carrier: policy.carrier,
+        vehicles: policy.vehicles,
+      });
     }
 
     // Step 4: Build prompt for OpenAI
@@ -312,11 +327,27 @@ export async function POST(request: NextRequest) {
     console.log('[Canopy Webhook] OpenAI grading complete');
 
     // Step 6: Store grading results
+    // Combine all coverages of each type into single strings for storage
+    const homePolicies = (formattedByType.home || []) as FormattedPolicy[];
+    const autoPolicies = (formattedByType.auto || []) as FormattedPolicy[];
+    const rentersPolicies = (formattedByType.renters || []) as FormattedPolicy[];
+    
+    const formatPoliciesForStorage = (policies: FormattedPolicy[], type: string) => {
+      if (policies.length === 0) return undefined;
+      if (policies.length === 1) return policies[0].coverage;
+      return policies.map((p, i) => {
+        const vehicleInfo = p.vehicles?.length 
+          ? ` (${p.vehicles.map(v => `${v.year || ''} ${v.make || ''} ${v.model || ''}`.trim()).join(', ')})`
+          : '';
+        return `[${type} ${i + 1}${vehicleInfo}] ${p.coverage}`;
+      }).join('\n\n');
+    };
+    
     await createGradingResult(submissionId, {
-      formatted_home_coverage: formattedByType.home?.coverage,
-      formatted_home_deductible: formattedByType.home?.deductible,
-      formatted_auto_coverage: formattedByType.auto?.coverage,
-      formatted_renters_coverage: formattedByType.renters?.coverage,
+      formatted_home_coverage: formatPoliciesForStorage(homePolicies, 'Home'),
+      formatted_home_deductible: homePolicies.map(p => p.deductible).filter(Boolean).join('; ') || undefined,
+      formatted_auto_coverage: formatPoliciesForStorage(autoPolicies, 'Auto'),
+      formatted_renters_coverage: formatPoliciesForStorage(rentersPolicies, 'Renters'),
       home_score: gradeResult.homeGrade?.overallScore,
       auto_score: gradeResult.autoGrade?.overallScore,
       renters_score: gradeResult.rentersGrade?.overallScore,
@@ -342,6 +373,12 @@ export async function POST(request: NextRequest) {
       submissionId,
       reportUrl,
       sessionToken,
+      policyCounts: {
+        home: homePolicies.length,
+        auto: autoPolicies.length,
+        renters: rentersPolicies.length,
+        totalVehicles: autoPolicies.reduce((sum, p) => sum + (p.vehicles?.length || 0), 0),
+      },
       grades: {
         home: gradeResult.homeGrade?.overallGrade,
         auto: gradeResult.autoGrade?.overallGrade,
@@ -349,10 +386,10 @@ export async function POST(request: NextRequest) {
         overall: scoreToGrade(calculateOverallScore(gradeResult)),
       },
       formattedCoverages: {
-        home: formattedByType.home?.coverage,
-        homeDeductible: formattedByType.home?.deductible,
-        auto: formattedByType.auto?.coverage,
-        renters: formattedByType.renters?.coverage,
+        home: formatPoliciesForStorage(homePolicies, 'Home'),
+        homeDeductible: homePolicies.map(p => p.deductible).filter(Boolean).join('; ') || undefined,
+        auto: formatPoliciesForStorage(autoPolicies, 'Auto'),
+        renters: formatPoliciesForStorage(rentersPolicies, 'Renters'),
       },
     });
 
@@ -406,41 +443,87 @@ function extractMetadata(rawData: Record<string, unknown>, key: string): string 
   return undefined;
 }
 
+interface FormattedPolicy {
+  coverage: string;
+  deductible: string;
+  policyNumber?: string;
+  carrier?: string;
+  vehicles?: Array<{ year?: number; make?: string; model?: string }>;
+}
+
 /**
  * Build the grading prompt for OpenAI
+ * Now handles multiple policies of the same type (e.g., 2 auto policies)
  */
 function buildGradingPrompt(
   parsedData: ParsedCanopyData, 
-  formattedByType: Record<string, { coverage: string; deductible: string }>
+  formattedByType: Record<string, FormattedPolicy[]>
 ): string {
   let prompt = `Please analyze and grade the following insurance policy data:\n\n`;
 
-  if (formattedByType.home) {
-    prompt += `## Home Insurance Coverage\n${formattedByType.home.coverage}\n\n`;
-    if (formattedByType.home.deductible) {
-      prompt += `## Home Deductible\n${formattedByType.home.deductible}\n\n`;
-    }
-  }
-
-  if (formattedByType.auto) {
-    prompt += `## Auto Insurance Coverage\n${formattedByType.auto.coverage}\n\n`;
-    
-    // Include vehicle details if available
-    const autoPolicy = parsedData.policies.find(p => p.type === 'auto');
-    if (autoPolicy?.vehicles && autoPolicy.vehicles.length > 0) {
-      prompt += `## Vehicles\n`;
-      for (const v of autoPolicy.vehicles) {
-        prompt += `- ${v.year || ''} ${v.make || ''} ${v.model || ''}\n`;
+  // Home policies
+  const homePolicies = formattedByType.home || [];
+  if (homePolicies.length > 0) {
+    prompt += `## Home Insurance\n`;
+    homePolicies.forEach((policy, idx) => {
+      if (homePolicies.length > 1) {
+        prompt += `### Home Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
+      }
+      prompt += `Coverage: ${policy.coverage}\n`;
+      if (policy.deductible) {
+        prompt += `Deductible: ${policy.deductible}\n`;
       }
       prompt += '\n';
-    }
+    });
   }
 
-  if (formattedByType.renters) {
-    prompt += `## Renters Insurance Coverage\n${formattedByType.renters.coverage}\n\n`;
+  // Auto policies
+  const autoPolicies = formattedByType.auto || [];
+  if (autoPolicies.length > 0) {
+    prompt += `## Auto Insurance\n`;
+    autoPolicies.forEach((policy, idx) => {
+      if (autoPolicies.length > 1) {
+        prompt += `### Auto Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
+      }
+      // List vehicles for this policy
+      if (policy.vehicles && policy.vehicles.length > 0) {
+        prompt += `Vehicles: ${policy.vehicles.map(v => `${v.year || ''} ${v.make || ''} ${v.model || ''}`.trim()).join(', ')}\n`;
+      }
+      prompt += `Coverage: ${policy.coverage}\n`;
+      prompt += '\n';
+    });
   }
 
-  prompt += `Provide a comprehensive grade report following the grading criteria and output format specified in your instructions.`;
+  // Renters policies
+  const rentersPolicies = formattedByType.renters || [];
+  if (rentersPolicies.length > 0) {
+    prompt += `## Renters Insurance\n`;
+    rentersPolicies.forEach((policy, idx) => {
+      if (rentersPolicies.length > 1) {
+        prompt += `### Renters Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
+      }
+      prompt += `Coverage: ${policy.coverage}\n`;
+      prompt += '\n';
+    });
+  }
+
+  // Summary counts
+  const totalPolicies = homePolicies.length + autoPolicies.length + rentersPolicies.length;
+  const totalVehicles = autoPolicies.reduce((sum, p) => sum + (p.vehicles?.length || 0), 0);
+  
+  prompt += `---\nSummary: ${totalPolicies} total policies`;
+  if (autoPolicies.length > 0) {
+    prompt += `, ${autoPolicies.length} auto (${totalVehicles} vehicles)`;
+  }
+  if (homePolicies.length > 0) {
+    prompt += `, ${homePolicies.length} home`;
+  }
+  if (rentersPolicies.length > 0) {
+    prompt += `, ${rentersPolicies.length} renters`;
+  }
+  prompt += `\n\n`;
+
+  prompt += `Provide a comprehensive grade report. For auto insurance, provide an OVERALL auto grade that considers ALL vehicles/policies together. Output format should include homeGrade, autoGrade, rentersGrade as applicable.`;
 
   return prompt;
 }
