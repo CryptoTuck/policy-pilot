@@ -99,8 +99,22 @@ function FindingCard({ finding }: { finding: CarrierAlignmentFinding }) {
   );
 }
 
+function getEfficiencyColor(score: number) {
+  if (score >= 80) return 'text-green-600';
+  if (score >= 60) return 'text-amber-600';
+  return 'text-red-600';
+}
+
+function getEfficiencyLabel(score: number) {
+  if (score >= 90) return 'Excellent';
+  if (score >= 80) return 'Good';
+  if (score >= 70) return 'Fair';
+  if (score >= 60) return 'Needs Attention';
+  return 'Poor';
+}
+
 export function CarrierAnalysis({ analysis }: CarrierAnalysisProps) {
-  const { findings, isBundled, liabilityAligned, summary } = analysis;
+  const { findings, isBundled, liabilityAligned, portfolioEfficiencyScore, summary } = analysis;
 
   // Sort findings by severity (high first)
   const sortedFindings = [...findings].sort((a, b) => {
@@ -125,6 +139,27 @@ export function CarrierAnalysis({ analysis }: CarrierAnalysisProps) {
       <p className="text-gray-600 text-sm mb-4">
         How insurance carriers would evaluate your coverage portfolio
       </p>
+
+      {/* Portfolio Efficiency Score */}
+      {portfolioEfficiencyScore !== undefined && (
+        <div className="mb-4 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500 mb-1">Portfolio Efficiency</p>
+              <p className="text-xs text-gray-400">How well your policies work together</p>
+            </div>
+            <div className="text-right">
+              <span className={`text-3xl font-bold ${getEfficiencyColor(portfolioEfficiencyScore)}`}>
+                {portfolioEfficiencyScore}
+              </span>
+              <span className="text-gray-400 text-lg">/100</span>
+              <p className={`text-sm ${getEfficiencyColor(portfolioEfficiencyScore)}`}>
+                {getEfficiencyLabel(portfolioEfficiencyScore)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Status Badges */}
       <div className="flex flex-wrap gap-2 mb-4">

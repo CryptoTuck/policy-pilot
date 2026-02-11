@@ -64,6 +64,7 @@ export interface CarrierAlignmentAnalysis {
   findings: CarrierAlignmentFinding[];
   isBundled: boolean;
   liabilityAligned: boolean;
+  portfolioEfficiencyScore?: number; // 0-100
   summary: string;
 }
 
