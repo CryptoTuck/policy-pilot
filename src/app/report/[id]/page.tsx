@@ -235,12 +235,12 @@ export default async function ReportPage({ params }: ReportPageProps) {
                     <h3 className="text-lg font-bold text-gray-900">
                       {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
                     </h3>
-                    {autoPolicy.policyNumber && (
+                    {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
                       <p className="text-sm text-gray-600">Policy: {autoPolicy.policyNumber}</p>
                     )}
                     <div className="mt-2 flex items-center gap-2">
+                      <span className="text-sm text-gray-500">Grade:</span>
                       <span className="text-2xl font-bold text-blue-600">{autoPolicy.overallGrade}</span>
-                      <span className="text-sm text-gray-500">Grade</span>
                     </div>
                   </div>
                 )}
