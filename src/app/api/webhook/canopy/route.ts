@@ -48,12 +48,13 @@ export async function POST(request: NextRequest) {
     console.log('[Canopy Webhook] Received payload with keys:', Object.keys(rawData ?? {}));
 
     // Extract customer info from metadata if available
-    const customerEmail = extractMetadata(rawData, 'email') || extractMetadata(rawData, 'customerEmail');
-    const customerName = extractMetadata(rawData, 'name') || extractMetadata(rawData, 'customerName');
+    const customerEmail = extractMetadata(rawData, 'Pull Account Email');
+    const customerName = `${extractMetadata(rawData, 'Pull First Name') || ''} ${extractMetadata(rawData, 'Pull Last Name') || ''}`.trim();
+    const customerPhone = extractMetadata(rawData, 'Pull Phone');
     const sessionToken = extractMetadata(rawData, 'sessionToken');
 
     // Step 1: Store raw data in Supabase
-    const submission = await createSubmission(rawData, customerEmail, customerName);
+    const submission = await createSubmission(rawData, customerEmail, customerName, customerPhone);
     submissionId = submission.id;
     console.log('[Canopy Webhook] Created submission:', submissionId);
 
@@ -84,12 +85,34 @@ export async function POST(request: NextRequest) {
         policy.sourceIndex,
         {
           carrier: policy.carrier,
+          policy_number: policy.policyNumber,
+          status: policy.status,
           effective_date: policy.effectiveDate,
           expiration_date: policy.expirationDate,
+          renewal_date: policy.renewalDate,
           premium_cents: policy.premiumCents,
+          paid_in_full: policy.paidInFull,
+          amount_due_cents: policy.amountDueCents,
+          amount_paid_cents: policy.amountPaidCents,
           vehicle_count: policy.vehicleCount,
         }
       );
+
+      // Store vehicles if it's an auto policy
+      if (policy.type === 'auto' && policy.vehicles && policy.vehicles.length > 0) {
+        await createVehicles(
+          policyRecord.id,
+          policy.vehicles.map(v => ({
+            vehicle_index: v.index,
+            year: v.year,
+            make: v.make,
+            model: v.model,
+            vin: v.vin,
+            vehicle_type: v.vehicleType,
+            uses: v.uses,
+          }))
+        );
+      }
 
       // Store coverages
       if (policy.coverages.length > 0) {

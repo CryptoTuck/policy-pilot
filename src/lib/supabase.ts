@@ -40,10 +40,28 @@ export interface Policy {
   policy_index: number | null;
   carrier: string | null;
   policy_number: string | null;
+  status: string | null;
   effective_date: string | null;
   expiration_date: string | null;
+  renewal_date: string | null;
   premium_cents: number | null;
+  paid_in_full: boolean | null;
+  amount_due_cents: number | null;
+  amount_paid_cents: number | null;
   vehicle_count: number;
+}
+
+export interface Vehicle {
+  id: string;
+  policy_id: string;
+  created_at: string;
+  vehicle_index: number;
+  year: number | null;
+  make: string | null;
+  model: string | null;
+  vin: string | null;
+  vehicle_type: string | null;
+  uses: string | null;
 }
 
 export interface Coverage {
@@ -81,7 +99,8 @@ export interface GradingResult {
 export async function createSubmission(
   rawData: Record<string, unknown>, 
   customerEmail?: string, 
-  customerName?: string
+  customerName?: string,
+  customerPhone?: string,
 ): Promise<Submission> {
   const supabase = getSupabaseClient();
   
@@ -91,6 +110,7 @@ export async function createSubmission(
       raw_canopy_data: rawData,
       customer_email: customerEmail ?? null,
       customer_name: customerName ?? null,
+      customer_phone: customerPhone ?? null,
       status: 'pending',
     })
     .select()
@@ -135,9 +155,14 @@ export async function createPolicy(
   details?: {
     carrier?: string;
     policy_number?: string;
+    status?: string;
     effective_date?: string;
     expiration_date?: string;
+    renewal_date?: string;
     premium_cents?: number;
+    paid_in_full?: boolean;
+    amount_due_cents?: number;
+    amount_paid_cents?: number;
     vehicle_count?: number;
   }
 ): Promise<Policy> {
@@ -151,16 +176,55 @@ export async function createPolicy(
       policy_index: policyIndex,
       carrier: details?.carrier ?? null,
       policy_number: details?.policy_number ?? null,
+      status: details?.status ?? null,
       effective_date: details?.effective_date ?? null,
       expiration_date: details?.expiration_date ?? null,
+      renewal_date: details?.renewal_date ?? null,
       premium_cents: details?.premium_cents ?? null,
-      vehicle_count: details?.vehicle_count ?? 1,
+      paid_in_full: details?.paid_in_full ?? null,
+      amount_due_cents: details?.amount_due_cents ?? null,
+      amount_paid_cents: details?.amount_paid_cents ?? null,
+      vehicle_count: details?.vehicle_count ?? 0,
     })
     .select()
     .single();
 
   if (error) throw error;
   return data as Policy;
+}
+
+export async function createVehicles(
+  policyId: string,
+  vehicles: Array<{
+    vehicle_index: number;
+    year?: number;
+    make?: string;
+    model?: string;
+    vin?: string;
+    vehicle_type?: string;
+    uses?: string;
+  }>
+): Promise<Vehicle[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = vehicles.map(v => ({
+    policy_id: policyId,
+    vehicle_index: v.vehicle_index,
+    year: v.year ?? null,
+    make: v.make ?? null,
+    model: v.model ?? null,
+    vin: v.vin ?? null,
+    vehicle_type: v.vehicle_type ?? null,
+    uses: v.uses ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('vehicles')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as Vehicle[];
 }
 
 export async function createCoverages(

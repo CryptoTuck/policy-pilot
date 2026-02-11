@@ -12,6 +12,7 @@ CREATE TABLE submissions (
   -- Customer info (if available from Canopy metadata)
   customer_email TEXT,
   customer_name TEXT,
+  customer_phone TEXT,
   
   -- Raw data storage
   raw_canopy_data JSONB NOT NULL,
@@ -41,12 +42,35 @@ CREATE TABLE policies (
   -- Policy details
   carrier TEXT,
   policy_number TEXT,
+  status TEXT, -- e.g., 'ACTIVE'
   effective_date DATE,
   expiration_date DATE,
-  premium_cents BIGINT,
+  renewal_date DATE,
   
-  -- For auto policies with multiple vehicles
-  vehicle_count INT DEFAULT 1
+  -- Premium details
+  premium_cents BIGINT,
+  paid_in_full BOOLEAN,
+  amount_due_cents BIGINT,
+  amount_paid_cents BIGINT,
+  
+  -- For auto policies
+  vehicle_count INT DEFAULT 0
+);
+
+-- Vehicles table (for auto policies)
+CREATE TABLE vehicles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  policy_id UUID REFERENCES policies(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+
+  -- Vehicle details
+  vehicle_index INT NOT NULL,
+  year INT,
+  make TEXT,
+  model TEXT,
+  vin TEXT,
+  vehicle_type TEXT,
+  uses TEXT
 );
 
 -- Coverages table: individual coverage items for each policy
