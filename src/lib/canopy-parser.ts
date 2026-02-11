@@ -114,23 +114,68 @@ export function parseCanopyData(rawData: RawCanopyData): ParsedCanopyData {
   const metadata: Record<string, unknown> = {};
 
   // Extract metadata fields
-  const metadataKeys = ['MetaData', 'metadata', 'pullMetaData', 'pullMetadata', 'sessionToken'];
+  const metadataKeys = ['MetaData', 'metadata', 'pullMetaData', 'pullMetadata', 'sessionToken', 'meta_data'];
   for (const key of metadataKeys) {
     if (rawData[key]) {
       metadata[key] = rawData[key];
     }
   }
 
-  // Check if we have a policies array (raw Canopy format)
+  // Try to find policies in various locations
+  let policiesSource: unknown = null;
+  
+  // Option 1: rawData.policies as array (simple format)
   if (rawData.policies && Array.isArray(rawData.policies)) {
-    for (let i = 0; i < rawData.policies.length; i++) {
-      const policy = parseRawPolicy(rawData.policies[i], i);
-      if (policy) {
-        policies.push(policy);
+    policiesSource = rawData.policies;
+  }
+  // Option 2: rawData.pull.policies as object with policy0, policy1, etc. (real Canopy format)
+  else if (rawData.pull && typeof rawData.pull === 'object') {
+    const pull = rawData.pull as Record<string, unknown>;
+    if (pull.policies && typeof pull.policies === 'object') {
+      policiesSource = pull.policies;
+    }
+    // Also extract metadata from pull
+    if (pull.meta_data) {
+      metadata['meta_data'] = pull.meta_data;
+    }
+  }
+  // Option 3: rawData.policies as object with policy0, policy1, etc.
+  else if (rawData.policies && typeof rawData.policies === 'object' && !Array.isArray(rawData.policies)) {
+    policiesSource = rawData.policies;
+  }
+
+  // Parse policies if found
+  if (policiesSource) {
+    if (Array.isArray(policiesSource)) {
+      // It's an array
+      for (let i = 0; i < policiesSource.length; i++) {
+        const policy = parseRawPolicy(policiesSource[i] as RawCanopyPolicy, i);
+        if (policy) {
+          policies.push(policy);
+        }
+      }
+    } else if (typeof policiesSource === 'object') {
+      // It's an object with keys like policy0, policy1, policy2
+      const policiesObj = policiesSource as Record<string, unknown>;
+      const policyKeys = Object.keys(policiesObj)
+        .filter(k => k.startsWith('policy'))
+        .sort((a, b) => {
+          const numA = parseInt(a.replace('policy', ''), 10);
+          const numB = parseInt(b.replace('policy', ''), 10);
+          return numA - numB;
+        });
+      
+      for (let i = 0; i < policyKeys.length; i++) {
+        const policy = parseRawPolicy(policiesObj[policyKeys[i]] as RawCanopyPolicy, i);
+        if (policy) {
+          policies.push(policy);
+        }
       }
     }
-  } else {
-    // Try to parse flattened Zapier format
+  }
+  
+  // If still no policies, try flattened Zapier format
+  if (policies.length === 0) {
     const flattenedPolicies = parseFlattenedFormat(rawData);
     policies.push(...flattenedPolicies);
   }
@@ -166,19 +211,41 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
   const vehicles: ParsedVehicle[] = [];
   let vehicleCount = 1;
 
-  // Parse dwellings (home/renters)
+  // Parse dwellings (home/renters) - coverages are nested inside each dwelling
   if (raw.dwellings && Array.isArray(raw.dwellings)) {
-    for (let i = 0; i < raw.dwellings.length; i++) {
-      const cov = raw.dwellings[i];
-      coverages.push({
-        name: cov.name || cov.friendly_name || `Coverage ${i}`,
-        friendlyName: cov.friendly_name,
-        perIncidentLimitCents: cov.limit_per_occurrence ?? cov.limit,
-        perPersonLimitCents: cov.limit_per_person,
-        deductibleCents: cov.deductible,
-        isDeclined: cov.is_declined ?? false,
-        sourceIndex: i,
-      });
+    for (let di = 0; di < raw.dwellings.length; di++) {
+      const dwelling = raw.dwellings[di] as Record<string, unknown>;
+      
+      // Canopy nests coverages inside each dwelling
+      const dwellingCoverages = dwelling.coverages as Array<Record<string, unknown>> | undefined;
+      if (dwellingCoverages && Array.isArray(dwellingCoverages)) {
+        for (let ci = 0; ci < dwellingCoverages.length; ci++) {
+          const cov = dwellingCoverages[ci];
+          coverages.push({
+            name: (cov.name as string) || (cov.friendly_name as string) || `Coverage ${ci}`,
+            friendlyName: cov.friendly_name as string | undefined,
+            perIncidentLimitCents: (cov.per_incident_limit_cents as number) ?? (cov.limit_per_occurrence as number) ?? (cov.limit as number),
+            perPersonLimitCents: (cov.per_person_limit_cents as number) ?? (cov.limit_per_person as number),
+            deductibleCents: (cov.deductible_cents as number) ?? (cov.deductible as number),
+            isDeclined: (cov.is_declined as boolean) ?? false,
+            sourceIndex: ci,
+          });
+        }
+      } else {
+        // Fallback: dwelling itself might be a coverage (old format)
+        const cov = dwelling as unknown as RawCanopyCoverage;
+        if (cov.name || cov.friendly_name) {
+          coverages.push({
+            name: cov.name || cov.friendly_name || `Coverage ${di}`,
+            friendlyName: cov.friendly_name,
+            perIncidentLimitCents: cov.limit_per_occurrence ?? cov.limit,
+            perPersonLimitCents: cov.limit_per_person,
+            deductibleCents: cov.deductible,
+            isDeclined: cov.is_declined ?? false,
+            sourceIndex: di,
+          });
+        }
+      }
     }
   }
 
@@ -202,14 +269,14 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
       // Parse coverages for this vehicle
       if (vehicle.coverages && Array.isArray(vehicle.coverages)) {
         for (let ci = 0; ci < vehicle.coverages.length; ci++) {
-          const cov = vehicle.coverages[ci];
+          const cov = vehicle.coverages[ci] as Record<string, unknown>;
           coverages.push({
-            name: cov.name || cov.friendly_name || `Coverage ${ci}`,
-            friendlyName: cov.friendly_name,
-            perIncidentLimitCents: cov.limit_per_occurrence ?? cov.limit,
-            perPersonLimitCents: cov.limit_per_person,
-            deductibleCents: cov.deductible,
-            isDeclined: cov.is_declined ?? false,
+            name: (cov.name as string) || (cov.friendly_name as string) || `Coverage ${ci}`,
+            friendlyName: cov.friendly_name as string | undefined,
+            perIncidentLimitCents: (cov.per_incident_limit_cents as number) ?? (cov.limit_per_occurrence as number) ?? (cov.limit as number),
+            perPersonLimitCents: (cov.per_person_limit_cents as number) ?? (cov.limit_per_person as number),
+            deductibleCents: (cov.deductible_cents as number) ?? (cov.deductible as number),
+            isDeclined: (cov.is_declined as boolean) ?? false,
             vehicleIndex: vi,
             sourceIndex: ci,
           });
