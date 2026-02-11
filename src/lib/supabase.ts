@@ -470,7 +470,7 @@ export async function createDrivers(
     policy_id: policyId,
     first_name: d.first_name ?? null,
     last_name: d.last_name ?? null,
-    full_name: d.full_name ?? `${d.first_name || ''} ${d.last_name || ''}`.trim() || null,
+    full_name: d.full_name ?? (`${d.first_name || ''} ${d.last_name || ''}`.trim() || null),
     gender: d.gender ?? null,
     age: d.age ?? null,
     marital_status: d.marital_status ?? null,
