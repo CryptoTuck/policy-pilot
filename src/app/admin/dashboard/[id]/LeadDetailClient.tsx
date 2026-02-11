@@ -394,48 +394,6 @@ export function LeadDetailClient({ id }: { id: string }) {
           )}
         </div>
 
-        {/* Formatted Coverage Strings */}
-        {grading && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Formatted Coverage (sent to OpenAI)</h2>
-            <div className="space-y-4">
-              {grading.formatted_home_coverage && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Home Coverage</p>
-                  <pre className="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap overflow-x-auto">
-                    {grading.formatted_home_coverage}
-                  </pre>
-                </div>
-              )}
-              {grading.formatted_auto_coverage && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Auto Coverage</p>
-                  <pre className="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap overflow-x-auto">
-                    {grading.formatted_auto_coverage}
-                  </pre>
-                </div>
-              )}
-              {grading.formatted_renters_coverage && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Renters Coverage</p>
-                  <pre className="bg-gray-50 rounded-lg p-4 text-sm text-gray-800 whitespace-pre-wrap overflow-x-auto">
-                    {grading.formatted_renters_coverage}
-                  </pre>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Raw OpenAI Response */}
-        {grading?.openai_response && (
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">OpenAI Grading Response</h2>
-            <pre className="bg-gray-50 rounded-lg p-4 text-xs text-gray-800 overflow-x-auto max-h-96 overflow-y-auto">
-              {JSON.stringify(grading.openai_response, null, 2)}
-            </pre>
-          </div>
-        )}
       </main>
     </div>
   );
