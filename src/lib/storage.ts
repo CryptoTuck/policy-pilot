@@ -1,6 +1,7 @@
 import { Redis } from '@upstash/redis';
 import type { PolicySubmission } from '@/types/policy';
 import type { PolicyReport } from '@/types/grading';
+import { getReportFromSupabase, getReportByTokenFromSupabase, isSupabaseConfigured } from './storage-supabase';
 
 // Initialize Redis client using environment variables
 // Vercel KV uses KV_REST_API_URL and KV_REST_API_TOKEN
@@ -78,6 +79,15 @@ export async function storeReport(report: PolicyReport): Promise<void> {
 }
 
 export async function getReport(id: string): Promise<PolicyReport | undefined> {
+  // First try Supabase (new storage)
+  if (isSupabaseConfigured()) {
+    const supabaseReport = await getReportFromSupabase(id);
+    if (supabaseReport) {
+      return supabaseReport;
+    }
+  }
+
+  // Fall back to Redis (legacy storage)
   if (redis) {
     // Upstash SDK auto-deserializes objects
     const data = await redis.get<PolicyReport>(`${REPORT_PREFIX}${id}`);
@@ -105,6 +115,15 @@ export async function storeReportByToken(token: string, reportId: string): Promi
  * Called by the polling endpoint to find the user's specific report.
  */
 export async function getReportByToken(token: string): Promise<PolicyReport | undefined> {
+  // First try Supabase (new storage)
+  if (isSupabaseConfigured()) {
+    const supabaseReport = await getReportByTokenFromSupabase(token);
+    if (supabaseReport) {
+      return supabaseReport;
+    }
+  }
+
+  // Fall back to Redis (legacy storage)
   let reportId: string | null = null;
 
   if (redis) {
