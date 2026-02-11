@@ -7,8 +7,6 @@ import {
   createCoverages,
   createVehicles,
   createGradingResult,
-  type Submission,
-  type Policy,
 } from '@/lib/supabase';
 import { getOpenAIClient } from '@/lib/openai';
 import { POLICY_GRADING_SYSTEM_PROMPT } from '@/lib/grading-prompt';
