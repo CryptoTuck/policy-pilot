@@ -43,8 +43,26 @@ export async function POST(request: NextRequest) {
     // TODO: Re-enable auth after testing data flow
 
     // Parse the incoming raw data
-    const rawData = await request.json();
-    console.log('[Canopy Webhook] Received payload with keys:', Object.keys(rawData ?? {}));
+    const requestBody = await request.json();
+    console.log('[Canopy Webhook] Received payload with keys:', Object.keys(requestBody ?? {}));
+    
+    // Handle nested canopyData field from Zapier, or use root level if raw Canopy format
+    let rawData = requestBody;
+    if (requestBody.canopyData && typeof requestBody.canopyData === 'object') {
+      console.log('[Canopy Webhook] Found nested canopyData field, using that');
+      rawData = requestBody.canopyData;
+      // Merge in pullMetaData if present at root level
+      if (requestBody.pullMetaData) {
+        rawData.pullMetaData = requestBody.pullMetaData;
+      }
+    } else if (requestBody.canopyData && typeof requestBody.canopyData === 'string') {
+      // Handle case where canopyData is a JSON string
+      console.log('[Canopy Webhook] Found stringified canopyData, parsing');
+      rawData = JSON.parse(requestBody.canopyData);
+      if (requestBody.pullMetaData) {
+        rawData.pullMetaData = requestBody.pullMetaData;
+      }
+    }
 
     // Extract customer info from metadata if available
     const customerEmail = extractMetadata(rawData, 'Pull Account Email');
