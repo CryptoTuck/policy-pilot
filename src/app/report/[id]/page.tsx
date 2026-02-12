@@ -172,8 +172,27 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
-        {/* Score Overview */}
-        <div className={`mb-6 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r ${overallGradient}`}>
+        {/* Demo Banner */}
+        <div className="flex justify-center mb-6">
+          <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
+            Policy Report - Generated {new Date(report.generatedAt).toLocaleDateString()}
+          </div>
+        </div>
+
+        {/* Policy Type Tabs */}
+        <PolicyTabs hasHome={!!homeGrade} hasAuto={autoPolicies.length > 0} hasRenters={!!rentersGrade} />
+
+        {/* Overall Grade Header */}
+        <div className="mb-6">
+          <p className="text-gray-500 text-sm">Policy Holder</p>
+          <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
+            Overall Policy Grade
+          </h1>
+        </div>
+
+        {/* Score Overview Card */}
+        <div className={`mb-4 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r ${overallGradient}`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
               <p className="text-sm uppercase tracking-wide text-white/80">Overall Score</p>
@@ -196,25 +215,8 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </div>
         </div>
 
-        {/* Demo Banner */}
-        <div className="flex justify-center mb-6">
-          <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
-            Policy Report - Generated {new Date(report.generatedAt).toLocaleDateString()}
-          </div>
-        </div>
-
-        {/* Policy Type Tabs */}
-        <PolicyTabs hasHome={!!homeGrade} hasAuto={autoPolicies.length > 0} hasRenters={!!rentersGrade} />
-
-        {/* Overall Grade Header */}
-        <div className="mb-6">
-          <p className="text-gray-500 text-sm">Policy Holder</p>
-          <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
-            Overall Policy Grade: {displayGrade}
-          </h1>
-          <p className="text-gray-500 mt-1">{getGradeDescription(displayGrade)}</p>
-        </div>
+        {/* Grade Description */}
+        <p className="text-gray-500 mb-6">{getGradeDescription(displayGrade)}</p>
 
         {/* Areas to Review Alert */}
         <AreasToReviewAlert
