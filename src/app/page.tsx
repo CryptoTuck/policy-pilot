@@ -222,23 +222,16 @@ export default function Home() {
               </div>
             </div>
 
+            <div className="pointer-events-none absolute -top-6 right-6 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-500 shadow-lg lg:block">
+              AI-powered in under 2 minutes
+            </div>
+
             <div className="pointer-events-none absolute -bottom-8 left-6 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-500 shadow-lg lg:block">
               Bank-level security via Canopy Connect
             </div>
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-          <div className="grid gap-6 rounded-3xl border border-slate-100 bg-white px-6 py-8 shadow-sm sm:grid-cols-5 sm:items-center">
-            <span className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">Trusted by</span>
-            {/* TODO: Replace with partner/customer logos */}
-            {['Hearthline', 'Sunridge', 'Cedar & Co', 'Northwell', 'Beacon'].map((logo) => (
-              <div key={logo} className="text-sm font-semibold text-slate-400">
-                {logo}
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* How It Works */}
