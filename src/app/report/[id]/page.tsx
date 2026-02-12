@@ -91,6 +91,47 @@ function calculateSectionScore(coverages: { score: number; maxScore: number }[])
   return { score, maxScore };
 }
 
+function gradeToScore(grade?: string): number | undefined {
+  switch (grade) {
+    case 'A':
+      return 95;
+    case 'B':
+      return 85;
+    case 'C':
+      return 75;
+    case 'D':
+      return 65;
+    case 'F':
+      return 45;
+    default:
+      return undefined;
+  }
+}
+
+function getPolicyScore(grade?: string, score?: number): number | undefined {
+  if (typeof score === 'number' && !Number.isNaN(score)) {
+    return Math.max(0, Math.min(100, Math.round(score)));
+  }
+  const gradeScore = gradeToScore(grade);
+  return gradeScore === undefined ? undefined : Math.max(0, Math.min(100, gradeScore));
+}
+
+function averageScores(scores: Array<number | undefined>): number | undefined {
+  const validScores = scores.filter((score): score is number => typeof score === 'number');
+  if (validScores.length === 0) return undefined;
+  return Math.round(validScores.reduce((sum, score) => sum + score, 0) / validScores.length);
+}
+
+function getScoreGradient(score?: number): string {
+  if (score === undefined) {
+    return 'from-slate-500 via-slate-600 to-slate-700';
+  }
+  if (score >= 90) return 'from-emerald-500 via-green-500 to-green-600';
+  if (score >= 70) return 'from-amber-400 via-orange-400 to-orange-500';
+  if (score >= 50) return 'from-orange-500 via-orange-600 to-red-500';
+  return 'from-red-500 via-red-600 to-red-700';
+}
+
 export default async function ReportPage({ params }: ReportPageProps) {
   const { id } = await params;
   const report = await getReport(id);
@@ -104,6 +145,15 @@ export default async function ReportPage({ params }: ReportPageProps) {
   
   // Handle multiple auto policies
   const autoPolicies = autoGrades && autoGrades.length > 0 ? autoGrades : (autoGrade ? [autoGrade] : []);
+  const homeScore = getPolicyScore(homeGrade?.overallGrade, homeGrade?.overallScore);
+  const autoScore = autoPolicies.length > 0
+    ? averageScores(autoPolicies.map(policy => getPolicyScore(policy.overallGrade, policy.overallScore)))
+    : undefined;
+  const rentersScore = getPolicyScore(rentersGrade?.overallGrade, rentersGrade?.overallScore);
+  const overallScore = getPolicyScore(combinedGrade, report.combinedScore)
+    ?? averageScores([homeScore, autoScore, rentersScore]);
+  const overallGradient = getScoreGradient(overallScore);
+  const formatPercent = (score?: number): string => (typeof score === 'number' ? `${score}%` : '--');
 
   return (
     <div className="min-h-screen bg-white">
@@ -122,6 +172,30 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
+        {/* Score Overview */}
+        <div className={`mb-6 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r ${overallGradient}`}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div>
+              <p className="text-sm uppercase tracking-wide text-white/80">Overall Score</p>
+              <p className="text-4xl sm:text-5xl font-bold mt-2">{formatPercent(overallScore)}</p>
+            </div>
+            <div className="w-full sm:w-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {[
+                  { label: 'Home', score: homeScore },
+                  { label: 'Auto', score: autoScore },
+                  { label: 'Renters', score: rentersScore },
+                ].map(({ label, score }) => (
+                  <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-4 py-3 text-center">
+                    <div className="text-xl font-bold">{formatPercent(score)}</div>
+                    <div className="text-xs uppercase tracking-wide text-white/80 mt-1">{label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Demo Banner */}
         <div className="flex justify-center mb-6">
           <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
