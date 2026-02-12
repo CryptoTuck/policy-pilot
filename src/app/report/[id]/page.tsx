@@ -183,16 +183,17 @@ export default async function ReportPage({ params }: ReportPageProps) {
         <PolicyTabs hasHome={!!homeGrade} hasAuto={autoPolicies.length > 0} hasRenters={!!rentersGrade} />
 
         {/* Overall Grade Header */}
-        <div className="mb-6">
+        <div className="mb-4">
           <p className="text-gray-500 text-sm">Policy Holder</p>
           <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
             Overall Policy Grade
           </h1>
+          <p className="text-gray-500 mt-1">{getGradeDescription(displayGrade)}</p>
         </div>
 
         {/* Score Overview Card */}
-        <div className={`mb-4 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r ${overallGradient}`}>
+        <div className={`mb-6 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r ${overallGradient}`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
               <p className="text-sm uppercase tracking-wide text-white/80">Overall Score</p>
@@ -214,9 +215,6 @@ export default async function ReportPage({ params }: ReportPageProps) {
             </div>
           </div>
         </div>
-
-        {/* Grade Description */}
-        <p className="text-gray-500 mb-6">{getGradeDescription(displayGrade)}</p>
 
         {/* Areas to Review Alert */}
         <AreasToReviewAlert
