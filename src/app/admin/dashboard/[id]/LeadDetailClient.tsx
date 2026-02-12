@@ -113,38 +113,26 @@ function getGradeStyles(grade: string) {
   }
 }
 
-function getSmallGradeColor(grade: string) {
-  switch (grade) {
-    case 'A': return 'bg-green-100 text-green-700';
-    case 'B': return 'bg-blue-100 text-blue-700';
-    case 'C': return 'bg-amber-100 text-amber-700';
-    case 'D': return 'bg-orange-100 text-orange-700';
-    case 'F': return 'bg-red-100 text-red-700';
-    default: return 'bg-gray-100 text-gray-500';
-  }
-}
-
 export function LeadDetailClient({ id }: { id: string }) {
   const [data, setData] = useState<LeadData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/admin/submissions/${id}`);
+        if (!res.ok) throw new Error('Failed to fetch');
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to load');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchData();
   }, [id]);
-
-  const fetchData = async () => {
-    try {
-      const res = await fetch(`/api/admin/submissions/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch');
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (

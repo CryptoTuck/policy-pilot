@@ -231,7 +231,7 @@ export default function GetPolicyPage() {
 
             {/* Subtitle */}
             <p className="text-gray-600 text-lg mb-8">
-              Let's get your policy
+              Let&apos;s get your policy
             </p>
 
             {/* CTA Button */}
@@ -257,7 +257,7 @@ export default function GetPolicyPage() {
             <div className="mt-8 text-left w-full space-y-3">
               <div className="flex items-start gap-3">
                 <span className="text-gray-700 font-medium">1.</span>
-                <span className="text-gray-600">Select "Get my policy"</span>
+                <span className="text-gray-600">Select &ldquo;Get my policy&rdquo;</span>
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-gray-700 font-medium">2.</span>
