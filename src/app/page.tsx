@@ -90,8 +90,22 @@ export default function Home() {
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               Free • 2 minutes • No credit card
             </div>
-            <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-              Understand your insurance in minutes, with an AI grade you can trust.
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 leading-[1.1] sm:text-5xl lg:text-6xl">
+              Know your insurance.{' '}
+              <span className="relative">
+                <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
+                  Finally.
+                </span>
+                <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
+                  <path d="M2 8.5C50 2 150 2 198 8.5" stroke="url(#underline-gradient)" strokeWidth="4" strokeLinecap="round"/>
+                  <defs>
+                    <linearGradient id="underline-gradient" x1="0" y1="0" x2="200" y2="0">
+                      <stop stopColor="#3B82F6"/>
+                      <stop offset="1" stopColor="#06B6D4"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-slate-600 sm:text-xl">
               PolicyPilot connects to your existing policy and delivers a clear, unbiased score so you know
