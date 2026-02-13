@@ -506,85 +506,95 @@ export function formatCoverages(policy: ParsedPolicy): {
 }
 
 function formatSingleCoverage(cov: ParsedCoverage, policyType: 'home' | 'auto' | 'renters'): string | null {
+  // Use friendly name for both display and matching (raw Canopy names are UPPER_SNAKE_CASE)
+  const displayName = cov.friendlyName || cov.name;
+  const matchName = displayName.toLowerCase();
+
   if (cov.isDeclined) {
-    return `${cov.name}: None`;
+    return `${displayName}: None`;
   }
 
   // Auto-specific formatting
   if (policyType === 'auto') {
-    const splitLimitCoverages = [
-      'Bodily Injury Liability',
-      'Uninsured Motorist Bodily Injury Liability',
-      'Underinsured Motorist Bodily Injury Liability',
-    ];
-
-    if (splitLimitCoverages.includes(cov.name)) {
+    // Split-limit coverages: show per-person/per-accident
+    if (matchName.includes('bodily injury') || matchName.includes('uninsured motorist') || matchName.includes('underinsured motorist')) {
       if (cov.perPersonLimitCents && cov.perIncidentLimitCents) {
-        return `${cov.name}: ${formatMoneyWhole(cov.perPersonLimitCents)}/${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perPersonLimitCents)}/${formatMoneyWhole(cov.perIncidentLimitCents)}`;
       } else if (cov.perIncidentLimitCents) {
-        return `${cov.name}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
       }
-      return `${cov.name}: None`;
+      return `${displayName}: None`;
     }
 
-    if (cov.name === 'Collision' || cov.name === 'Comprehensive') {
+    if (matchName === 'collision' || matchName === 'comprehensive') {
       if (cov.deductibleCents) {
-        return `${cov.name}: ${formatMoney(cov.deductibleCents)} deductible`;
+        return `${displayName}: ${formatMoney(cov.deductibleCents)} deductible`;
       }
-      return `${cov.name}: Not included`;
+      return `${displayName}: Not included`;
     }
 
-    if (cov.name === 'Emergency Road Service') {
-      return `${cov.name}: Yes`;
+    if (matchName.includes('emergency road') || matchName.includes('roadside')) {
+      return `${displayName}: Yes`;
     }
 
-    if (cov.name === 'Property Damage Liability' || cov.name === 'Medical Payments') {
+    if (matchName === 'property damage liability') {
       if (cov.perIncidentLimitCents) {
-        return `${cov.name}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
       }
-      return `${cov.name}: None`;
+      return `${displayName}: None`;
     }
 
-    if (cov.name === 'Car Rental and Travel Expenses' || cov.name === 'Rental Reimbursement') {
+    if (matchName === 'medical payments') {
+      // Medical payments may come as per-person or per-incident
       if (cov.perPersonLimitCents) {
-        return `${cov.name}: ${formatMoney(cov.perPersonLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perPersonLimitCents)}`;
       } else if (cov.perIncidentLimitCents) {
-        return `${cov.name}: ${formatMoney(cov.perIncidentLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
       }
-      return `${cov.name}: Not included`;
+      return `${displayName}: None`;
+    }
+
+    if (matchName.includes('car rental') || matchName.includes('rental reimbursement')) {
+      if (cov.perPersonLimitCents) {
+        return `${displayName}: ${formatMoney(cov.perPersonLimitCents)}`;
+      } else if (cov.perIncidentLimitCents) {
+        return `${displayName}: ${formatMoney(cov.perIncidentLimitCents)}`;
+      }
+      return `${displayName}: Not included`;
     }
   }
 
   // Home/renters formatting
   if (policyType === 'home' || policyType === 'renters') {
     // Show deductible-based coverages with their deductible amount
-    const deductibleCoverages = ['All Other Perils', 'Windstorm or Hail', 'All Perils'];
-    if (deductibleCoverages.includes(cov.name)) {
+    if (matchName.includes('all other perils') || matchName.includes('windstorm') || matchName === 'all perils') {
       if (cov.deductibleCents) {
-        return `${cov.name} Deductible: ${formatMoney(cov.deductibleCents)}`;
+        return `${displayName} Deductible: ${formatMoney(cov.deductibleCents)}`;
       }
-      return `${cov.name} Deductible: Not specified`;
+      return `${displayName} Deductible: Not specified`;
     }
 
-    const perPersonCoverages = ['Personal Liability', 'Medical Payments to Others', 'Medical Payments'];
-    if (perPersonCoverages.includes(cov.name)) {
+    // Per-person coverages
+    if (matchName.includes('personal liability') || matchName.includes('medical payments')) {
       if (cov.perPersonLimitCents) {
-        return `${cov.name}: ${formatMoneyWhole(cov.perPersonLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perPersonLimitCents)}`;
       } else if (cov.perIncidentLimitCents) {
-        return `${cov.name}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+        return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
       }
-      return `${cov.name}: None`;
+      return `${displayName}: None`;
     }
 
     if (cov.perIncidentLimitCents) {
-      return `${cov.name}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+      return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
     }
-    return `${cov.name}: None`;
+    return `${displayName}: None`;
   }
 
   // Default formatting
   if (cov.perIncidentLimitCents) {
-    return `${cov.name}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+    return `${displayName}: ${formatMoneyWhole(cov.perIncidentLimitCents)}`;
+  } else if (cov.perPersonLimitCents) {
+    return `${displayName}: ${formatMoneyWhole(cov.perPersonLimitCents)}`;
   }
   return null;
 }
