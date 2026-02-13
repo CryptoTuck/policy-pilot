@@ -147,9 +147,9 @@ export default function Home() {
         <div className="relative overflow-hidden border-t border-white/10 py-5 mt-4">
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32" style={{ background: 'linear-gradient(to right, #f8fafc, transparent)' }} />
           <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32" style={{ background: 'linear-gradient(to left, #f8fafc, transparent)' }} />
-          <div className="flex animate-scroll-x gap-16 whitespace-nowrap">
+          <div className="flex animate-scroll-x gap-8 whitespace-nowrap sm:gap-16">
             {[...Array(2)].map((_, setIndex) => (
-              <div key={setIndex} className="flex shrink-0 items-center gap-16">
+              <div key={setIndex} className="flex shrink-0 items-center gap-8 sm:gap-16">
                 {[
                   {
                     label: 'SOC 2 Type II Certified',
@@ -201,9 +201,9 @@ export default function Home() {
                     ),
                   },
                 ].map((badge) => (
-                  <div key={badge.label} className="flex items-center gap-2.5 text-slate-500">
+                  <div key={badge.label} className="flex items-center gap-2 text-slate-500 sm:gap-2.5">
                     {badge.icon}
-                    <span className="text-sm font-semibold uppercase tracking-[0.15em]">{badge.label}</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.15em] sm:text-sm">{badge.label}</span>
                   </div>
                 ))}
               </div>
@@ -900,7 +900,7 @@ export default function Home() {
           }
         }
         .animate-scroll-x {
-          animation: scroll-x 30s linear infinite;
+          animation: scroll-x 15s linear infinite;
         }
         .animate-scroll-x:hover {
           animation-play-state: paused;
