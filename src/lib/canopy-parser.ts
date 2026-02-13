@@ -24,6 +24,9 @@ export interface RawCanopyPolicy {
   carrier?: {
     name?: string;
   } | string;
+  carrier_name?: string;
+  carrier_friendly_name?: string;
+  carrier_policy_number?: string;
   policy_number?: string;
   status?: string;
   effective_date?: string;
@@ -285,9 +288,13 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
     }
   }
 
-  // Get carrier name
+  // Get carrier name - check multiple Canopy formats
   let carrier: string | undefined;
-  if (typeof raw.carrier === 'string') {
+  if (raw.carrier_friendly_name) {
+    carrier = raw.carrier_friendly_name;
+  } else if (raw.carrier_name) {
+    carrier = raw.carrier_name;
+  } else if (typeof raw.carrier === 'string') {
     carrier = raw.carrier;
   } else if (raw.carrier?.name) {
     carrier = raw.carrier.name;
@@ -297,7 +304,7 @@ function parseRawPolicy(raw: RawCanopyPolicy, index: number): ParsedPolicy | nul
     type,
     sourceIndex: index,
     carrier,
-    policyNumber: raw.policy_number,
+    policyNumber: raw.policy_number || raw.carrier_policy_number,
     status: raw.status,
     effectiveDate: raw.effective_date,
     expirationDate: raw.expiration_date,
