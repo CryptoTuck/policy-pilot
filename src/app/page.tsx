@@ -149,69 +149,63 @@ export default function Home() {
       <section id="how" className="scroll-mt-24 bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold sm:text-4xl">Three Simple Steps. Two Minutes. Total Clarity.</h2>
+            <h2 className="text-3xl font-semibold sm:text-4xl">How It Works</h2>
+            <p className="mt-2 text-lg text-slate-600">Three Simple Steps. Two Minutes. Total Clarity.</p>
           </div>
 
-          <div className="mt-12 grid gap-6 lg:grid-cols-3">
-            {[
-              {
-                title: 'Connect Your Insurance',
-                desc: 'Securely link your existing policy through Canopy Connect. We never see your login credentials.',
-                icon: (
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                ),
-              },
-              {
-                title: 'Let AI Analyze It',
-                desc: 'Our AI checks every line against industry benchmarks to find gaps, overlaps, and pricing issues.',
-                icon: (
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                    />
-                  </svg>
-                ),
-              },
-              {
-                title: 'Get Your PolicyPilot Score',
-                desc: 'Receive a clear grade, actionable insights, and a shareable PDF report in minutes.',
-                icon: (
-                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M12 4.354a4 4 0 110 5.292M15 21H9a2 2 0 01-2-2v-6a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                ),
-              },
-            ].map((step, index) => (
-              <div
-                key={step.title}
-                className="group rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-                style={{ animationDelay: `${index * 80}ms` }}
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  {step.icon}
-                </div>
-                <div className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
-                  Step {index + 1}
-                </div>
-                <h3 className="mt-2 text-lg font-semibold text-slate-900">{step.title}</h3>
-                <p className="mt-3 text-sm text-slate-600">{step.desc}</p>
+          <div className="relative mt-16">
+            {/* Connecting line - desktop only */}
+            <div className="absolute top-10 left-0 right-0 hidden lg:block">
+              <div className="mx-auto max-w-3xl px-24">
+                <div className="h-[2px] w-full bg-gradient-to-r from-blue-200 via-cyan-200 to-blue-200" />
               </div>
-            ))}
+            </div>
+
+            <div className="relative grid gap-10 lg:grid-cols-3 lg:gap-8">
+              {[
+                {
+                  title: 'Connect Your Insurance',
+                  desc: 'Securely link your existing policy through Canopy Connect. We never see your login credentials.',
+                  icon: (
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'Let AI Analyze It',
+                  desc: 'Our AI checks every line against industry benchmarks to find gaps, overlaps, and pricing issues.',
+                  icon: (
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'Get Your PolicyPilot Score',
+                  desc: 'Receive a clear grade, actionable insights, and a shareable PDF report in minutes.',
+                  icon: (
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  ),
+                },
+              ].map((step, index) => (
+                <div key={step.title} className="flex flex-col items-center text-center">
+                  {/* Step number circle */}
+                  <div className="relative z-10 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-lg shadow-blue-500/10 ring-4 ring-slate-50">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-white">
+                      {step.icon}
+                    </div>
+                  </div>
+                  <div className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
+                    Step {index + 1}
+                  </div>
+                  <h3 className="mt-2 text-xl font-semibold text-slate-900">{step.title}</h3>
+                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-slate-600">{step.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
