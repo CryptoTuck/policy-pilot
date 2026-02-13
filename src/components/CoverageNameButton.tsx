@@ -7,9 +7,16 @@ import { getCoverageDescription } from '@/lib/coverage-descriptions';
 interface CoverageNameButtonProps {
   name: string;
   className?: string;
+  variant?: 'default' | 'red' | 'amber';
 }
 
-export function CoverageNameButton({ name, className }: CoverageNameButtonProps) {
+const variantStyles = {
+  default: { border: 'border-gray-400 hover:border-gray-600', icon: 'text-gray-400' },
+  red: { border: 'border-red-700/50 hover:border-red-700', icon: 'text-red-700/60' },
+  amber: { border: 'border-amber-700/50 hover:border-amber-700', icon: 'text-amber-700/60' },
+};
+
+export function CoverageNameButton({ name, className, variant = 'default' }: CoverageNameButtonProps) {
   const context = useContext(CoverageDescriptionContext);
   const hasDescription = !!getCoverageDescription(name);
 
@@ -17,15 +24,17 @@ export function CoverageNameButton({ name, className }: CoverageNameButtonProps)
     return <span className={className}>{name}</span>;
   }
 
+  const styles = variantStyles[variant];
+
   return (
     <button
       type="button"
       onClick={() => context.showDescription(name)}
-      className={`inline text-left border-b border-dashed border-gray-400 cursor-pointer hover:border-gray-600 transition-colors ${className ?? ''}`}
+      className={`inline text-left border-b border-dashed ${styles.border} cursor-pointer transition-colors ${className ?? ''}`}
     >
       {name}
       <svg
-        className="inline-block w-3.5 h-3.5 text-gray-400 ml-1 align-middle -mt-px"
+        className={`inline-block w-3.5 h-3.5 ${styles.icon} ml-1 align-middle -mt-px`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"

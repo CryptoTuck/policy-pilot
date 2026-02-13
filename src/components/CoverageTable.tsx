@@ -71,6 +71,7 @@ export function CoverageTable({
             {coverages.map((coverage, index) => {
               const hasIssue = coverage.score <= 3 || !!coverage.recommendation;
               const colors = getScoreColor(coverage.score, !!coverage.recommendation);
+              const buttonVariant = (coverage.score <= 2 || !!coverage.recommendation) ? 'red' as const : coverage.score <= 3 ? 'amber' as const : 'default' as const;
 
               return (
                 <tr
@@ -81,7 +82,7 @@ export function CoverageTable({
                     <div className="flex items-center gap-2">
                       {hasIssue && <WarningIcon className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />}
                       <span className={`font-medium ${hasIssue ? colors.text : 'text-gray-900'}`}>
-                        <CoverageNameButton name={coverage.name} />
+                        <CoverageNameButton name={coverage.name} variant={buttonVariant} />
                       </span>
                     </div>
                   </td>
@@ -125,6 +126,7 @@ export function CoverageTable({
           const hasIssue = coverage.score <= 3 || !!coverage.recommendation;
           const colors = getScoreColor(coverage.score, !!coverage.recommendation);
           const badgeColor = getScoreBadgeColor(coverage.score, !!coverage.recommendation);
+          const buttonVariant = (coverage.score <= 2 || !!coverage.recommendation) ? 'red' as const : coverage.score <= 3 ? 'amber' as const : 'default' as const;
 
           return (
             <div
@@ -139,7 +141,7 @@ export function CoverageTable({
                 <div className="flex items-center gap-2">
                   {hasIssue && <WarningIcon className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />}
                   <h4 className={`font-semibold text-sm ${hasIssue ? colors.text : 'text-gray-900'}`}>
-                    <CoverageNameButton name={coverage.name} />
+                    <CoverageNameButton name={coverage.name} variant={buttonVariant} />
                   </h4>
                 </div>
                 {showScore && (
