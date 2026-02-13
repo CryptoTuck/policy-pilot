@@ -1,4 +1,7 @@
+'use client';
+
 import type { AdditionalCoverageAssessment } from '@/types/grading';
+import { CoverageNameButton } from '@/components/CoverageNameButton';
 
 interface AdditionalCoverageTableProps {
   coverages: AdditionalCoverageAssessment[];
@@ -24,7 +27,7 @@ export function AdditionalCoverageTable({ coverages }: AdditionalCoverageTablePr
                 className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
               >
                 <td className="py-4 px-4 text-gray-900 font-medium text-sm">
-                  {coverage.name}
+                  <CoverageNameButton name={coverage.name} />
                 </td>
                 <td className="py-4 px-4 text-gray-700 text-sm">
                   {coverage.limit || (coverage.present ? 'Included' : 'None')}
@@ -46,7 +49,7 @@ export function AdditionalCoverageTable({ coverages }: AdditionalCoverageTablePr
             className={`rounded-lg p-4 ${index % 2 === 0 ? 'bg-white border border-gray-100' : 'bg-gray-50'}`}
           >
             <div className="flex justify-between items-start mb-2">
-              <h4 className="font-semibold text-gray-900 text-sm">{coverage.name}</h4>
+              <h4 className="font-semibold text-gray-900 text-sm"><CoverageNameButton name={coverage.name} /></h4>
               <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                 coverage.present
                   ? 'bg-green-100 text-green-700'

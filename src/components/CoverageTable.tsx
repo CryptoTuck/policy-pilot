@@ -1,4 +1,7 @@
+'use client';
+
 import type { CoverageGrade } from '@/types/grading';
+import { CoverageNameButton } from '@/components/CoverageNameButton';
 
 interface CoverageTableProps {
   coverages: CoverageGrade[];
@@ -74,11 +77,11 @@ export function CoverageTable({
                   key={coverage.name}
                   className={`border-b ${hasIssue ? `${colors.bg} ${colors.border} border-l-4` : 'border-gray-100'} ${!hasIssue && index % 2 === 0 ? 'bg-white' : !hasIssue ? 'bg-gray-50/50' : ''}`}
                 >
-                  <td className="py-4 px-4 text-sm">
+                  <td className="py-4 px-4 text-sm whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       {hasIssue && <WarningIcon className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />}
                       <span className={`font-medium ${hasIssue ? colors.text : 'text-gray-900'}`}>
-                        {coverage.name}
+                        <CoverageNameButton name={coverage.name} />
                       </span>
                     </div>
                   </td>
@@ -136,7 +139,7 @@ export function CoverageTable({
                 <div className="flex items-center gap-2">
                   {hasIssue && <WarningIcon className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />}
                   <h4 className={`font-semibold text-sm ${hasIssue ? colors.text : 'text-gray-900'}`}>
-                    {coverage.name}
+                    <CoverageNameButton name={coverage.name} />
                   </h4>
                 </div>
                 {showScore && (

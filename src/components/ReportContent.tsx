@@ -5,6 +5,7 @@ import { CoverageTable } from '@/components/CoverageTable';
 import { AdditionalCoverageTable } from '@/components/AdditionalCoverageTable';
 import { SectionAnalysis } from '@/components/SectionAnalysis';
 import { CarrierAnalysis } from '@/components/CarrierAnalysis';
+import { CoverageDescriptionProvider } from '@/components/CoverageDescriptionModal';
 import type { PolicyReport, AutoPolicyGrade } from '@/types/grading';
 
 function getGradeDescription(grade: string): string {
@@ -191,14 +192,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
   }
 
   return (
-    <>
-      {/* Demo Banner */}
-      <div className="flex justify-center mb-6">
-        <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-full text-sm font-medium">
-          Policy Report - Generated {new Date(report.generatedAt).toLocaleDateString()}
-        </div>
-      </div>
-
+    <CoverageDescriptionProvider>
       {/* Policy Type Tabs */}
       <PolicyTabs
         hasHome={hasHome}
@@ -210,7 +204,6 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Overall Grade Header */}
       <div className="mb-4">
-        <p className="text-gray-500 text-sm">Policy Holder</p>
         <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
           {activeFilter === 'all' ? 'Overall Policy Grade' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Policy Grade`}
@@ -420,6 +413,6 @@ export function ReportContent({ report }: { report: PolicyReport }) {
           Consult with a licensed insurance agent for personalized recommendations.
         </p>
       </div>
-    </>
+    </CoverageDescriptionProvider>
   );
 }
