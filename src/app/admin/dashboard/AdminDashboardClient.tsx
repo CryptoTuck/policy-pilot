@@ -119,11 +119,7 @@ export function AdminDashboardClient() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </div>
+              <img src="/logo.png" alt="Policy Pilot" className="w-10 h-10 rounded-xl shadow-lg shadow-blue-500/20" />
               <div>
                 <h1 className="text-lg font-bold text-gray-900">Policy Pilot</h1>
                 <p className="text-xs text-gray-500">Admin Dashboard</p>

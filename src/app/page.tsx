@@ -42,16 +42,7 @@ export default function Home() {
       <nav className="absolute top-0 left-0 right-0 z-50 pt-4 sm:pt-4">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20">
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
-            </div>
+            <img src="/logo.png" alt="PolicyPilot" className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-semibold tracking-tight text-white">PolicyPilot</span>
           </div>
           <div className="hidden items-center gap-8 text-[15px] font-semibold text-slate-100 md:flex">
@@ -155,70 +146,14 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            <div className="relative mx-auto max-w-md">
-              <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-blue-500/30 to-cyan-400/30 blur-2xl" />
-              <div className="relative rounded-[28px] border border-white/10 bg-white p-6 shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">PolicyPilot Score</p>
-                    <p className="text-sm font-medium text-slate-600">Homeowners • State Farm</p>
-                  </div>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
-                    <svg className="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex items-center justify-center">
-                  <div className="relative">
-                    <svg className="h-36 w-36 -rotate-90" viewBox="0 0 100 100">
-                      <circle cx="50" cy="50" r="42" fill="none" stroke="#E2E8F0" strokeWidth="8" />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="42"
-                        fill="none"
-                        stroke="url(#score-gradient)"
-                        strokeWidth="8"
-                        strokeLinecap="round"
-                        strokeDasharray="264"
-                        strokeDashoffset="62"
-                      />
-                      <defs>
-                        <linearGradient id="score-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" stopColor="#2563EB" />
-                          <stop offset="100%" stopColor="#06B6D4" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-4xl font-semibold text-slate-900">82</span>
-                      <span className="text-xs font-medium text-slate-500">out of 100</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-6 space-y-3">
-                  <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm">
-                    <span className="font-medium text-slate-700">Coverage grade</span>
-                    <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-700">B+</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm">
-                    <span className="font-medium text-slate-700">Gaps detected</span>
-                    <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">2 items</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 text-sm">
-                    <span className="font-medium text-slate-700">Price check</span>
-                    <span className="rounded-full bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700">$310 / yr high</span>
-                  </div>
-                </div>
-              </div>
+            <div className="relative mx-auto max-w-lg">
+              {/* Glow behind image */}
+              <div className="absolute -inset-6 rounded-[36px] bg-gradient-to-br from-blue-500/20 to-cyan-400/20 blur-3xl" />
+              <img
+                src="/hero-image.png"
+                alt="PolicyPilot Score card showing an 82 out of 100 score with coverage grade, gaps detected, and price check"
+                className="relative w-full drop-shadow-2xl"
+              />
             </div>
           </div>
         </div>
@@ -230,7 +165,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-semibold sm:text-4xl">Three steps. Two minutes. Full clarity.</h2>
-            <p className="mt-4 text-lg text-slate-600">Connect once and let PolicyPilot do the rest.</p>
+            <p className="mt-2 text-lg text-slate-600">Connect once and let PolicyPilot do the rest.</p>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
@@ -297,6 +232,284 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Before & After Report Comparison */}
+      <section className="bg-slate-100 py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+              Before & After
+            </div>
+            <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">See what PolicyPilot reveals.</h2>
+            <p className="mt-2 text-lg text-slate-600">
+              Most people think their coverage is fine — until they see the gaps.
+            </p>
+          </div>
+
+          <div className="relative mx-auto mt-12 grid max-w-6xl gap-8 lg:grid-cols-2">
+            {/* BEFORE Report */}
+            <div>
+              <div className="mb-4 text-center">
+                <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+                  Before PolicyPilot
+                  <svg className="h-3.5 w-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </p>
+                <p className="text-xs text-slate-500">Hidden gaps, unknown risks</p>
+              </div>
+            <div className="rounded-2xl bg-[#F6F6FA] p-4 shadow-lg">
+              {/* Score Header - Red */}
+              <div className="rounded-2xl bg-gradient-to-r from-red-500 via-red-600 to-red-700 p-5 sm:p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-white/80">Overall Score</p>
+                    <p className="text-3xl sm:text-4xl font-bold mt-1">54%</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'Home', score: '61%' },
+                      { label: 'Auto', score: '47%' },
+                    ].map(({ label, score }) => (
+                      <div key={label} className="rounded-lg bg-white/20 border border-white/20 px-3 py-1.5 text-center">
+                        <div className="text-base font-bold">{score}</div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/80">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Coverage Table - Desktop */}
+              <div className="mt-3 hidden sm:block rounded-xl bg-white shadow-sm overflow-hidden">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-[#1e293b] text-white text-[11px] font-medium uppercase tracking-wide">
+                      <th className="text-left py-2 px-3">Coverage</th>
+                      <th className="text-left py-2 px-3">Limit</th>
+                      <th className="text-left py-2 px-3">Score</th>
+                      <th className="text-left py-2 px-3">What It Means</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: 'Bodily Injury', limit: '$25k/$50k', score: '1/5', severity: 'red' as const, explanation: 'State minimum only. Won\'t cover most serious injuries.' },
+                      { name: 'Property Damage', limit: '$15,000', score: '1/5', severity: 'red' as const, explanation: 'Below recommended levels for modern vehicle damage.' },
+                      { name: 'Personal Liability', limit: '$100,000', score: '2/5', severity: 'red' as const, explanation: 'May not fully cover a serious lawsuit against you.' },
+                      { name: 'Collision Deductible', limit: '$1,000', score: '3/5', severity: 'amber' as const, explanation: 'Higher than ideal for your vehicle\'s current value.' },
+                      { name: 'Water Backup', limit: 'None', score: '--', severity: 'red' as const, explanation: 'Not included. Leaves you exposed to drain backups.' },
+                    ].map((row, i) => (
+                      <tr
+                        key={row.name}
+                        className={`border-b border-gray-100 ${
+                          row.severity === 'red' ? 'bg-red-50 border-l-4 border-l-red-300' :
+                          row.severity === 'amber' ? 'bg-amber-50 border-l-4 border-l-amber-300' :
+                          i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                        }`}
+                      >
+                        <td className="py-3 px-3 text-xs whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            {row.severity === 'red' && (
+                              <svg className="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                            <span className={`font-medium ${row.severity === 'red' ? 'text-red-700' : row.severity === 'amber' ? 'text-amber-700' : 'text-gray-900'}`}>{row.name}</span>
+                          </div>
+                        </td>
+                        <td className={`py-3 px-3 text-xs ${row.severity === 'red' ? 'text-red-600' : row.severity === 'amber' ? 'text-amber-600' : 'text-gray-600'}`}>{row.limit}</td>
+                        <td className="py-3 px-3">
+                          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
+                            row.score === '--' ? 'bg-gray-100 text-gray-500' :
+                            row.severity === 'red' ? 'bg-red-100 text-red-800' :
+                            row.severity === 'amber' ? 'bg-amber-100 text-amber-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>{row.score}</span>
+                        </td>
+                        <td className={`py-3 px-3 text-xs ${row.severity === 'red' ? 'text-red-700' : row.severity === 'amber' ? 'text-amber-700' : 'text-gray-600'}`}>
+                          {row.explanation}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Coverage Cards - Mobile */}
+              <div className="mt-3 sm:hidden space-y-3">
+                {[
+                  { name: 'Bodily Injury', limit: '$25k/$50k', score: '1/5', severity: 'red' as const, explanation: 'State minimum only. Won\'t cover most serious injuries.' },
+                  { name: 'Property Damage', limit: '$15,000', score: '1/5', severity: 'red' as const, explanation: 'Below recommended levels for modern vehicle damage.' },
+                  { name: 'Personal Liability', limit: '$100,000', score: '2/5', severity: 'red' as const, explanation: 'May not fully cover a serious lawsuit against you.' },
+                  { name: 'Collision Deductible', limit: '$1,000', score: '3/5', severity: 'amber' as const, explanation: 'Higher than ideal for your vehicle\'s current value.' },
+                  { name: 'Water Backup', limit: 'None', score: '--', severity: 'red' as const, explanation: 'Not included. Leaves you exposed to drain backups.' },
+                ].map((row) => (
+                  <div
+                    key={row.name}
+                    className={`rounded-lg p-4 ${
+                      row.severity === 'red' ? 'bg-red-50 border-2 border-red-200' :
+                      row.severity === 'amber' ? 'bg-amber-50 border-2 border-amber-200' :
+                      'bg-white border border-gray-100'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="flex items-center gap-2">
+                        {row.severity === 'red' && (
+                          <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                        <h4 className={`font-semibold text-sm ${row.severity === 'red' ? 'text-red-700' : row.severity === 'amber' ? 'text-amber-700' : 'text-gray-900'}`}>
+                          {row.name}
+                        </h4>
+                      </div>
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full text-white ${
+                        row.score === '--' ? 'bg-gray-400' :
+                        row.severity === 'red' ? 'bg-red-500' :
+                        row.severity === 'amber' ? 'bg-amber-500' :
+                        'bg-gradient-to-r from-blue-500 to-cyan-400'
+                      }`}>{row.score}</span>
+                    </div>
+                    <div className={`font-medium text-sm mb-2 ${row.severity === 'red' ? 'text-red-600' : row.severity === 'amber' ? 'text-amber-600' : 'text-blue-600'}`}>
+                      {row.limit}
+                    </div>
+                    <p className={`text-sm leading-relaxed ${row.severity === 'red' ? 'text-red-700' : row.severity === 'amber' ? 'text-amber-700' : 'text-gray-600'}`}>
+                      {row.explanation}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Section Analysis */}
+              <div className="mt-3 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 p-4 text-white">
+                <p className="text-xs font-semibold uppercase tracking-wide">Section Analysis</p>
+                <p className="mt-1 text-sm font-bold">4 critical gaps found</p>
+                <p className="mt-1 text-xs text-white/90">Liability below carrier minimums, missing endorsements, and UM/UIM mismatch.</p>
+              </div>
+            </div>
+            </div>
+
+            {/* AFTER Report */}
+            <div>
+              <div className="mb-4 text-center">
+                <p className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+                  After PolicyPilot
+                  <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </p>
+                <p className="text-xs text-slate-500">Gaps fixed, fully protected</p>
+              </div>
+            <div className="rounded-2xl bg-[#F6F6FA] p-4 shadow-lg">
+              {/* Score Header - Green */}
+              <div className="rounded-2xl bg-gradient-to-r from-emerald-500 via-green-500 to-green-600 p-5 sm:p-6 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase tracking-wide text-white/80">Overall Score</p>
+                    <p className="text-3xl sm:text-4xl font-bold mt-1">91%</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'Home', score: '93%' },
+                      { label: 'Auto', score: '89%' },
+                    ].map(({ label, score }) => (
+                      <div key={label} className="rounded-lg bg-white/20 border border-white/20 px-3 py-1.5 text-center">
+                        <div className="text-base font-bold">{score}</div>
+                        <div className="text-[10px] uppercase tracking-wide text-white/80">{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Coverage Table - Desktop */}
+              <div className="mt-3 hidden sm:block rounded-xl bg-white shadow-sm overflow-hidden">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-[#1e293b] text-white text-[11px] font-medium uppercase tracking-wide">
+                      <th className="text-left py-2 px-3">Coverage</th>
+                      <th className="text-left py-2 px-3">Limit</th>
+                      <th className="text-left py-2 px-3">Score</th>
+                      <th className="text-left py-2 px-3">What It Means</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: 'Bodily Injury', limit: '$250k/$500k', score: '5/5', explanation: 'Well above state minimums. Strong injury protection.' },
+                      { name: 'Property Damage', limit: '$100,000', score: '5/5', explanation: 'Covers most accident damage scenarios comfortably.' },
+                      { name: 'Personal Liability', limit: '$300,000', score: '5/5', explanation: 'Good protection for your assets in a lawsuit.' },
+                      { name: 'Collision Deductible', limit: '$500', score: '5/5', explanation: 'Appropriate and affordable for your vehicle value.' },
+                      { name: 'Water Backup', limit: '$10,000', score: '5/5', explanation: 'Covers sewer and drain backup water damage.' },
+                    ].map((row, i) => (
+                      <tr
+                        key={row.name}
+                        className={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                      >
+                        <td className="py-3 px-3 text-xs font-medium text-gray-900 whitespace-nowrap">{row.name}</td>
+                        <td className="py-3 px-3 text-xs text-gray-600">{row.limit}</td>
+                        <td className="py-3 px-3">
+                          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-green-100 text-green-800">{row.score}</span>
+                        </td>
+                        <td className="py-3 px-3 text-xs text-gray-600">{row.explanation}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Coverage Cards - Mobile */}
+              <div className="mt-3 sm:hidden space-y-3">
+                {[
+                  { name: 'Bodily Injury', limit: '$250k/$500k', score: '5/5', explanation: 'Well above state minimums. Strong injury protection.' },
+                  { name: 'Property Damage', limit: '$100,000', score: '5/5', explanation: 'Covers most accident damage scenarios comfortably.' },
+                  { name: 'Personal Liability', limit: '$300,000', score: '5/5', explanation: 'Good protection for your assets in a lawsuit.' },
+                  { name: 'Collision Deductible', limit: '$500', score: '5/5', explanation: 'Appropriate and affordable for your vehicle value.' },
+                  { name: 'Water Backup', limit: '$10,000', score: '5/5', explanation: 'Covers sewer and drain backup water damage.' },
+                ].map((row, i) => (
+                  <div
+                    key={row.name}
+                    className={`rounded-lg p-4 ${i % 2 === 0 ? 'bg-white' : 'bg-white'} border border-gray-100`}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-sm text-gray-900">{row.name}</h4>
+                      <span className="text-xs font-semibold px-2 py-1 rounded-full text-white bg-gradient-to-r from-blue-500 to-cyan-400">{row.score}</span>
+                    </div>
+                    <div className="font-medium text-sm mb-2 text-blue-600">{row.limit}</div>
+                    <p className="text-sm leading-relaxed text-gray-600">{row.explanation}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Section Analysis */}
+              <div className="mt-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 p-4 text-white">
+                <p className="text-xs font-semibold uppercase tracking-wide">Section Analysis</p>
+                <p className="mt-1 text-sm font-bold">All gaps resolved</p>
+                <p className="mt-1 text-xs text-white/90">Coverage aligned with carrier standards. Liability, UM/UIM, and endorsements optimized.</p>
+              </div>
+            </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="mt-12 text-center">
+            <Link
+              href="/get-policy"
+              className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
+            >
+              See Your Score
+              <svg
+                className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <p className="mt-4 text-sm text-slate-500">Free forever. No credit card required.</p>
+          </div>
+        </div>
+      </section>
+
       {/* What You Get / Score */}
       <section id="score" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
@@ -341,7 +554,7 @@ export default function Home() {
             <h2 className="mt-4 text-3xl font-semibold sm:text-4xl">
               A single score that explains your entire policy.
             </h2>
-            <p className="mt-4 text-lg text-slate-600">
+            <p className="mt-2 text-lg text-slate-600">
               We distill complex coverage into a clear grade and practical guidance you can act on today.
             </p>
 
@@ -382,7 +595,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-semibold sm:text-4xl">Bank-level security, built in.</h2>
-            <p className="mt-4 text-lg text-slate-600">
+            <p className="mt-2 text-lg text-slate-600">
               PolicyPilot is powered by Canopy Connect and designed to meet the highest data privacy standards.
             </p>
           </div>
@@ -427,7 +640,7 @@ export default function Home() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <h2 className="text-3xl font-semibold sm:text-4xl">Trusted by homeowners and renters nationwide.</h2>
-              <p className="mt-4 max-w-xl text-lg text-slate-600">
+              <p className="mt-2 max-w-xl text-lg text-slate-600">
                 Clear, unbiased insurance insights designed for real people — not policy experts.
               </p>
             </div>
@@ -490,7 +703,7 @@ export default function Home() {
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-semibold sm:text-4xl">Questions, answered.</h2>
-            <p className="mt-4 text-lg text-slate-600">Everything you need to know before you start.</p>
+            <p className="mt-2 text-lg text-slate-600">Everything you need to know before you start.</p>
           </div>
 
           <div className="mt-10 space-y-4">
@@ -522,8 +735,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="relative overflow-hidden bg-slate-900 py-20">
+      {/* Final CTA + Footer */}
+      <section className="relative overflow-hidden bg-slate-900 pt-20 pb-12">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -left-32 top-16 h-[280px] w-[280px] rounded-full bg-blue-600/30 blur-[120px]" />
           <div className="absolute right-0 top-0 h-[360px] w-[360px] rounded-full bg-cyan-500/20 blur-[140px]" />
@@ -535,7 +748,7 @@ export default function Home() {
           <h2 className="mt-6 text-3xl font-semibold text-white sm:text-4xl lg:text-5xl">
             Get clarity on your insurance — instantly.
           </h2>
-          <p className="mt-6 text-lg text-slate-300">
+          <p className="mt-3 text-lg text-slate-300">
             Join thousands of homeowners and renters using PolicyPilot to uncover coverage gaps and savings.
           </p>
           <div className="mt-10">
@@ -554,45 +767,37 @@ export default function Home() {
             <span>Private & secure</span>
           </div>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-12">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400">
-              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
+        {/* Footer */}
+        <div className="relative mt-20">
+          <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center gap-6 sm:grid sm:grid-cols-3 sm:items-center">
+              <div className="flex items-center gap-3">
+                <img src="/logo.png" alt="PolicyPilot" className="h-9 w-9 rounded-xl" />
+                <span className="text-sm font-semibold text-white">PolicyPilot</span>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
+                <Link href="/privacy" className="transition-colors hover:text-white">
+                  Privacy Policy
+                </Link>
+                <Link href="/terms" className="transition-colors hover:text-white">
+                  Terms
+                </Link>
+                <Link href="/contact" className="transition-colors hover:text-white">
+                  Contact
+                </Link>
+              </div>
+              <div className="flex items-center justify-end gap-3 text-slate-500">
+                {['X', 'LinkedIn', 'Facebook'].map((social) => (
+                  <a key={social} href="#" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:text-white">
+                    {social}
+                  </a>
+                ))}
+              </div>
             </div>
-            <span className="text-sm font-semibold">PolicyPilot</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-600">
-            <Link href="/privacy" className="transition-colors hover:text-slate-900">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="transition-colors hover:text-slate-900">
-              Terms
-            </Link>
-            <Link href="/contact" className="transition-colors hover:text-slate-900">
-              Contact
-            </Link>
-          </div>
-          <div className="flex items-center gap-3 text-slate-500">
-            {/* TODO: Replace with real social links/icons */}
-            {['X', 'LinkedIn', 'Facebook'].map((social) => (
-              <a key={social} href="#" className="text-xs font-semibold uppercase tracking-[0.2em]">
-                {social}
-              </a>
-            ))}
           </div>
         </div>
-      </footer>
+      </section>
 
       <style jsx>{`
         @keyframes fade-up {
