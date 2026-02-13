@@ -93,7 +93,7 @@ function PolicyTabs({
 
   return (
     <div className="flex justify-center mb-6">
-      <div className="inline-flex rounded-full bg-gray-100 p-1">
+      <div className="inline-flex rounded-full bg-white p-1">
         {tabs.map((tab) => {
           const isActive = activeFilter === tab.id;
           return (
@@ -204,8 +204,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Overall Grade Header */}
       <div className="mb-4">
-        <p className="text-blue-500 text-sm font-medium">Policy Pilot Report</p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-2">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
           {activeFilter === 'all' ? 'Overall Policy Grade' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Policy Grade`}
         </h1>
         <p className="text-gray-500 mt-1">{getGradeDescription(displayGrade)}</p>
@@ -252,7 +251,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
           </h2>
 
-          <section className="mb-6">
+          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
               Standard Coverages
             </h3>
@@ -269,7 +268,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             />
           </section>
 
-          <section className="mb-6">
+          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Deductible</h2>
             <CoverageTable
               coverages={[homeGrade.deductibleGrade]}
@@ -289,7 +288,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             />
           </section>
 
-          <section className="mb-6">
+          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
               Additional Coverages
             </h2>
@@ -314,13 +313,13 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Auto Policy Section(s) */}
       {showAuto && (
-        <div id="auto" className={showHome ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
+        <div id="auto" className={showHome ? 'mt-8' : ''}>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
             Auto Policy Analysis{carriers?.auto ? ` (${carriers.auto})` : ''}
           </h2>
 
           {autoPolicies.map((autoPolicy, idx) => (
-            <section key={idx} className={`mb-8 ${idx > 0 ? 'pt-6 border-t border-gray-100' : ''}`}>
+            <section key={idx} className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
               {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
                 <div className="mb-6">
                   <p className="text-gray-500 text-sm">Vehicle</p>
@@ -350,61 +349,42 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       )}
 
       {/* Renters Policy Section */}
-      {showRenters && rentersGrade && (
-        <div id="renters" className={(showHome || showAuto) ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-            Renters Policy Analysis{carriers?.renters ? ` (${carriers.renters})` : ''}
-          </h2>
+      {showRenters && rentersGrade && (() => {
+        const allRentersCoverages = [
+          ...rentersGrade.standardCoverages,
+          ...(rentersGrade.deductibleGrade ? [rentersGrade.deductibleGrade] : []),
+          ...(rentersGrade.additionalCoverages?.map(c => ({
+            name: c.name,
+            limit: c.limit || (c.present ? 'Included' : 'Not included'),
+            score: c.present ? 5 : 3,
+            maxScore: 5 as const,
+            explanation: c.note || '',
+          })) || []),
+        ];
+        const allScores = calculateSectionScore(allRentersCoverages);
 
-          <section className="mb-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Renters Coverages
-            </h3>
-            <CoverageTable coverages={rentersGrade.standardCoverages} />
+        return (
+          <div id="renters" className={(showHome || showAuto) ? 'mt-8' : ''}>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+              Renters Policy Analysis{carriers?.renters ? ` (${carriers.renters})` : ''}
+            </h2>
 
-            <SectionAnalysis
-              title="Renters Coverage"
-              score={calculateSectionScore(rentersGrade.standardCoverages).score}
-              maxScore={calculateSectionScore(rentersGrade.standardCoverages).maxScore}
-              analysis={rentersGrade.summary}
-            />
-          </section>
-
-          {rentersGrade.deductibleGrade && (
-            <section className="mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Deductible</h3>
-              <CoverageTable
-                coverages={[rentersGrade.deductibleGrade]}
-                columns={{
-                  name: 'Type',
-                  limit: 'Amount',
-                  score: 'Score',
-                  explanation: 'What It Means'
-                }}
-              />
+            <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">
+                Renters Coverages
+              </h3>
+              <CoverageTable coverages={allRentersCoverages} />
 
               <SectionAnalysis
-                title="Deductibles"
-                score={rentersGrade.deductibleGrade.score}
-                maxScore={rentersGrade.deductibleGrade.maxScore}
-                analysis={rentersGrade.deductibleGrade.explanation}
+                title="Renters Coverage"
+                score={allScores.score}
+                maxScore={allScores.maxScore}
+                analysis={rentersGrade.summary}
               />
             </section>
-          )}
-
-          {rentersGrade.additionalCoverages && rentersGrade.additionalCoverages.length > 0 && (
-            <section className="mb-6">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                Additional Coverages
-              </h3>
-              <p className="text-sm text-gray-500 mb-4">
-                Optional endorsements
-              </p>
-              <AdditionalCoverageTable coverages={rentersGrade.additionalCoverages} />
-            </section>
-          )}
-        </div>
-      )}
+          </div>
+        );
+      })()}
 
       {/* Footer Disclaimer */}
       <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg mb-24">

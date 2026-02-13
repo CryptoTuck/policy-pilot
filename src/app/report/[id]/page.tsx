@@ -33,7 +33,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#F6F6FA]">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
         <nav className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
