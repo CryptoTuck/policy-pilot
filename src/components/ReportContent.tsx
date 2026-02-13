@@ -229,15 +229,15 @@ export function ReportContent({ report }: { report: PolicyReport }) {
           </div>
           {activeFilter === 'all' && (
             <div className="w-full sm:w-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {[
                   { label: 'Home', score: homeScore },
                   { label: 'Auto', score: autoScore },
                   { label: 'Renters', score: rentersScore },
                 ].map(({ label, score }) => (
-                  <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-4 py-3 text-center">
-                    <div className="text-xl font-bold">{formatPercent(score)}</div>
-                    <div className="text-xs uppercase tracking-wide text-white mt-1">{label}</div>
+                  <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-4 sm:py-3 text-center">
+                    <div className="text-lg sm:text-xl font-bold">{formatPercent(score)}</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-wide text-white mt-0.5 sm:mt-1">{label}</div>
                   </div>
                 ))}
               </div>
