@@ -328,7 +328,7 @@ export default function Home() {
               <div className="mt-3 hidden sm:block rounded-xl bg-white shadow-sm overflow-hidden">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#1e293b] text-white text-[11px] font-medium uppercase tracking-wide">
+                    <tr className="bg-slate-800/80 text-white text-[11px] font-medium uppercase tracking-wide">
                       <th className="text-left py-2 px-3">Coverage</th>
                       <th className="text-left py-2 px-3">Limit</th>
                       <th className="text-left py-2 px-3">Score</th>
@@ -469,7 +469,7 @@ export default function Home() {
               <div className="mt-3 hidden sm:block rounded-xl bg-white shadow-sm overflow-hidden">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#1e293b] text-white text-[11px] font-medium uppercase tracking-wide">
+                    <tr className="bg-slate-800/80 text-white text-[11px] font-medium uppercase tracking-wide">
                       <th className="text-left py-2 px-3">Coverage</th>
                       <th className="text-left py-2 px-3">Limit</th>
                       <th className="text-left py-2 px-3">Score</th>

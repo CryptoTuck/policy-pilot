@@ -58,13 +58,13 @@ export function CoverageTable({
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-[#1e293b] text-white text-sm">
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">{columns.name}</th>
+            <tr className="bg-slate-800/80 text-white text-sm">
+              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide first:rounded-tl-2xl">{columns.name}</th>
               <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">{columns.limit}</th>
               {showScore && columns.score && (
                 <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">{columns.score}</th>
               )}
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">{columns.explanation}</th>
+              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide last:rounded-tr-2xl">{columns.explanation}</th>
             </tr>
           </thead>
           <tbody>

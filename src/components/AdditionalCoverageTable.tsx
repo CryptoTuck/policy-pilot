@@ -14,10 +14,10 @@ export function AdditionalCoverageTable({ coverages }: AdditionalCoverageTablePr
       <div className="hidden sm:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-[#1e293b] text-white text-sm">
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">Coverage</th>
+            <tr className="bg-slate-800/80 text-white text-sm">
+              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide rounded-tl-2xl">Coverage</th>
               <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">Limit</th>
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">What It Means</th>
+              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide rounded-tr-2xl">What It Means</th>
             </tr>
           </thead>
           <tbody>
