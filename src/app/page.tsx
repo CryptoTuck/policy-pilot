@@ -341,7 +341,6 @@ export default function Home() {
                       { name: 'Property Damage', limit: '$15,000', score: '1/5', severity: 'red' as const, explanation: 'Below recommended levels for modern vehicle damage.' },
                       { name: 'Personal Liability', limit: '$100,000', score: '2/5', severity: 'red' as const, explanation: 'May not fully cover a serious lawsuit against you.' },
                       { name: 'Collision Deductible', limit: '$1,000', score: '3/5', severity: 'amber' as const, explanation: 'Higher than ideal for your vehicle\'s current value.' },
-                      { name: 'Water Backup', limit: 'None', score: '--', severity: 'red' as const, explanation: 'Not included. Leaves you exposed to drain backups.' },
                     ].map((row, i) => (
                       <tr
                         key={row.name}
@@ -483,7 +482,6 @@ export default function Home() {
                       { name: 'Property Damage', limit: '$100,000', score: '5/5', explanation: 'Covers most accident damage scenarios comfortably.' },
                       { name: 'Personal Liability', limit: '$300,000', score: '5/5', explanation: 'Good protection for your assets in a lawsuit.' },
                       { name: 'Collision Deductible', limit: '$500', score: '5/5', explanation: 'Appropriate and affordable for your vehicle value.' },
-                      { name: 'Water Backup', limit: '$10,000', score: '5/5', explanation: 'Covers sewer and drain backup water damage.' },
                     ].map((row, i) => (
                       <tr
                         key={row.name}
