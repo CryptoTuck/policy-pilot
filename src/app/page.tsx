@@ -143,6 +143,73 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Trust Badge Carousel */}
+        <div className="relative overflow-hidden border-t border-white/10 py-5 mt-4">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-32" style={{ background: 'linear-gradient(to right, #f8fafc, transparent)' }} />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32" style={{ background: 'linear-gradient(to left, #f8fafc, transparent)' }} />
+          <div className="flex animate-scroll-x gap-16 whitespace-nowrap">
+            {[...Array(2)].map((_, setIndex) => (
+              <div key={setIndex} className="flex shrink-0 items-center gap-16">
+                {[
+                  {
+                    label: 'SOC 2 Type II Certified',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'Continuous Compliance Monitoring',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: '256-bit AES Encryption',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'TLS 1.3+ in Transit',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'CSA STAR Level 1 APIs',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    label: 'Canopy Connect — 300+ Carriers',
+                    icon: (
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                    ),
+                  },
+                ].map((badge) => (
+                  <div key={badge.label} className="flex items-center gap-2.5 text-slate-500">
+                    {badge.icon}
+                    <span className="text-sm font-semibold uppercase tracking-[0.15em]">{badge.label}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* How It Works */}
@@ -824,8 +891,25 @@ export default function Home() {
         section {
           animation: fade-up 0.8s ease both;
         }
+        @keyframes scroll-x {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-scroll-x {
+          animation: scroll-x 30s linear infinite;
+        }
+        .animate-scroll-x:hover {
+          animation-play-state: paused;
+        }
         @media (prefers-reduced-motion: reduce) {
           section {
+            animation: none;
+          }
+          .animate-scroll-x {
             animation: none;
           }
         }
