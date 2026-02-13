@@ -9,28 +9,28 @@ export default function Home() {
   const faqs = useMemo(
     () => [
       {
-        q: 'Is Policy Pilot really free?',
-        a: "Yes, 100% free. We make money when you choose to compare quotes through our partner carriers — but that's completely optional. Your Policy Pilot Score and analysis are always free.",
+        q: 'Is PolicyPilot really free?',
+        a: 'Yes. Your score and analysis are always free. Optional partner quotes only if you want them.',
       },
       {
-        q: 'How do you access my insurance information?',
-        a: 'We use Canopy Connect, a bank-level secure platform that connects to 300+ insurance carriers. You simply log in to your insurance account through their secure portal — we never see your login credentials.',
+        q: 'How do you access my insurance info?',
+        a: 'We use Canopy Connect, a secure platform connecting to 300+ carriers. We never see your login.',
       },
       {
-        q: 'What types of insurance do you analyze?',
-        a: "Currently we analyze home, auto, and renters insurance policies. We're adding more coverage types soon, including life, umbrella, and business insurance.",
+        q: 'What types of policies do you analyze?',
+        a: 'Home, auto, and renters at the moment. Coming soon: life, umbrella, and commercial policies.',
       },
       {
-        q: 'Will I get spam calls after using this?',
-        a: 'Absolutely not. We will never call you or share your information with agents unless you explicitly request quotes. Your data stays private.',
+        q: 'Will I get spam calls?',
+        a: 'Absolutely not. We will never call you or share your information with agents unless you explicitly request a licensed agent to help you find a new policy. Your data stays private.',
       },
       {
         q: 'How accurate is the AI analysis?',
-        a: 'Our AI has been trained on thousands of policies and uses industry-standard coverage benchmarks. While no automated analysis replaces professional advice, our scores consistently identify real coverage gaps and savings opportunities.',
+        a: 'Our AI has been trained by licensed agents using thousands of policies and uses carrier-standard coverage benchmarks. While no automated analysis replaces professional advice, our scores consistently identify real coverage gaps and savings opportunities.',
       },
       {
-        q: 'Can I share my report with my insurance agent?',
-        a: "Yes! Your Policy Pilot Score report includes a downloadable PDF that you can share with your current agent, a new agent, or anyone you'd like.",
+        q: 'Can I share my report with my agent?',
+        a: 'Yes. Download a PDF and share it with anyone—current agent, new agent, or yourself.',
       },
     ],
     []
@@ -99,33 +99,18 @@ export default function Home() {
               </span>
             </h1>
             <p className="mt-6 max-w-xl text-lg text-slate-300 sm:text-xl">
-              PolicyPilot connects to your existing policy and delivers a clear, unbiased score so you know
-              exactly what you&apos;re covered for, what you&apos;re missing, and whether you&apos;re overpaying.
+              Connect your policy to see your current coverage and get a clear, unbiased score. Understand
+              your existing coverage, what&apos;s missing, and whether you&apos;re overpaying&mdash;instantly.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
                 href="/get-policy"
                 className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-7 py-3 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
               >
-                Get My Free Score
-                <svg
-                  className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                See My PolicyPilot Score &rarr;
               </Link>
-              <div className="flex items-center gap-2 text-sm text-slate-400">
-                <svg className="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                No spam. Your data stays private.
+              <div className="text-sm text-slate-400">
+                Free &bull; 2 minutes &bull; No credit card
               </div>
             </div>
 
@@ -164,15 +149,14 @@ export default function Home() {
       <section id="how" className="scroll-mt-24 bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-semibold sm:text-4xl">Three steps. Two minutes. Full clarity.</h2>
-            <p className="mt-2 text-lg text-slate-600">Connect once and let PolicyPilot do the rest.</p>
+            <h2 className="text-3xl font-semibold sm:text-4xl">Three Simple Steps. Two Minutes. Total Clarity.</h2>
           </div>
 
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {[
               {
-                title: 'Connect your insurance',
-                desc: 'Link your existing policy through Canopy Connect. We never see your login credentials.',
+                title: 'Connect Your Insurance',
+                desc: 'Securely link your existing policy through Canopy Connect. We never see your login credentials.',
                 icon: (
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -185,8 +169,8 @@ export default function Home() {
                 ),
               },
               {
-                title: 'AI reviews your coverage',
-                desc: 'We analyze every line against industry benchmarks to find gaps, overlaps, and pricing issues.',
+                title: 'Let AI Analyze It',
+                desc: 'Our AI checks every line against industry benchmarks to find gaps, overlaps, and pricing issues.',
                 icon: (
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -199,8 +183,8 @@ export default function Home() {
                 ),
               },
               {
-                title: 'Get your PolicyPilot Score',
-                desc: 'Receive a clear grade, savings insights, and a shareable PDF report in minutes.',
+                title: 'Get Your PolicyPilot Score',
+                desc: 'Receive a clear grade, actionable insights, and a shareable PDF report in minutes.',
                 icon: (
                   <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
