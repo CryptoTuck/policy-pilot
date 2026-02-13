@@ -207,7 +207,9 @@ You must respond with valid JSON matching this structure:
     "areasToReview": ["Area 1"]
   },
   "autoGrades": [
-    // Array of autoGrade objects if multiple vehicles/policies
+    // REQUIRED if multiple vehicles. Each vehicle gets its own entry with:
+    // vehicleInfo, overallGrade, overallScore, riskTier, standardCoverages, summary, keyStrengths, areasToReview
+    // Example: { "vehicleInfo": "2024 TESLA Model Y", "overallGrade": "C", "overallScore": 72, ... }
   ],
   "rentersGrade": {
     "overallGrade": "A|B|C|D|F",

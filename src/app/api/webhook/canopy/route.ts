@@ -337,13 +337,20 @@ export async function POST(request: NextRequest) {
       }).join('\n\n');
     };
     
+    // Handle both autoGrade (single) and autoGrades (array) from OpenAI
+    const autoGradesArray = gradeResult.autoGrades as Array<{ overallScore?: number }> | undefined;
+    const singleAutoGrade = gradeResult.autoGrade as { overallScore?: number } | undefined;
+    const autoScoreForStorage = autoGradesArray?.length 
+      ? Math.round(autoGradesArray.reduce((sum, g) => sum + (g.overallScore || 0), 0) / autoGradesArray.length)
+      : singleAutoGrade?.overallScore;
+    
     await createGradingResult(submissionId, {
       formatted_home_coverage: formatPoliciesForStorage(homePolicies, 'Home'),
       formatted_home_deductible: homePolicies.map(p => p.deductible).filter(Boolean).join('; ') || undefined,
       formatted_auto_coverage: formatPoliciesForStorage(autoPolicies, 'Auto'),
       formatted_renters_coverage: formatPoliciesForStorage(rentersPolicies, 'Renters'),
       home_score: gradeResult.homeGrade?.overallScore,
-      auto_score: gradeResult.autoGrade?.overallScore,
+      auto_score: autoScoreForStorage,
       renters_score: gradeResult.rentersGrade?.overallScore,
       overall_score: calculateOverallScore(gradeResult),
       recommendations: gradeResult.recommendations,
@@ -517,7 +524,16 @@ function buildGradingPrompt(
   }
   prompt += `\n\n`;
 
-  prompt += `Provide a comprehensive grade report. For auto insurance, provide an OVERALL auto grade that considers ALL vehicles/policies together. Output format should include homeGrade, autoGrade, rentersGrade as applicable.`;
+  prompt += `Provide a comprehensive grade report.
+
+IMPORTANT FOR AUTO: If there are multiple vehicles, provide SEPARATE grades for EACH vehicle in an "autoGrades" array. Each entry should have vehicleInfo (e.g., "2024 TESLA Model Y"), its own overallGrade, overallScore, standardCoverages, summary, keyStrengths, and areasToReview.
+
+Output format:
+- homeGrade (if home policy exists)
+- autoGrades (array - one entry per vehicle, each with vehicleInfo)
+- rentersGrade (if renters policy exists)
+
+Do NOT combine multiple vehicles into a single autoGrade. Each vehicle gets its own separate grade entry in the autoGrades array.`;
 
   return prompt;
 }
@@ -530,10 +546,19 @@ function calculateOverallScore(gradeResult: Record<string, unknown>): number | u
 
   const homeGrade = gradeResult.homeGrade as { overallScore?: number } | undefined;
   const autoGrade = gradeResult.autoGrade as { overallScore?: number } | undefined;
+  const autoGrades = gradeResult.autoGrades as Array<{ overallScore?: number }> | undefined;
   const rentersGrade = gradeResult.rentersGrade as { overallScore?: number } | undefined;
 
   if (homeGrade?.overallScore) scores.push(homeGrade.overallScore);
-  if (autoGrade?.overallScore) scores.push(autoGrade.overallScore);
+  
+  // Handle both autoGrade (single) and autoGrades (array)
+  if (autoGrades?.length) {
+    const avgAutoScore = autoGrades.reduce((sum, g) => sum + (g.overallScore || 0), 0) / autoGrades.length;
+    scores.push(Math.round(avgAutoScore));
+  } else if (autoGrade?.overallScore) {
+    scores.push(autoGrade.overallScore);
+  }
+  
   if (rentersGrade?.overallScore) scores.push(rentersGrade.overallScore);
 
   if (scores.length === 0) return undefined;
