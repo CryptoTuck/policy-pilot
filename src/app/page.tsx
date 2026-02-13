@@ -39,7 +39,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Top navigation */}
-      <nav className="sticky top-0 z-50 border-b border-slate-100/80 bg-white/80 backdrop-blur">
+      <nav className="absolute top-0 left-0 right-0 z-50 pt-4 sm:pt-4">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-cyan-400 shadow-lg shadow-blue-600/20">
@@ -52,25 +52,25 @@ export default function Home() {
                 />
               </svg>
             </div>
-            <span className="text-lg font-semibold tracking-tight">PolicyPilot</span>
+            <span className="text-lg font-semibold tracking-tight text-white">PolicyPilot</span>
           </div>
-          <div className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-            <a href="#how" className="transition-colors hover:text-slate-900">
+          <div className="hidden items-center gap-8 text-[15px] font-semibold text-slate-100 md:flex">
+            <a href="#how" className="transition-colors hover:text-white">
               How it works
             </a>
-            <a href="#score" className="transition-colors hover:text-slate-900">
+            <a href="#score" className="transition-colors hover:text-white">
               The score
             </a>
-            <a href="#security" className="transition-colors hover:text-slate-900">
+            <a href="#security" className="transition-colors hover:text-white">
               Security
             </a>
-            <a href="#faq" className="transition-colors hover:text-slate-900">
+            <a href="#faq" className="transition-colors hover:text-white">
               FAQ
             </a>
           </div>
           <Link
             href="/get-policy"
-            className="inline-flex items-center justify-center rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800"
+            className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
           >
             Get My Free Score
           </Link>
@@ -78,19 +78,19 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden pt-16 sm:pt-20">
+      <section className="relative overflow-hidden bg-slate-900 pt-36 sm:pt-40" style={{ backgroundImage: 'linear-gradient(to bottom, #0f172a 0%, #1e293b 30%, #475569 60%, #94a3b8 80%, #f8fafc 100%)' }}>
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-32 left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-blue-200/40 blur-[140px]" />
-          <div className="absolute -right-24 top-24 h-[320px] w-[320px] rounded-full bg-cyan-200/50 blur-[120px]" />
+          <div className="absolute -top-32 left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-blue-600/20 blur-[140px]" />
+          <div className="absolute -right-24 top-24 h-[320px] w-[320px] rounded-full bg-cyan-500/15 blur-[120px]" />
         </div>
 
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:pb-24">
           <div className="relative z-10 flex flex-col justify-center">
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold text-blue-700">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-2 text-xs font-semibold text-blue-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
               Free • 2 minutes • No credit card
             </div>
-            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 leading-[1.1] sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white leading-[1.1] sm:text-5xl lg:text-6xl">
               Know your insurance.{' '}
               <span className="relative">
                 <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
@@ -107,7 +107,7 @@ export default function Home() {
                 </svg>
               </span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-slate-600 sm:text-xl">
+            <p className="mt-6 max-w-xl text-lg text-slate-300 sm:text-xl">
               PolicyPilot connects to your existing policy and delivers a clear, unbiased score so you know
               exactly what you&apos;re covered for, what you&apos;re missing, and whether you&apos;re overpaying.
             </p>
@@ -126,7 +126,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
-              <div className="flex items-center gap-2 text-sm text-slate-500">
+              <div className="flex items-center gap-2 text-sm text-slate-400">
                 <svg className="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
@@ -138,17 +138,17 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-10 grid gap-4 rounded-2xl border border-slate-100 bg-white/80 p-4 text-sm text-slate-600 shadow-sm backdrop-blur sm:grid-cols-3">
+            <div className="mt-10 grid gap-4 rounded-2xl border border-white/10 bg-slate-800/80 p-4 text-sm text-slate-300 shadow-lg backdrop-blur sm:grid-cols-3">
               <div>
-                <div className="text-lg font-semibold text-slate-900">10,000+</div>
+                <div className="text-lg font-semibold text-white">10,000+</div>
                 Policies analyzed
               </div>
               <div>
-                <div className="text-lg font-semibold text-slate-900">4.9★</div>
+                <div className="text-lg font-semibold text-white">4.9★</div>
                 Average user rating
               </div>
               <div>
-                <div className="text-lg font-semibold text-slate-900">300+</div>
+                <div className="text-lg font-semibold text-white">300+</div>
                 Carriers supported via Canopy
               </div>
             </div>
@@ -156,8 +156,8 @@ export default function Home() {
 
           <div className="relative">
             <div className="relative mx-auto max-w-md">
-              <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-blue-600/20 to-cyan-400/20 blur-2xl" />
-              <div className="relative rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-2xl">
+              <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-blue-500/30 to-cyan-400/30 blur-2xl" />
+              <div className="relative rounded-[28px] border border-white/10 bg-white p-6 shadow-2xl">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">PolicyPilot Score</p>

@@ -3,37 +3,37 @@ import { gradePolicy } from '@/lib/grader';
 import { generateId, storeSubmission, storeReport } from '@/lib/storage';
 import type { PolicySubmission, HomePolicy, AutoPolicy } from '@/types/policy';
 
-// Sample policy data for testing - designed to score a B grade
+// Comprehensive sample policy data - slightly above average (B/B+ range)
 const sampleHomePolicy: HomePolicy = {
   type: 'home',
   policyType: 'HO3',
   state: 'TX',
   coverage: {
-    dwelling: 320000,
+    dwelling: 425000,
     dwellingType: 'replacement_cost',
-    otherStructures: 32000,
+    otherStructures: 42500,
     otherStructuresPercent: 10,
-    personalProperty: 160000,
+    personalProperty: 212500,
     personalPropertyPercent: 50,
-    personalPropertyType: 'actual_cash_value', // ACV instead of replacement cost
-    lossOfUse: 64000,
+    personalPropertyType: 'replacement_cost',
+    lossOfUse: 85000,
     lossOfUseType: 'flat_dollar',
-    personalLiability: 100000, // Lower liability - common gap
-    medicalPayments: 1000, // Lower med pay
+    personalLiability: 300000,
+    medicalPayments: 5000,
     deductible: 2500,
-    deductiblePercent: 0.78,
+    deductiblePercent: 0.59,
   },
   additionalCoverages: {
-    waterBackup: 5000, // Lower water backup limit
-    equipmentBreakdown: false, // Missing
-    serviceLine: false, // Missing
-    ordinanceLaw: false, // Missing
-    identityTheft: false, // Missing
+    waterBackup: 10000,
+    equipmentBreakdown: true,
+    serviceLine: false, // Missing - gap
+    ordinanceLaw: false, // Missing - gap
+    identityTheft: 25000,
     scheduledProperty: false,
   },
-  priorClaims: 0,
+  priorClaims: 1,
   hasDetachedStructures: true,
-  hasPool: false,
+  hasPool: true,
   hasDog: true,
   hasTrampoline: false,
 };
@@ -42,26 +42,33 @@ const sampleAutoPolicy: AutoPolicy = {
   type: 'auto',
   state: 'TX',
   coverage: {
-    bodilyInjuryPerPerson: 50000, // Lower BI limits
-    bodilyInjuryPerAccident: 100000,
-    propertyDamage: 50000, // Lower PD
-    uninsuredMotoristPerPerson: 50000, // Lower UM
-    uninsuredMotoristPerAccident: 100000,
-    underinsuredMotoristPerPerson: 50000, // Lower UIM
+    bodilyInjuryPerPerson: 100000,
+    bodilyInjuryPerAccident: 300000,
+    propertyDamage: 100000,
+    uninsuredMotoristPerPerson: 100000,
+    uninsuredMotoristPerAccident: 300000,
+    underinsuredMotoristPerPerson: 50000, // Lower than BI - partial gap
     underinsuredMotoristPerAccident: 100000,
-    medicalPayments: 2500, // Lower med pay
+    medicalPayments: 5000,
     collision: 1,
-    collisionDeductible: 1000, // Higher deductible
+    collisionDeductible: 500,
     comprehensive: 1,
-    comprehensiveDeductible: 500,
+    comprehensiveDeductible: 250,
   },
   vehicles: [
     {
-      year: 2022,
-      make: 'Toyota',
-      model: 'Camry',
-      estimatedValue: 28000,
-      isFinanced: true,
+      year: 2023,
+      make: 'BMW',
+      model: 'X5 xDrive40i',
+      estimatedValue: 55000,
+      isFinanced: true, // Financed - gap coverage will be flagged
+    },
+    {
+      year: 2021,
+      make: 'Honda',
+      model: 'Civic EX',
+      estimatedValue: 22000,
+      isFinanced: false,
     },
   ],
   priorClaims: 0,
