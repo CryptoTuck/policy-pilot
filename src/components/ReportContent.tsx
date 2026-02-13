@@ -144,7 +144,7 @@ function AreasToReviewAlert({ areas }: { areas: string[] }) {
 export function ReportContent({ report }: { report: PolicyReport }) {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
-  const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade, carrierAnalysis } = report;
+  const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade, carrierAnalysis, carriers } = report;
   const displayGrade = combinedGrade || homeGrade?.overallGrade || autoGrade?.overallGrade || rentersGrade?.overallGrade || 'N/A';
 
   const autoPolicies: AutoPolicyGrade[] = autoGrades && autoGrades.length > 0 ? autoGrades : (autoGrade ? [autoGrade] : []);
@@ -255,10 +255,14 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       {/* Home Policy Section */}
       {showHome && homeGrade && (
         <div id="home">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+            Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
+          </h2>
+
           <section className="mb-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
               Standard Coverages
-            </h2>
+            </h3>
             <p className="text-sm text-gray-500 mb-4">
               Coverages that come with standard HOI policy
             </p>
@@ -319,7 +323,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       {showAuto && (
         <div id="auto" className={showHome ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-            Auto Policy Analysis
+            Auto Policy Analysis{carriers?.auto ? ` (${carriers.auto})` : ''}
           </h2>
 
           {autoPolicies.map((autoPolicy, idx) => (
@@ -328,7 +332,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 <div className="mb-6">
                   <p className="text-gray-500 text-sm">Vehicle</p>
                   <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                    {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}: <span className="text-blue-600">{autoPolicy.overallGrade}</span>
+                    {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
                   </h3>
                   {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
                     <p className="text-gray-500 text-sm mt-1">Policy #{autoPolicy.policyNumber}</p>
@@ -356,7 +360,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       {showRenters && rentersGrade && (
         <div id="renters" className={(showHome || showAuto) ? 'mt-12 pt-8 border-t border-gray-200' : ''}>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-            Renters Policy Analysis
+            Renters Policy Analysis{carriers?.renters ? ` (${carriers.renters})` : ''}
           </h2>
 
           <section className="mb-6">
@@ -372,6 +376,40 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               analysis={rentersGrade.summary}
             />
           </section>
+
+          {rentersGrade.deductibleGrade && (
+            <section className="mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Deductible</h3>
+              <CoverageTable
+                coverages={[rentersGrade.deductibleGrade]}
+                columns={{
+                  name: 'Type',
+                  limit: 'Amount',
+                  score: 'Score',
+                  explanation: 'What It Means'
+                }}
+              />
+
+              <SectionAnalysis
+                title="Deductibles"
+                score={rentersGrade.deductibleGrade.score}
+                maxScore={rentersGrade.deductibleGrade.maxScore}
+                analysis={rentersGrade.deductibleGrade.explanation}
+              />
+            </section>
+          )}
+
+          {rentersGrade.additionalCoverages && rentersGrade.additionalCoverages.length > 0 && (
+            <section className="mb-6">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+                Additional Coverages
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Optional endorsements
+              </p>
+              <AdditionalCoverageTable coverages={rentersGrade.additionalCoverages} />
+            </section>
+          )}
         </div>
       )}
 

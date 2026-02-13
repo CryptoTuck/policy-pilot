@@ -531,7 +531,7 @@ function formatSingleCoverage(cov: ParsedCoverage, policyType: 'home' | 'auto' |
       if (cov.deductibleCents) {
         return `${cov.name}: ${formatMoney(cov.deductibleCents)} deductible`;
       }
-      return null; // Skip if no deductible
+      return `${cov.name}: Not included`;
     }
 
     if (cov.name === 'Emergency Road Service') {
@@ -551,15 +551,19 @@ function formatSingleCoverage(cov: ParsedCoverage, policyType: 'home' | 'auto' |
       } else if (cov.perIncidentLimitCents) {
         return `${cov.name}: ${formatMoney(cov.perIncidentLimitCents)}`;
       }
-      return null;
+      return `${cov.name}: Not included`;
     }
   }
 
   // Home/renters formatting
   if (policyType === 'home' || policyType === 'renters') {
-    const skipCoverages = ['All Other Perils', 'Windstorm or Hail', 'All Perils'];
-    if (skipCoverages.includes(cov.name)) {
-      return null;
+    // Show deductible-based coverages with their deductible amount
+    const deductibleCoverages = ['All Other Perils', 'Windstorm or Hail', 'All Perils'];
+    if (deductibleCoverages.includes(cov.name)) {
+      if (cov.deductibleCents) {
+        return `${cov.name} Deductible: ${formatMoney(cov.deductibleCents)}`;
+      }
+      return `${cov.name} Deductible: Not specified`;
     }
 
     const perPersonCoverages = ['Personal Liability', 'Medical Payments to Others', 'Medical Payments'];

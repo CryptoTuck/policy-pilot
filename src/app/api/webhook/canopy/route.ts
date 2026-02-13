@@ -325,6 +325,20 @@ export async function POST(request: NextRequest) {
     const homePolicies = (formattedByType.home || []) as FormattedPolicy[];
     const autoPolicies = (formattedByType.auto || []) as FormattedPolicy[];
     const rentersPolicies = (formattedByType.renters || []) as FormattedPolicy[];
+
+    // Extract carrier names per policy type
+    const carriers: Record<string, string> = {};
+    if (homePolicies.length > 0 && homePolicies[0].carrier) {
+      carriers.home = homePolicies[0].carrier;
+    }
+    if (autoPolicies.length > 0 && autoPolicies[0].carrier) {
+      carriers.auto = autoPolicies[0].carrier;
+    }
+    if (rentersPolicies.length > 0 && rentersPolicies[0].carrier) {
+      carriers.renters = rentersPolicies[0].carrier;
+    }
+    // Attach carriers to grading result so it's available in the report
+    gradeResult.carriers = carriers;
     
     const formatPoliciesForStorage = (policies: FormattedPolicy[], type: string) => {
       if (policies.length === 0) return undefined;
@@ -470,6 +484,9 @@ function buildGradingPrompt(
       if (homePolicies.length > 1) {
         prompt += `### Home Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
       }
+      if (policy.carrier) {
+        prompt += `Carrier: ${policy.carrier}\n`;
+      }
       prompt += `Coverage: ${policy.coverage}\n`;
       if (policy.deductible) {
         prompt += `Deductible: ${policy.deductible}\n`;
@@ -485,6 +502,9 @@ function buildGradingPrompt(
     autoPolicies.forEach((policy, idx) => {
       if (autoPolicies.length > 1) {
         prompt += `### Auto Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
+      }
+      if (policy.carrier) {
+        prompt += `Carrier: ${policy.carrier}\n`;
       }
       // List vehicles for this policy
       if (policy.vehicles && policy.vehicles.length > 0) {
@@ -502,6 +522,9 @@ function buildGradingPrompt(
     rentersPolicies.forEach((policy, idx) => {
       if (rentersPolicies.length > 1) {
         prompt += `### Renters Policy ${idx + 1}${policy.policyNumber ? ` (${policy.policyNumber})` : ''}\n`;
+      }
+      if (policy.carrier) {
+        prompt += `Carrier: ${policy.carrier}\n`;
       }
       prompt += `Coverage: ${policy.coverage}\n`;
       prompt += '\n';

@@ -38,6 +38,7 @@ export async function getReportFromSupabase(id: string): Promise<PolicyReport | 
       autoGrade?: AutoPolicyGrade;
       autoGrades?: AutoPolicyGrade[];
       rentersGrade?: RentersPolicyGrade;
+      carriers?: { home?: string; auto?: string; renters?: string };
     } | undefined;
 
     // Calculate combined grade
@@ -58,6 +59,7 @@ export async function getReportFromSupabase(id: string): Promise<PolicyReport | 
       rentersGrade: openaiResponse?.rentersGrade,
       combinedGrade,
       combinedScore,
+      carriers: openaiResponse?.carriers,
     };
   } catch (error) {
     console.error('[Storage Supabase] Error getting report:', error);

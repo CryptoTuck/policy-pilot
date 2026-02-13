@@ -47,6 +47,8 @@ export interface RentersPolicyGrade {
   overallScore: number; // 0-100
   riskTier: RiskTier;
   standardCoverages: CoverageGrade[];
+  deductibleGrade?: CoverageGrade;
+  additionalCoverages?: AdditionalCoverageAssessment[];
   summary: string;
   keyStrengths: string[];
   areasToReview: string[];
@@ -78,4 +80,10 @@ export interface PolicyReport {
   combinedGrade?: string;
   combinedScore?: number;
   carrierAnalysis?: CarrierAlignmentAnalysis;
+  // Carrier names per policy type
+  carriers?: {
+    home?: string;
+    auto?: string;
+    renters?: string;
+  };
 }

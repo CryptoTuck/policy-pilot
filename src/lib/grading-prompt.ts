@@ -158,7 +158,7 @@ You must respond with valid JSON matching this structure:
     "riskTier": "low|moderate|elevated",
     "standardCoverages": [
       {
-        "name": "Coverage Name (e.g., Dwelling, Personal Property, Personal Liability)",
+        "name": "Coverage Name",
         "limit": "$X or percentage - the actual coverage limit from the policy",
         "score": 1-5,
         "maxScore": 5,
@@ -186,6 +186,25 @@ You must respond with valid JSON matching this structure:
     "keyStrengths": ["Strength 1", "Strength 2"],
     "areasToReview": ["Area 1 - phrased as what carriers would flag, not what they should do"]
   },
+
+  IMPORTANT - HOME standardCoverages MUST always include ALL of these items (in this order):
+  1. Dwelling (Coverage A) - the dwelling amount
+  2. Other Structures (Coverage B) - amount
+  3. Personal Property (Coverage C) - amount
+  4. Loss of Use (Coverage D) - amount
+  5. Personal Liability (Coverage E) - amount
+  6. Medical Payments (Coverage F) - amount. If the data shows medical payments, report the amount. If not found, show "Not included"
+  7. All Other Perils Deductible - the deductible amount
+  8. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
+
+  HOME additionalCoverages MUST always include ALL of these items:
+  1. Water Backup and Sump Overflow - show amount if present, "Not included" if absent
+  2. Service Line Coverage
+  3. Equipment Breakdown
+  4. Ordinance or Law
+  5. Identity Theft
+  6. Debris Removal
+
   "autoGrade": {
     "overallGrade": "A|B|C|D|F",
     "overallScore": 0-100,
@@ -195,7 +214,7 @@ You must respond with valid JSON matching this structure:
     "standardCoverages": [
       {
         "name": "Coverage Name",
-        "limit": "$X/$Y for split limits",
+        "limit": "$X/$Y for split limits (MUST include per person AND per accident for BI and UM/UIM)",
         "score": 1-5,
         "maxScore": 5,
         "explanation": "Using the liability floor logic thresholds",
@@ -206,20 +225,49 @@ You must respond with valid JSON matching this structure:
     "keyStrengths": ["Strength 1", "Strength 2"],
     "areasToReview": ["Area 1"]
   },
+
+  IMPORTANT - AUTO standardCoverages MUST always include ALL of these items (in this order):
+  1. Bodily Injury Liability - MUST show as "$per_person/$per_accident" (e.g., "$250,000/$500,000"). Both per-person and per-accident limits are required.
+  2. Property Damage Liability - amount
+  3. Uninsured/Underinsured Motorist - MUST show as "$per_person/$per_accident" (e.g., "$250,000/$500,000"). Both per-person and per-accident limits are required.
+  4. Medical Payments - amount. If the data shows medical payments, report the amount. If not found in data, show "Not included"
+  5. Collision Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
+  6. Comprehensive Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
+  7. Emergency Roadside Coverage - show "Included" or "Not included"
+  8. Car Rental Coverage - show amount or "Not included"
+  9. Loan or Lease Assistance - show "Included" or "Not included" (only if vehicle is financed)
+
   "autoGrades": [
     // REQUIRED if multiple vehicles. Each vehicle gets its own entry with:
     // vehicleInfo, overallGrade, overallScore, riskTier, standardCoverages, summary, keyStrengths, areasToReview
-    // Example: { "vehicleInfo": "2024 TESLA Model Y", "overallGrade": "C", "overallScore": 72, ... }
+    // Each vehicle's standardCoverages MUST include ALL the same items listed above for auto
   ],
+
   "rentersGrade": {
     "overallGrade": "A|B|C|D|F",
     "overallScore": 0-100,
     "riskTier": "low|moderate|elevated",
     "standardCoverages": [...],
+    "additionalCoverages": [...],
+    "deductibleGrade": {...},
     "summary": "2-3 sentence assessment",
     "keyStrengths": [],
     "areasToReview": []
   },
+
+  IMPORTANT - RENTERS standardCoverages MUST always include ALL of these items (in this order):
+  1. Personal Property (Contents) - amount
+  2. Loss of Use - amount
+  3. Personal Liability - amount
+  4. Medical Payments - amount. If the data shows medical payments, report the amount (e.g., "$5,000"). If not found, show "Not included"
+
+  RENTERS deductibleGrade MUST include:
+  - name: "All Perils Deductible"
+  - The deductible amount
+
+  RENTERS additionalCoverages MUST always include ALL of these items:
+  1. Water Backup and Sump Overflow - show amount if present, "Not included" if absent
+  2. Damage to Property of Others - show amount if present, "Not included" if absent
   "carrierAnalysis": {
     "findings": [
       {
