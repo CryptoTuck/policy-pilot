@@ -167,11 +167,11 @@ export function ReportContent({ report }: { report: PolicyReport }) {
   const showAuto = hasAuto && (activeFilter === 'all' || activeFilter === 'auto');
   const showRenters = hasRenters && (activeFilter === 'all' || activeFilter === 'renters');
 
-  // Build areas to review based on active filter
+  // Build areas to review based on active filter, prefixed with policy type
   const areasToReview = [
-    ...(showHome ? (homeGrade?.areasToReview || []) : []),
-    ...(showAuto ? autoPolicies.flatMap(a => a.areasToReview || []) : []),
-    ...(showRenters ? (rentersGrade?.areasToReview || []) : []),
+    ...(showHome ? (homeGrade?.areasToReview || []).map(a => activeFilter === 'all' ? `Home: ${a}` : a) : []),
+    ...(showAuto ? autoPolicies.flatMap(a => (a.areasToReview || []).map(area => activeFilter === 'all' ? `Auto: ${area}` : area)) : []),
+    ...(showRenters ? (rentersGrade?.areasToReview || []).map(a => activeFilter === 'all' ? `Renters: ${a}` : a) : []),
   ];
 
   // Determine displayed score based on filter
