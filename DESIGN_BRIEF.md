@@ -39,7 +39,7 @@ PolicyPilot is an AI-powered insurance policy grading tool. Users connect their 
 ### 3. What You Get (The Score)
 - Show a sample score/report visual
 - Explain what the Policy Pilot Score includes:
-  - Coverage grade (A-F)
+  - Coverage grade (0-100%)
   - Gap analysis
   - Price comparison
   - Personalized recommendations

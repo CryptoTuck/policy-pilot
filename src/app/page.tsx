@@ -492,37 +492,8 @@ export default function Home() {
       <section id="score" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
           <div className="relative">
-            {/* TODO: Replace with custom score/report mockup */}
             <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-blue-600/10 to-cyan-400/10 blur-2xl" />
-            <div className="relative rounded-[28px] border border-slate-200/80 bg-slate-900 p-6 text-white shadow-2xl">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold">Sample Policy Report</div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs">PDF ready</span>
-              </div>
-              <div className="mt-6 grid gap-4">
-                <div className="rounded-2xl bg-white/10 p-4">
-                  <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Coverage Grade</div>
-                  <div className="mt-2 text-3xl font-semibold">A-</div>
-                  <p className="mt-2 text-sm text-slate-300">Solid protection with two moderate gaps.</p>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-white/10 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Gaps Found</div>
-                    <div className="mt-2 text-xl font-semibold">Flood • Sewer</div>
-                  </div>
-                  <div className="rounded-2xl bg-white/10 p-4">
-                    <div className="text-xs uppercase tracking-[0.2em] text-slate-300">Price Check</div>
-                    <div className="mt-2 text-xl font-semibold">$420/yr high</div>
-                  </div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-blue-600/40 to-cyan-500/40 p-4">
-                  <div className="text-xs uppercase tracking-[0.2em] text-slate-100">Recommendations</div>
-                  <p className="mt-2 text-sm text-slate-100">
-                    Increase deductible to $1,500 and add flood rider. Estimated savings: $310/year.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <img src="/sample-report.png" alt="Sample Policy Report showing coverage grade, gaps found, price check, and recommendations" className="relative w-full drop-shadow-2xl" />
           </div>
 
           <div>
@@ -536,33 +507,60 @@ export default function Home() {
               We distill complex coverage into a clear grade and practical guidance you can act on today.
             </p>
 
-            <div className="mt-8 grid gap-4">
-              {[
-                {
-                  title: 'Coverage grade (A–F)',
-                  desc: 'A simple, objective rating of how protected you really are.',
-                },
-                {
-                  title: 'Gap analysis',
-                  desc: 'Flagged exposures that could lead to uncovered losses.',
-                },
-                {
-                  title: 'Price comparison',
-                  desc: 'Benchmarks your premium against similar homes and policies.',
-                },
-                {
-                  title: 'Personalized recommendations',
-                  desc: 'Actionable steps to improve protection or reduce cost.',
-                },
-              ].map((item) => (
-                <div key={item.title} className="flex gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
-                  <div className="mt-1 h-2 w-2 rounded-full bg-blue-600" />
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-900">{item.title}</h3>
-                    <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
+            <div className="relative mt-8">
+              {/* Vertical connecting line */}
+              <div className="absolute left-5 top-5 bottom-5 w-[2px] bg-gradient-to-b from-blue-200 via-cyan-200 to-blue-200" />
+
+              <div className="space-y-6">
+                {[
+                  {
+                    title: 'Coverage grade (0-100%)',
+                    desc: 'A simple, objective rating of how protected you really are.',
+                    icon: (
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    title: 'Gap analysis',
+                    desc: 'Flagged exposures that could lead to uncovered losses.',
+                    icon: (
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    title: 'Price comparison',
+                    desc: 'Benchmarks your premium against similar homes and policies.',
+                    icon: (
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    ),
+                  },
+                  {
+                    title: 'Personalized recommendations',
+                    desc: 'Actionable steps to improve protection or reduce cost.',
+                    icon: (
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                    ),
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="relative flex items-start gap-5">
+                    <div className="relative z-10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-white">
+                      {item.icon}
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="text-base font-semibold text-slate-900">{item.title}</h3>
+                      <p className="mt-1 text-sm text-slate-600">{item.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -615,23 +613,23 @@ export default function Home() {
       {/* Social Proof */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h2 className="text-3xl font-semibold sm:text-4xl">Trusted by homeowners and renters nationwide.</h2>
-              <p className="mt-2 max-w-xl text-lg text-slate-600">
-                Clear, unbiased insurance insights designed for real people — not policy experts.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-slate-100 bg-slate-50 px-6 py-4 text-sm text-slate-600">
-              <div className="text-2xl font-semibold text-slate-900">4.9/5</div>
-              <div className="mt-1 flex items-center gap-1 text-amber-400">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-3xl font-semibold sm:text-4xl">Trusted by homeowners and renters nationwide.</h2>
+            <p className="mt-2 text-lg text-slate-600">
+              Clear, unbiased insurance insights designed for real people — not policy experts.
+            </p>
+            {/* Aggregate rating */}
+            <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-slate-100 bg-slate-50 px-5 py-2.5">
+              <div className="flex items-center gap-1 text-amber-400">
                 {Array.from({ length: 5 }).map((_, index) => (
-                  <svg key={index} className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <svg key={index} className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
               </div>
-              <div className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">Verified users</div>
+              <span className="text-lg font-bold text-slate-900">4.9</span>
+              <span className="text-sm text-slate-500">from 500+ reviews</span>
             </div>
           </div>
 
@@ -642,32 +640,67 @@ export default function Home() {
                   "PolicyPilot made our coverage crystal clear. We dropped overlaps and saved hundreds without losing protection.",
                 name: 'Sarah M.',
                 title: 'Homeowner, Austin, TX',
+                rating: 5,
+                timeAgo: '2 weeks ago',
               },
               {
                 quote:
-                  "I finally understand what my renters policy does — and what it doesn’t. The score was spot on.",
+                  "I finally understand what my renters policy does — and what it doesn't. The score was spot on.",
                 name: 'James K.',
                 title: 'Renter, Miami, FL',
+                rating: 5,
+                timeAgo: '1 month ago',
               },
               {
                 quote:
                   'Our agent appreciated the report and used it immediately. The recommendations were the exact changes we needed.',
                 name: 'Michelle R.',
                 title: 'Homeowner, Seattle, WA',
+                rating: 5,
+                timeAgo: '3 weeks ago',
               },
             ].map((testimonial) => (
-              <div key={testimonial.name} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-                <p className="text-sm text-slate-600">“{testimonial.quote}”</p>
+              <div key={testimonial.name} className="relative flex flex-col rounded-2xl border border-slate-100 bg-white p-6 shadow-[0_2px_20px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_4px_28px_rgba(0,0,0,0.1)]">
+                {/* Decorative quote mark */}
+                <div className="absolute -top-3 left-6">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 shadow-md">
+                    <svg className="h-4 w-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10H14.017zM0 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151C7.546 6.068 5.983 8.789 5.983 11H10v10H0z" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Star rating */}
+                <div className="mt-2 flex items-center gap-1">
+                  {Array.from({ length: testimonial.rating }).map((_, index) => (
+                    <svg key={index} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+
+                {/* Quote */}
+                <p className="mt-4 flex-1 text-[15px] leading-relaxed text-slate-700">&ldquo;{testimonial.quote}&rdquo;</p>
+
+                {/* Author + verified */}
                 <div className="mt-6 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-sm font-semibold text-white shadow-sm">
                     {testimonial.name
                       .split(' ')
                       .map((part) => part[0])
                       .join('')}
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold text-slate-900">{testimonial.name}</div>
-                    <div className="text-xs text-slate-500">{testimonial.title}</div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-slate-900">{testimonial.name}</span>
+                      <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600">
+                        <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.403 12.652a3 3 0 010-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+                        </svg>
+                        Verified
+                      </span>
+                    </div>
+                    <div className="text-xs text-slate-500">{testimonial.title} &middot; {testimonial.timeAgo}</div>
                   </div>
                 </div>
               </div>
