@@ -86,7 +86,7 @@ export function AnalyzingLoader({ onCancel }: AnalyzingLoaderProps) {
         <div className="text-center">
           <button
             onClick={onCancel}
-            className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-sm text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
           >
             Cancel and start over
           </button>

@@ -196,7 +196,7 @@ export default function GetPolicyPage() {
               </p>
               <button
                 onClick={handleCancelLoading}
-                className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold rounded-full transition-all"
+                className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white font-semibold rounded-full transition-all cursor-pointer"
               >
                 Try Again
               </button>

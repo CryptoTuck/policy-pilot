@@ -106,8 +106,8 @@ function getGradeStyles(grade: string) {
   switch (grade) {
     case 'A': return { bg: 'from-green-500 to-emerald-400', text: 'text-white' };
     case 'B': return { bg: 'from-blue-500 to-cyan-400', text: 'text-white' };
-    case 'C': return { bg: 'from-amber-500 to-yellow-400', text: 'text-white' };
-    case 'D': return { bg: 'from-orange-500 to-amber-400', text: 'text-white' };
+    case 'C': return { bg: 'from-amber-600 to-yellow-500', text: 'text-white' };
+    case 'D': return { bg: 'from-orange-600 to-amber-500', text: 'text-white' };
     case 'F': return { bg: 'from-red-500 to-rose-400', text: 'text-white' };
     default: return { bg: 'from-gray-400 to-gray-300', text: 'text-white' };
   }

@@ -155,7 +155,6 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            {/* TODO: Replace with custom hero illustration showing insurance/protection */}
             <div className="relative mx-auto max-w-md">
               <div className="absolute -inset-4 rounded-[32px] bg-gradient-to-br from-blue-600/20 to-cyan-400/20 blur-2xl" />
               <div className="relative rounded-[28px] border border-slate-200/80 bg-white p-6 shadow-2xl">
@@ -220,14 +219,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="pointer-events-none absolute -top-6 right-6 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-500 shadow-lg lg:block">
-              AI-powered in under 2 minutes
-            </div>
-
-            <div className="pointer-events-none absolute -bottom-8 left-6 hidden rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-500 shadow-lg lg:block">
-              Bank-level security via Canopy Connect
             </div>
           </div>
         </div>
@@ -507,7 +498,7 @@ export default function Home() {
               <div key={faq.q} className="rounded-2xl border border-slate-100 bg-white">
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+                  className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
                 >
                   <span className="text-base font-semibold text-slate-900">{faq.q}</span>
                   <span
