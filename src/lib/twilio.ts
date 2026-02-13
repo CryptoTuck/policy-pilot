@@ -30,7 +30,7 @@ export function isTwilioConfigured(): boolean {
   return !!(
     process.env.TWILIO_ACCOUNT_SID &&
     process.env.TWILIO_AUTH_TOKEN &&
-    process.env.TWILIO_PHONE_NUMBER
+    process.env.TWILIO_MESSAGING_SERVICE_SID
   );
 }
 
@@ -45,14 +45,14 @@ export async function sendSMS(to: string, body: string): Promise<{ success: bool
     }
 
     const client = getTwilioClient();
-    const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+    const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
 
     // Normalize phone number (ensure it has country code)
     const normalizedTo = normalizePhoneNumber(to);
 
     const message = await client.messages.create({
       body,
-      from: fromNumber,
+      messagingServiceSid,
       to: normalizedTo,
     });
 
