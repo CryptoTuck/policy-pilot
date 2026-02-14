@@ -549,7 +549,7 @@ export default function Home() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
-            <p className="mt-4 text-sm text-slate-500">Free forever. No credit card required.</p>
+            <p className="mt-4 text-sm text-slate-500">Completely free. No credit card required.</p>
           </div>
         </div>
       </section>
@@ -837,7 +837,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm text-slate-300">
-            <span>Free forever</span>
+            <span>Completely free</span>
             <span className="hidden h-1 w-1 rounded-full bg-slate-400 sm:inline-block" />
             <span>No credit card</span>
             <span className="hidden h-1 w-1 rounded-full bg-slate-400 sm:inline-block" />
