@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
 import { getReport } from '@/lib/storage';
-import { getSubmissionWithDetails } from '@/lib/supabase';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
 import { ReportContent } from '@/components/ReportContent';
 import Link from 'next/link';
@@ -15,21 +14,6 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   if (!report) {
     notFound();
-  }
-
-  // Fetch customer info for the CTA button SMS
-  let customerPhone: string | null = null;
-  let customerName: string | null = null;
-  try {
-    const { submission } = await getSubmissionWithDetails(id);
-    if (submission) {
-      customerPhone = submission.customer_phone;
-      customerName = [submission.customer_first_name, submission.customer_last_name]
-        .filter(Boolean)
-        .join(' ') || null;
-    }
-  } catch {
-    // Continue without customer info
   }
 
   return (
@@ -49,7 +33,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </main>
 
       {/* Sticky CTA Button */}
-      <StickyCtaButton customerPhone={customerPhone} customerName={customerName} />
+      <StickyCtaButton />
     </div>
   );
 }
