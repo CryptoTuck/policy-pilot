@@ -69,7 +69,7 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-slate-900 pt-36 sm:pt-40" style={{ backgroundImage: 'linear-gradient(to bottom, #0f172a 0%, #1e293b 30%, #475569 60%, #94a3b8 80%, #f8fafc 100%)' }}>
+      <section className="relative overflow-hidden bg-slate-900 pt-24 sm:pt-40" style={{ backgroundImage: 'linear-gradient(to bottom, #0f172a 0%, #1e293b 30%, #475569 60%, #94a3b8 80%, #f8fafc 100%)' }}>
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -top-32 left-1/2 h-[460px] w-[460px] -translate-x-1/2 rounded-full bg-blue-600/20 blur-[140px]" />
           <div className="absolute -right-24 top-24 h-[320px] w-[320px] rounded-full bg-cyan-500/15 blur-[120px]" />
@@ -388,7 +388,6 @@ export default function Home() {
                   { name: 'Property Damage', limit: '$15,000', score: '1/5', severity: 'red' as const, explanation: 'Below recommended levels for modern vehicle damage.' },
                   { name: 'Personal Liability', limit: '$100,000', score: '2/5', severity: 'red' as const, explanation: 'May not fully cover a serious lawsuit against you.' },
                   { name: 'Collision Deductible', limit: '$1,000', score: '3/5', severity: 'amber' as const, explanation: 'Higher than ideal for your vehicle\'s current value.' },
-                  { name: 'Water Backup', limit: 'None', score: '--', severity: 'red' as const, explanation: 'Not included. Leaves you exposed to drain backups.' },
                 ].map((row) => (
                   <div
                     key={row.name}
@@ -509,7 +508,6 @@ export default function Home() {
                   { name: 'Property Damage', limit: '$100,000', score: '5/5', explanation: 'Covers most accident damage scenarios comfortably.' },
                   { name: 'Personal Liability', limit: '$300,000', score: '5/5', explanation: 'Good protection for your assets in a lawsuit.' },
                   { name: 'Collision Deductible', limit: '$500', score: '5/5', explanation: 'Appropriate and affordable for your vehicle value.' },
-                  { name: 'Water Backup', limit: '$10,000', score: '5/5', explanation: 'Covers sewer and drain backup water damage.' },
                 ].map((row, i) => (
                   <div
                     key={row.name}
