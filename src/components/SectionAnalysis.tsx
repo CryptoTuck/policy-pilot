@@ -22,24 +22,24 @@ function getCtaText(score: number, maxScore: number, title: string): string {
   const type = title.toLowerCase();
 
   if (pct < 40) {
-    if (type.includes('auto')) return 'Find Better Auto Coverage Now';
-    if (type.includes('home')) return 'Find Better Home Coverage Now';
-    if (type.includes('renter')) return 'Find Better Renters Coverage Now';
-    return 'Find Better Coverage Now';
+    if (type.includes('auto')) return 'Talk to an Agent About Your Auto Coverage';
+    if (type.includes('home')) return 'Talk to an Agent About Your Home Coverage';
+    if (type.includes('renter')) return 'Talk to an Agent About Your Renters Coverage';
+    return 'Talk to an Agent About Your Coverage';
   }
   if (pct < 60) {
-    if (type.includes('auto')) return 'See Stronger Auto Options';
-    if (type.includes('home')) return 'See Stronger Home Options';
-    if (type.includes('renter')) return 'See Stronger Renters Options';
-    return 'See Stronger Coverage Options';
+    if (type.includes('auto')) return 'Discuss Your Auto Options With an Agent';
+    if (type.includes('home')) return 'Discuss Your Home Options With an Agent';
+    if (type.includes('renter')) return 'Discuss Your Renters Options With an Agent';
+    return 'Discuss Your Options With an Agent';
   }
   if (pct < 80) {
-    if (type.includes('auto')) return 'Compare Auto Policies';
-    if (type.includes('home')) return 'Compare Home Policies';
-    if (type.includes('renter')) return 'Compare Renters Policies';
-    return 'Compare Policy Options';
+    if (type.includes('auto')) return 'Talk to an Agent to Improve Your Auto Coverage';
+    if (type.includes('home')) return 'Talk to an Agent to Improve Your Home Coverage';
+    if (type.includes('renter')) return 'Talk to an Agent to Improve Your Renters Coverage';
+    return 'Talk to an Agent to Improve Your Coverage';
   }
-  return 'See If You Can Save More';
+  return 'Talk to an Agent to Review Your Coverage';
 }
 
 export function SectionAnalysis({ title, score, maxScore, analysis }: SectionAnalysisProps) {
