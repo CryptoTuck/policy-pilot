@@ -110,7 +110,18 @@ export default function Home() {
                 See My PolicyPilot Score &rarr;
               </Link>
               <div className="text-sm text-slate-400">
-                Free &bull; 2 minutes &bull; No credit card
+                Free &mdash; One Question &mdash; 2 Minutes &mdash; No Credit Card
+              </div>
+            </div>
+            <div className="mt-6 inline-flex items-center gap-3 rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
+              <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md bg-emerald-500/20 border border-emerald-400/30">
+                <svg className="h-4 w-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">Secured by</span>
+                <span className="text-sm font-bold text-white">Canopy Connect</span>
               </div>
             </div>
 

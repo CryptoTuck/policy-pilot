@@ -245,71 +245,45 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       {activeFilter === 'all' && carrierAnalysis && <CarrierAnalysis analysis={carrierAnalysis} />}
 
       {/* Home Policy Section */}
-      {showHome && homeGrade && (
-        <div id="home">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-            Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
-          </h2>
+      {showHome && homeGrade && (() => {
+        const allHomeCoverages = [
+          ...homeGrade.standardCoverages,
+          homeGrade.deductibleGrade,
+          ...homeGrade.additionalCoverages.map(c => ({
+            name: c.name,
+            limit: c.limit || (c.present ? 'Included' : 'Not included'),
+            score: c.present ? 5 : 3,
+            maxScore: 5 as const,
+            explanation: c.note || '',
+          })),
+        ];
+        const allScores = calculateSectionScore(allHomeCoverages);
 
-          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-              Standard Coverages
-            </h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Coverages that come with standard HOI policy
-            </p>
-            <CoverageTable coverages={homeGrade.standardCoverages} />
-
-            <SectionAnalysis
-              title="Standard Coverage"
-              score={calculateSectionScore(homeGrade.standardCoverages).score}
-              maxScore={calculateSectionScore(homeGrade.standardCoverages).maxScore}
-              analysis={homeGrade.summary}
-            />
-          </section>
-
-          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Deductible</h2>
-            <CoverageTable
-              coverages={[homeGrade.deductibleGrade]}
-              columns={{
-                name: 'Type',
-                limit: 'Amount',
-                score: 'Score',
-                explanation: 'What It Means'
-              }}
-            />
-
-            <SectionAnalysis
-              title="Deductibles"
-              score={homeGrade.deductibleGrade.score}
-              maxScore={homeGrade.deductibleGrade.maxScore}
-              analysis={homeGrade.deductibleGrade.explanation}
-            />
-          </section>
-
-          <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-              Additional Coverages
+        return (
+          <div id="home">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+              Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
             </h2>
-            <p className="text-sm text-gray-500 mb-4">
-              Optional endorsements
-            </p>
-            <AdditionalCoverageTable coverages={homeGrade.additionalCoverages} />
 
-            <SectionAnalysis
-              title="Additional Coverage"
-              score={homeGrade.additionalCoverages.filter(c => c.present).length}
-              maxScore={homeGrade.additionalCoverages.length}
-              analysis={
-                homeGrade.additionalCoverages.filter(c => !c.present && c.relevance === 'often_worth_reviewing').length > 0
-                  ? `You're missing some valuable endorsements that are often worth reviewing: ${homeGrade.additionalCoverages.filter(c => !c.present && c.relevance === 'often_worth_reviewing').map(c => c.name).join(', ')}.`
-                  : 'Your additional coverages look appropriate for your situation.'
-              }
-            />
-          </section>
-        </div>
-      )}
+            <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
+                Home Coverages
+              </h3>
+              <p className="text-sm text-gray-500 mb-4">
+                Standard coverages, deductibles, and endorsements
+              </p>
+              <CoverageTable coverages={allHomeCoverages} />
+
+              <SectionAnalysis
+                title="Home Coverage"
+                score={allScores.score}
+                maxScore={allScores.maxScore}
+                analysis={homeGrade.summary}
+              />
+            </section>
+          </div>
+        );
+      })()}
 
       {/* Auto Policy Section(s) */}
       {showAuto && (
