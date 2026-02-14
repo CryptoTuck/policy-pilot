@@ -163,14 +163,6 @@ export default function Home() {
               <div key={setIndex} className="flex shrink-0 items-center gap-8 sm:gap-16">
                 {[
                   {
-                    label: 'SOC 2 Type II Certified',
-                    icon: (
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
-                    ),
-                  },
-                  {
                     label: 'Continuous Compliance Monitoring',
                     icon: (
                       <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -677,7 +669,7 @@ export default function Home() {
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
             {/* TODO: Replace with real security badges */}
-            {['SOC 2', '256-bit SSL', 'Data Encryption', 'GDPR Ready'].map((badge) => (
+            {['256-bit SSL', 'Data Encryption', 'GDPR Ready'].map((badge) => (
               <span key={badge} className="rounded-full border border-slate-200 bg-white px-4 py-2">
                 {badge}
               </span>
