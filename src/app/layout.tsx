@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadataBase = new URL("https://mypolicypilot.ai");
+export const metadataBase = new URL("https://www.mypolicypilot.ai");
 
 export const metadata: Metadata = {
   title: "PolicyPilot — Your Insurance Policy, Scored by AI",
