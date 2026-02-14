@@ -11,10 +11,11 @@ interface SectionAnalysisProps {
 
 function getScoreGradient(score: number, maxScore: number): string {
   const pct = maxScore > 0 ? (score / maxScore) * 100 : 0;
-  if (pct >= 80) return 'from-emerald-500 to-green-500';
-  if (pct >= 60) return 'from-yellow-400 to-amber-400';
-  if (pct >= 40) return 'from-orange-400 to-orange-500';
-  return 'from-red-500 to-red-600';
+  if (pct >= 90) return 'from-emerald-500 to-green-500';
+  if (pct >= 80) return 'from-blue-400 to-blue-500';
+  if (pct >= 70) return 'from-yellow-400 to-amber-400';
+  if (pct >= 60) return 'from-orange-500 to-red-400';
+  return 'from-red-700 to-red-800';
 }
 
 function getCtaText(score: number, maxScore: number, title: string): string {

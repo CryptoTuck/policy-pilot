@@ -59,9 +59,10 @@ function averageScores(scores: Array<number | undefined>): number | undefined {
 function getScoreGradient(score?: number): string {
   if (score === undefined) return 'from-slate-500 via-slate-600 to-slate-700';
   if (score >= 90) return 'from-emerald-500 via-green-500 to-green-600';
-  if (score >= 70) return 'from-yellow-400 via-amber-400 to-orange-400';
-  if (score >= 50) return 'from-orange-400 via-orange-500 to-red-400';
-  return 'from-red-500 via-red-600 to-red-700';
+  if (score >= 80) return 'from-blue-400 via-blue-500 to-blue-600';
+  if (score >= 70) return 'from-yellow-400 via-amber-400 to-amber-500';
+  if (score >= 60) return 'from-orange-500 via-orange-600 to-red-400';
+  return 'from-red-700 via-red-800 to-red-900';
 }
 
 type FilterType = 'all' | 'home' | 'auto' | 'renters';
