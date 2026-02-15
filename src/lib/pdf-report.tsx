@@ -104,6 +104,34 @@ function averageScores(scores: Array<number | undefined>): number | undefined {
   return Math.round(valid.reduce((a, b) => a + b, 0) / valid.length);
 }
 
+function weightedOverallScore(
+  homeScore?: number,
+  autoScore?: number,
+  rentersScore?: number,
+): number | undefined {
+  const hasHome = typeof homeScore === 'number';
+  const hasAuto = typeof autoScore === 'number';
+  const hasRenters = typeof rentersScore === 'number';
+
+  if (!hasHome && !hasAuto && !hasRenters) return undefined;
+
+  if (hasHome && !hasAuto && !hasRenters) return homeScore;
+  if (!hasHome && hasAuto && !hasRenters) return autoScore;
+  if (!hasHome && !hasAuto && hasRenters) return rentersScore;
+
+  // Home + Auto → 45/55
+  if (hasHome && hasAuto && !hasRenters) {
+    return Math.round(homeScore! * 0.45 + autoScore! * 0.55);
+  }
+
+  // Renters + Auto → 30/70
+  if (!hasHome && hasAuto && hasRenters) {
+    return Math.round(rentersScore! * 0.30 + autoScore! * 0.70);
+  }
+
+  return averageScores([homeScore, autoScore, rentersScore]);
+}
+
 function getLetterGrade(score: number): string {
   if (score >= 90) return 'A';
   if (score >= 80) return 'B';
@@ -520,7 +548,7 @@ function ReportDocument({ report }: { report: PolicyReport }) {
   const autoScoresArr = autoPolicies.map((a) => getPolicyScore(a.overallGrade, a.overallScore));
   const autoAvg = averageScores(autoScoresArr);
 
-  const overallScore = report.combinedScore ?? averageScores([homeScore, autoAvg, rentersScore]);
+  const overallScore = report.combinedScore ?? weightedOverallScore(homeScore, autoAvg, rentersScore);
   const overallGrade = report.combinedGrade ?? (overallScore !== undefined ? getLetterGrade(overallScore) : undefined);
 
   const dateStr = new Date(report.generatedAt).toLocaleDateString('en-US', {

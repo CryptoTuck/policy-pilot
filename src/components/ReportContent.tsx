@@ -56,6 +56,36 @@ function averageScores(scores: Array<number | undefined>): number | undefined {
   return Math.round(validScores.reduce((sum, score) => sum + score, 0) / validScores.length);
 }
 
+function weightedOverallScore(
+  homeScore?: number,
+  autoScore?: number,
+  rentersScore?: number,
+): number | undefined {
+  const hasHome = typeof homeScore === 'number';
+  const hasAuto = typeof autoScore === 'number';
+  const hasRenters = typeof rentersScore === 'number';
+
+  if (!hasHome && !hasAuto && !hasRenters) return undefined;
+
+  // Single policy → 100%
+  if (hasHome && !hasAuto && !hasRenters) return homeScore;
+  if (!hasHome && hasAuto && !hasRenters) return autoScore;
+  if (!hasHome && !hasAuto && hasRenters) return rentersScore;
+
+  // Home + Auto → 45/55
+  if (hasHome && hasAuto && !hasRenters) {
+    return Math.round(homeScore! * 0.45 + autoScore! * 0.55);
+  }
+
+  // Renters + Auto → 30/70
+  if (!hasHome && hasAuto && hasRenters) {
+    return Math.round(rentersScore! * 0.30 + autoScore! * 0.70);
+  }
+
+  // Fallback (e.g. Home + Renters, or all three) → simple average
+  return averageScores([homeScore, autoScore, rentersScore]);
+}
+
 function getScoreGradient(score?: number): string {
   if (score === undefined) return 'from-slate-500 via-slate-600 to-slate-700';
   if (score >= 90) return 'from-emerald-500 via-green-500 to-green-600';
@@ -160,7 +190,7 @@ export function ReportContent({ report, reportId, customerEmail }: { report: Pol
     : undefined;
   const rentersScore = getPolicyScore(rentersGrade?.overallGrade, rentersGrade?.overallScore);
   const overallScore = getPolicyScore(combinedGrade, report.combinedScore)
-    ?? averageScores([homeScore, autoScore, rentersScore]);
+    ?? weightedOverallScore(homeScore, autoScore, rentersScore);
   const overallGradient = getScoreGradient(overallScore);
   const formatPercent = (score?: number): string => (typeof score === 'number' ? `${score}%` : '--');
 
