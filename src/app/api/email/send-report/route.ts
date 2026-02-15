@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sendReportEmail, isResendConfigured } from '@/lib/resend';
 import { getReport } from '@/lib/storage';
+import { generateReportPdf } from '@/lib/pdf-report';
 
 /**
  * POST /api/email/send-report
@@ -54,22 +55,20 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const reportUrl = `${baseUrl}/report/${report.id}`;
 
-    const overallGrade =
-      report.combinedGrade ||
-      report.homeGrade?.overallGrade ||
-      report.autoGrade?.overallGrade;
-
-    const summary = report.homeGrade?.summary || report.autoGrade?.summary;
+    // Generate PDF attachment
+    let attachments: { filename: string; content: Buffer }[] | undefined;
+    try {
+      const pdfBuffer = await generateReportPdf(report);
+      attachments = [{ filename: 'PolicyPilot-Report.pdf', content: pdfBuffer }];
+    } catch (pdfError) {
+      console.error('[Email API] PDF generation failed, sending without attachment:', pdfError);
+    }
 
     const result = await sendReportEmail({
       to: email,
       customerName: name,
       reportUrl,
-      overallGrade,
-      overallScore: report.combinedScore,
-      homeGrade: report.homeGrade?.overallGrade,
-      autoGrade: report.autoGrade?.overallGrade,
-      summary,
+      attachments,
     });
 
     if (!result.success) {

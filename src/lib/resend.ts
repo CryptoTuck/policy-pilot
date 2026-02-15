@@ -42,11 +42,7 @@ interface SendReportEmailParams {
   to: string;
   customerName?: string;
   reportUrl: string;
-  overallGrade?: string;
-  overallScore?: number;
-  homeGrade?: string;
-  autoGrade?: string;
-  summary?: string;
+  attachments?: { filename: string; content: Buffer }[];
 }
 
 /**
@@ -62,21 +58,13 @@ export async function sendReportEmail(
 
   try {
     const resend = getResendClient();
-    const { to, customerName, reportUrl, overallGrade, overallScore, homeGrade, autoGrade, summary } = params;
+    const { to, customerName, reportUrl, attachments } = params;
 
-    const gradeDisplay = overallGrade || 'Ready';
-    const subject = overallGrade
-      ? `Your Insurance Grade: ${overallGrade} — Policy Pilot Report`
-      : `Your Policy Pilot Insurance Report is Ready`;
+    const subject = 'Your Policy Pilot Report is Ready!';
 
     const html = buildReportEmailHtml({
       customerName,
       reportUrl,
-      overallGrade: gradeDisplay,
-      overallScore,
-      homeGrade,
-      autoGrade,
-      summary,
     });
 
     const { data, error } = await resend.emails.send({
@@ -84,6 +72,7 @@ export async function sendReportEmail(
       to: [to],
       subject,
       html,
+      ...(attachments && attachments.length > 0 ? { attachments } : {}),
     });
 
     if (error) {
@@ -140,44 +129,11 @@ export async function sendNotificationEmail(
 interface EmailTemplateParams {
   customerName?: string;
   reportUrl: string;
-  overallGrade: string;
-  overallScore?: number;
-  homeGrade?: string;
-  autoGrade?: string;
-  summary?: string;
-}
-
-function getGradeColor(grade: string): string {
-  switch (grade.charAt(0).toUpperCase()) {
-    case 'A': return '#22c55e';
-    case 'B': return '#3b82f6';
-    case 'C': return '#f59e0b';
-    case 'D': return '#f97316';
-    case 'F': return '#ef4444';
-    default: return '#3b82f6';
-  }
 }
 
 function buildReportEmailHtml(params: EmailTemplateParams): string {
-  const { customerName, reportUrl, overallGrade, overallScore, homeGrade, autoGrade, summary } = params;
-  const gradeColor = getGradeColor(overallGrade);
+  const { customerName, reportUrl } = params;
   const greeting = customerName ? `Hi ${customerName},` : 'Hi there,';
-
-  const gradeBreakdownRows = [
-    homeGrade ? `<tr><td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Home Insurance</td><td style="padding: 8px 0; text-align: right; font-weight: 600; font-size: 14px; color: ${getGradeColor(homeGrade)};">${homeGrade}</td></tr>` : '',
-    autoGrade ? `<tr><td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Auto Insurance</td><td style="padding: 8px 0; text-align: right; font-weight: 600; font-size: 14px; color: ${getGradeColor(autoGrade)};">${autoGrade}</td></tr>` : '',
-  ].filter(Boolean).join('');
-
-  const gradeBreakdown = gradeBreakdownRows
-    ? `<table style="width: 100%; border-collapse: collapse; margin-top: 16px; border-top: 1px solid #e5e7eb; padding-top: 12px;">${gradeBreakdownRows}</table>`
-    : '';
-
-  const summarySection = summary
-    ? `<div style="margin-top: 24px; padding: 16px; background-color: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
-        <p style="margin: 0; font-size: 14px; color: #1e40af; font-weight: 600;">Key Insight</p>
-        <p style="margin: 8px 0 0; font-size: 14px; color: #374151; line-height: 1.6;">${summary}</p>
-      </div>`
-    : '';
 
   return `<!DOCTYPE html>
 <html>
@@ -200,29 +156,16 @@ function buildReportEmailHtml(params: EmailTemplateParams): string {
     <!-- Main Card -->
     <div style="background-color: #ffffff; border-radius: 12px; padding: 40px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
 
-      <p style="margin: 0 0 24px; font-size: 16px; color: #374151; line-height: 1.6;">${greeting}</p>
-      <p style="margin: 0 0 32px; font-size: 16px; color: #374151; line-height: 1.6;">Your insurance coverage has been analyzed. Here's how your policies stack up:</p>
-
-      <!-- Grade Circle -->
-      <div style="text-align: center; margin-bottom: 24px;">
-        <div style="display: inline-block; width: 120px; height: 120px; border-radius: 50%; border: 6px solid ${gradeColor}; line-height: 108px; text-align: center;">
-          <span style="font-size: 48px; font-weight: 800; color: ${gradeColor};">${overallGrade}</span>
-        </div>
-        ${overallScore ? `<p style="margin: 12px 0 0; font-size: 14px; color: #6b7280;">Overall Score: ${overallScore}/100</p>` : ''}
-      </div>
-
-      <!-- Grade Breakdown -->
-      ${gradeBreakdown}
-
-      <!-- Summary -->
-      ${summarySection}
+      <p style="margin: 0 0 16px; font-size: 16px; color: #374151; line-height: 1.6;">${greeting}</p>
+      <p style="margin: 0 0 16px; font-size: 16px; color: #374151; line-height: 1.6;">Thank you for using Policy Pilot!</p>
+      <p style="margin: 0 0 32px; font-size: 16px; color: #374151; line-height: 1.6;">Your Report &amp; Policy Pilot Score are ready and attached for your reference. Take a look to see how your current policy stacks up and where improvements might be possible.</p>
 
       <!-- CTA Button -->
-      <div style="text-align: center; margin-top: 32px;">
+      <div style="text-align: center; margin-top: 8px;">
         <a href="${reportUrl}" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #3b82f6, #06b6d4); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600; letter-spacing: 0.02em;">View Full Report →</a>
       </div>
 
-      <p style="margin: 24px 0 0; font-size: 14px; color: #9ca3af; text-align: center; line-height: 1.6;">Your detailed report includes coverage-by-coverage grading, personalized recommendations, and areas to review with your agent.</p>
+      <p style="margin: 32px 0 0; font-size: 14px; color: #6b7280; text-align: center; line-height: 1.6;">— The Policy Pilot Team</p>
     </div>
 
     <!-- Footer -->
