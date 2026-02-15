@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation';
 import Script from 'next/script';
 import { DevButton } from '@/components/DevButton';
 import { AnalyzingLoader } from '@/components/AnalyzingLoader';
+import {
+  trackGetPolicyPageView,
+  trackGetPolicyStarted,
+} from '@/lib/analytics';
 
 type CanopyHandler = {
   open: () => void;
@@ -51,6 +55,11 @@ export default function GetPolicyPage() {
     setExitTriggered(false);
     setWidgetOpen(false);
   };
+
+  // Track page view
+  useEffect(() => {
+    trackGetPolicyPageView();
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -124,6 +133,8 @@ export default function GetPolicyPage() {
       setPollingError('Canopy Connect is still loading. Please try again.');
       return;
     }
+
+    trackGetPolicyStarted();
 
     // Generate a unique session token to correlate this user with their webhook report
     const token = crypto.randomUUID();

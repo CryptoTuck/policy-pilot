@@ -1,6 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import {
+  trackCtaClicked,
+  trackEmailReportRequested,
+  trackEmailReportSent,
+  trackEmailReportFailed,
+} from '@/lib/analytics';
 
 interface StickyCtaButtonProps {
   reportId?: string;
@@ -25,6 +31,7 @@ export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProp
   const handleSendEmail = async () => {
     if (!customerEmail || !reportId) return;
 
+    trackEmailReportRequested('sticky_modal');
     setEmailStatus('sending');
     setErrorMessage('');
 
@@ -37,14 +44,17 @@ export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProp
 
       if (res.ok) {
         setEmailStatus('sent');
+        trackEmailReportSent('sticky_modal');
       } else {
         const data = await res.json();
         setErrorMessage(data.error || 'Failed to send email');
         setEmailStatus('error');
+        trackEmailReportFailed('sticky_modal', data.error);
       }
     } catch {
       setErrorMessage('Something went wrong. Please try again.');
       setEmailStatus('error');
+      trackEmailReportFailed('sticky_modal', 'network_error');
     }
   };
 
@@ -66,7 +76,10 @@ export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProp
         <div className="border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] px-4 py-3">
           <div className="max-w-5xl mx-auto">
             <button
-              onClick={() => setShowModal(true)}
+              onClick={() => {
+                setShowModal(true);
+                trackCtaClicked('sticky_bar');
+              }}
               className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
