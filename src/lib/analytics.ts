@@ -8,6 +8,7 @@
  */
 
 import * as amplitude from '@amplitude/analytics-browser';
+import { sessionReplayPlugin } from '@amplitude/plugin-session-replay-browser';
 
 let initialized = false;
 
@@ -23,6 +24,12 @@ export function initAnalytics() {
     console.warn('[Analytics] NEXT_PUBLIC_AMPLITUDE_API_KEY not set, skipping init');
     return;
   }
+
+  // Add session replay plugin (free tier: 1K replays/month)
+  const sessionReplay = sessionReplayPlugin({
+    sampleRate: 1,
+  });
+  amplitude.add(sessionReplay);
 
   amplitude.init(apiKey, {
     // Automatically track page views on route changes

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^2.34.1",
+    "@amplitude/plugin-session-replay-browser": "^1.25.11",
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.95.3",
     "@upstash/redis": "^1.36.1",
