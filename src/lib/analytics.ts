@@ -46,6 +46,27 @@ export function initAnalytics() {
   initialized = true;
 }
 
+// ─── User Identification ─────────────────────────────────────────────────────
+
+/**
+ * Identify a user by email and set profile traits.
+ * Call once when customer data becomes available (e.g. report page).
+ */
+export function identifyUser(params: {
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+}) {
+  amplitude.setUserId(params.email);
+
+  const identify = new amplitude.Identify();
+  identify.set('email', params.email);
+  if (params.firstName) identify.set('first_name', params.firstName);
+  if (params.lastName) identify.set('last_name', params.lastName);
+
+  amplitude.identify(identify);
+}
+
 // ─── Event Tracking ──────────────────────────────────────────────────────────
 
 /**

@@ -18,15 +18,19 @@ export default async function ReportPage({ params }: ReportPageProps) {
     notFound();
   }
 
-  // Fetch customer email for the email report button
+  // Fetch customer info for email + analytics
   let customerEmail: string | null = null;
+  let customerFirstName: string | null = null;
+  let customerLastName: string | null = null;
   try {
     const { submission } = await getSubmissionWithDetails(id);
     if (submission) {
       customerEmail = submission.customer_email;
+      customerFirstName = submission.customer_first_name;
+      customerLastName = submission.customer_last_name;
     }
   } catch {
-    // Continue without customer email
+    // Continue without customer data
   }
 
   return (
@@ -46,6 +50,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
         overallGrade={report.combinedGrade || report.homeGrade?.overallGrade || report.autoGrade?.overallGrade}
         hasHomePolicy={!!report.homeGrade}
         hasAutoPolicy={!!report.autoGrade}
+        customerEmail={customerEmail}
+        customerFirstName={customerFirstName}
+        customerLastName={customerLastName}
       />
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
