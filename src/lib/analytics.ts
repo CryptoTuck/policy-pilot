@@ -63,20 +63,6 @@ export function trackGetPolicyStarted() {
 }
 
 /**
- * Track when Canopy widget completes successfully
- */
-export function trackCanopyCompleted() {
-  amplitude.track('Canopy Completed');
-}
-
-/**
- * Track when user closes Canopy widget without completing
- */
-export function trackCanopyExited() {
-  amplitude.track('Canopy Exited');
-}
-
-/**
  * Track when user lands on their report page
  */
 export function trackReportPageView(properties?: {

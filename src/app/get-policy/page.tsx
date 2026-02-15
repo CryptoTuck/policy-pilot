@@ -9,8 +9,6 @@ import { AnalyzingLoader } from '@/components/AnalyzingLoader';
 import {
   trackGetPolicyPageView,
   trackGetPolicyStarted,
-  trackCanopyCompleted,
-  trackCanopyExited,
 } from '@/lib/analytics';
 
 type CanopyHandler = {
@@ -161,7 +159,6 @@ export default function GetPolicyPage() {
         setExitTriggered(false);
         setPollingStatus('waiting');
         setPollingError(null);
-        trackCanopyCompleted();
       },
       onExit: () => {
         setWidgetOpen(false);
@@ -172,7 +169,6 @@ export default function GetPolicyPage() {
         setExitTriggered(true);
         setPollingStatus('waiting');
         setPollingError(null);
-        trackCanopyExited();
       },
     });
 
