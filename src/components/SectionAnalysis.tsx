@@ -1,6 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import {
+  trackCtaClicked,
+  trackEmailReportRequested,
+  trackEmailReportSent,
+  trackEmailReportFailed,
+} from '@/lib/analytics';
 
 interface SectionAnalysisProps {
   title: string;
@@ -55,6 +61,7 @@ export function SectionAnalysis({ title, score, maxScore, analysis, reportId, cu
   const handleSendEmail = async () => {
     if (!customerEmail || !reportId) return;
 
+    trackEmailReportRequested('section_modal');
     setEmailStatus('sending');
     setErrorMessage('');
 
@@ -67,14 +74,17 @@ export function SectionAnalysis({ title, score, maxScore, analysis, reportId, cu
 
       if (res.ok) {
         setEmailStatus('sent');
+        trackEmailReportSent('section_modal');
       } else {
         const data = await res.json();
         setErrorMessage(data.error || 'Failed to send email');
         setEmailStatus('error');
+        trackEmailReportFailed('section_modal', data.error);
       }
     } catch {
       setErrorMessage('Something went wrong. Please try again.');
       setEmailStatus('error');
+      trackEmailReportFailed('section_modal', 'network_error');
     }
   };
 
@@ -95,7 +105,10 @@ export function SectionAnalysis({ title, score, maxScore, analysis, reportId, cu
       </div>
       <div className="flex mt-3 mb-2">
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setShowModal(true);
+            trackCtaClicked('section_analysis');
+          }}
           className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

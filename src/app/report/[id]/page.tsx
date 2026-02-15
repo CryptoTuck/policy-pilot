@@ -3,6 +3,7 @@ import { getReport } from '@/lib/storage';
 import { getSubmissionWithDetails } from '@/lib/supabase';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
 import { ReportContent } from '@/components/ReportContent';
+import { ReportAnalytics } from '@/components/ReportAnalytics';
 import Link from 'next/link';
 
 interface ReportPageProps {
@@ -39,6 +40,13 @@ export default async function ReportPage({ params }: ReportPageProps) {
           </Link>
         </nav>
       </header>
+
+      <ReportAnalytics
+        reportId={id}
+        overallGrade={report.combinedGrade || report.homeGrade?.overallGrade || report.autoGrade?.overallGrade}
+        hasHomePolicy={!!report.homeGrade}
+        hasAutoPolicy={!!report.autoGrade}
+      />
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
         <ReportContent report={report} reportId={id} customerEmail={customerEmail} />
