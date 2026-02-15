@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { gradePolicy } from '@/lib/grader';
-import { generateId, storeSubmission, storeReport } from '@/lib/storage';
+import { storeSubmission, storeReport } from '@/lib/storage';
+import { createSubmission as createSupabaseSubmission, updateSubmissionStatus } from '@/lib/supabase';
 import type { PolicySubmission, HomePolicy, AutoPolicy } from '@/types/policy';
 
 // Comprehensive sample policy data - slightly above average (B/B+ range)
@@ -77,12 +78,22 @@ const sampleAutoPolicy: AutoPolicy = {
 
 export async function GET() {
   try {
+    // Create Supabase submission first to get a valid UUID
+    const supabaseSub = await createSupabaseSubmission({
+      rawData: { test: true },
+      customerEmail: 'tuckergeorge77@gmail.com',
+      customerFirstName: 'Test',
+      customerLastName: 'User',
+    });
+    await updateSubmissionStatus(supabaseSub.id, 'completed');
+
+    // Use the Supabase UUID as the submission ID so everything matches
     const submission: PolicySubmission = {
-      id: generateId(),
+      id: supabaseSub.id,
       submittedAt: new Date().toISOString(),
       homePolicy: sampleHomePolicy,
       autoPolicy: sampleAutoPolicy,
-      contactEmail: 'test@example.com',
+      contactEmail: 'tuckergeorge77@gmail.com',
       contactName: 'Test User',
     };
 

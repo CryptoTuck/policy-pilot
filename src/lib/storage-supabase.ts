@@ -33,7 +33,13 @@ export async function getReportFromSupabase(id: string): Promise<PolicyReport | 
     }
 
     const gradingResult = gradingResults[0];
-    const openaiResponse = gradingResult?.openai_response as {
+
+    // If there's no grading data, return undefined so we fall through to Redis/memory
+    if (!gradingResult?.openai_response) {
+      return undefined;
+    }
+
+    const openaiResponse = gradingResult.openai_response as {
       homeGrade?: HomePolicyGrade;
       autoGrade?: AutoPolicyGrade;
       autoGrades?: AutoPolicyGrade[];

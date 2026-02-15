@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getReport } from '@/lib/storage';
+import { getSubmissionWithDetails } from '@/lib/supabase';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
 import { ReportContent } from '@/components/ReportContent';
 import Link from 'next/link';
@@ -14,6 +15,17 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   if (!report) {
     notFound();
+  }
+
+  // Fetch customer email for the email report button
+  let customerEmail: string | null = null;
+  try {
+    const { submission } = await getSubmissionWithDetails(id);
+    if (submission) {
+      customerEmail = submission.customer_email;
+    }
+  } catch {
+    // Continue without customer email
   }
 
   return (
@@ -33,7 +45,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </main>
 
       {/* Sticky CTA Button */}
-      <StickyCtaButton reportId={id} />
+      <StickyCtaButton reportId={id} customerEmail={customerEmail} />
     </div>
   );
 }

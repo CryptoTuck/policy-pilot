@@ -35,7 +35,7 @@ export function isResendConfigured(): boolean {
  * Get the "from" address — uses verified domain or Resend's onboarding address
  */
 function getFromAddress(): string {
-  return process.env.RESEND_FROM_EMAIL || 'Policy Pilot <onboarding@resend.dev>';
+  return process.env.RESEND_FROM_EMAIL || 'Policy Pilot <admin@mypolicypilot.ai>';
 }
 
 interface SendReportEmailParams {
