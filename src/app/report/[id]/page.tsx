@@ -33,7 +33,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
       </main>
 
       {/* Sticky CTA Button */}
-      <StickyCtaButton />
+      <StickyCtaButton reportId={id} />
     </div>
   );
 }

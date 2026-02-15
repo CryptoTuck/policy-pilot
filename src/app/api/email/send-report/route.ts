@@ -5,27 +5,16 @@ import { getReport } from '@/lib/storage';
 /**
  * POST /api/email/send-report
  *
- * Manually send (or resend) a report email.
- * Body: { reportId: string, email: string, name?: string }
+ * User-initiated: sends the grading report to the provided email.
+ * Called from the report page when the user opts in via the CTA modal.
  *
- * Useful for:
- * - Resending reports to customers
- * - Admin dashboard "send report" button
- * - Testing email delivery
+ * Body: { reportId: string, email: string, name?: string }
  */
 export async function POST(request: NextRequest) {
   try {
-    // Simple auth — require webhook secret for manual sends
-    const authHeader = request.headers.get('authorization');
-    const expectedSecret = process.env.WEBHOOK_SECRET;
-
-    if (expectedSecret && authHeader !== `Bearer ${expectedSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     if (!isResendConfigured()) {
       return NextResponse.json(
-        { error: 'Resend not configured. Set RESEND_API_KEY in environment.' },
+        { error: 'Email service not configured' },
         { status: 503 }
       );
     }
@@ -44,11 +33,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json(
+        { error: 'Invalid email address' },
+        { status: 400 }
+      );
+    }
+
     // Fetch the report
     const report = await getReport(reportId);
     if (!report) {
       return NextResponse.json(
-        { error: `Report ${reportId} not found` },
+        { error: 'Report not found' },
         { status: 404 }
       );
     }
@@ -84,7 +82,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       emailId: result.emailId,
-      sentTo: email,
     });
   } catch (error) {
     console.error('[Email API] Error:', error);

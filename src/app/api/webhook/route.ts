@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { gradeCanopyPolicy } from '@/lib/canopy-grader';
 import { generateId, storeReport, storeReportByToken } from '@/lib/storage';
-import { sendReportEmail, isResendConfigured } from '@/lib/resend';
+// Resend is available but email is sent on-demand from the report page,
+// not automatically. See /api/email/send-report for the endpoint.
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -70,80 +71,6 @@ function findSessionToken(payload: unknown): string | undefined {
   return undefined;
 }
 
-/**
- * Extract customer email from Canopy webhook payload.
- * Canopy can nest this under various keys depending on the integration.
- */
-function findCustomerEmail(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== 'object') return undefined;
-  const record = payload as UnknownRecord;
-
-  // Direct fields
-  const directKeys = ['email', 'customerEmail', 'customer_email', 'userEmail', 'user_email'];
-  for (const key of directKeys) {
-    if (typeof record[key] === 'string' && record[key]) {
-      return record[key] as string;
-    }
-  }
-
-  // Nested under common containers
-  const containers = ['customer', 'user', 'contact', 'data', 'payload', 'pullMetaData', 'pullMetadata', 'metadata'];
-  for (const containerKey of containers) {
-    const container = record[containerKey];
-    if (container && typeof container === 'object') {
-      const nested = container as UnknownRecord;
-      for (const key of directKeys) {
-        if (typeof nested[key] === 'string' && nested[key]) {
-          return nested[key] as string;
-        }
-      }
-    }
-    // Also try parsing string containers (Zapier sometimes sends JSON strings)
-    if (typeof container === 'string') {
-      try {
-        const parsed = JSON.parse(container) as UnknownRecord;
-        for (const key of directKeys) {
-          if (typeof parsed[key] === 'string' && parsed[key]) {
-            return parsed[key] as string;
-          }
-        }
-      } catch { /* not JSON, skip */ }
-    }
-  }
-
-  return undefined;
-}
-
-/**
- * Extract customer name from Canopy webhook payload.
- */
-function findCustomerName(payload: unknown): string | undefined {
-  if (!payload || typeof payload !== 'object') return undefined;
-  const record = payload as UnknownRecord;
-
-  const nameKeys = ['name', 'customerName', 'customer_name', 'fullName', 'full_name', 'firstName', 'first_name'];
-  for (const key of nameKeys) {
-    if (typeof record[key] === 'string' && record[key]) {
-      return record[key] as string;
-    }
-  }
-
-  const containers = ['customer', 'user', 'contact', 'data', 'payload', 'pullMetaData', 'pullMetadata', 'metadata'];
-  for (const containerKey of containers) {
-    const container = record[containerKey];
-    if (container && typeof container === 'object') {
-      const nested = container as UnknownRecord;
-      for (const key of nameKeys) {
-        if (typeof nested[key] === 'string' && nested[key]) {
-          return nested[key] as string;
-        }
-      }
-    }
-  }
-
-  return undefined;
-}
-
 export async function POST(request: NextRequest) {
   try {
     // Verify webhook secret (optional but recommended)
@@ -185,46 +112,15 @@ export async function POST(request: NextRequest) {
       console.warn('Webhook payload missing session token; report not linked to polling.');
     }
 
-    // Build the report URL
+    // Return the report URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const reportUrl = `${baseUrl}/report/${report.id}`;
-
-    // Send report email if Resend is configured and we have a customer email
-    const customerEmail = findCustomerEmail(rawData);
-    const customerName = findCustomerName(rawData);
-    let emailSent = false;
-
-    if (customerEmail && isResendConfigured()) {
-      const overallGrade = report.combinedGrade
-        || report.homeGrade?.overallGrade
-        || report.autoGrade?.overallGrade;
-      const summary = report.homeGrade?.summary || report.autoGrade?.summary;
-
-      const emailResult = await sendReportEmail({
-        to: customerEmail,
-        customerName,
-        reportUrl,
-        overallGrade,
-        overallScore: report.combinedScore,
-        homeGrade: report.homeGrade?.overallGrade,
-        autoGrade: report.autoGrade?.overallGrade,
-        summary,
-      });
-
-      emailSent = emailResult.success;
-      if (!emailResult.success) {
-        console.warn('[Webhook] Failed to send report email:', emailResult.error);
-      }
-    } else if (!customerEmail) {
-      console.warn('[Webhook] No customer email found in payload, skipping email delivery');
-    }
 
     return NextResponse.json({
       success: true,
       reportId: report.id,
       reportUrl,
       grade: report.combinedGrade || report.homeGrade?.overallGrade || report.autoGrade?.overallGrade,
-      emailSent,
     });
 
   } catch (error) {
