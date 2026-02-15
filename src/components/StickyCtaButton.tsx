@@ -1,23 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  trackCtaClicked,
-  trackEmailReportRequested,
-  trackEmailReportSent,
-  trackEmailReportFailed,
-} from '@/lib/analytics';
+import { trackCtaClicked } from '@/lib/analytics';
 
-interface StickyCtaButtonProps {
-  reportId?: string;
-  customerEmail?: string | null;
-}
-
-export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProps) {
+export function StickyCtaButton() {
   const [isVisible, setIsVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,40 +16,8 @@ export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProp
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSendEmail = async () => {
-    if (!customerEmail || !reportId) return;
-
-    trackEmailReportRequested('sticky_modal');
-    setEmailStatus('sending');
-    setErrorMessage('');
-
-    try {
-      const res = await fetch('/api/email/send-report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reportId, email: customerEmail }),
-      });
-
-      if (res.ok) {
-        setEmailStatus('sent');
-        trackEmailReportSent('sticky_modal');
-      } else {
-        const data = await res.json();
-        setErrorMessage(data.error || 'Failed to send email');
-        setEmailStatus('error');
-        trackEmailReportFailed('sticky_modal', data.error);
-      }
-    } catch {
-      setErrorMessage('Something went wrong. Please try again.');
-      setEmailStatus('error');
-      trackEmailReportFailed('sticky_modal', 'network_error');
-    }
-  };
-
   const handleCloseModal = () => {
     setShowModal(false);
-    setEmailStatus('idle');
-    setErrorMessage('');
   };
 
   return (
@@ -122,56 +78,6 @@ export function StickyCtaButton({ reportId, customerEmail }: StickyCtaButtonProp
               <p className="text-gray-600 mb-6">
                 A licensed insurance agent will be in contact with you shortly to discuss better coverage options.
               </p>
-
-              {/* Divider */}
-              <div className="border-t border-gray-200 my-5" />
-
-              {/* Email report button - only show if we have the customer's email */}
-              {customerEmail && reportId && emailStatus === 'idle' && (
-                <button
-                  onClick={handleSendEmail}
-                  className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2 mb-3"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  Email Me My Report
-                </button>
-              )}
-
-              {/* Sending state */}
-              {emailStatus === 'sending' && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-3 flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4 animate-spin text-blue-600" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  <p className="text-blue-700 text-sm font-medium">Sending report...</p>
-                </div>
-              )}
-
-              {/* Email sent confirmation */}
-              {emailStatus === 'sent' && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-3 mb-3 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <p className="text-green-700 text-sm font-medium">Report sent to {customerEmail}!</p>
-                </div>
-              )}
-
-              {/* Error state */}
-              {emailStatus === 'error' && (
-                <div className="mb-3">
-                  <p className="text-red-500 text-xs mb-2">{errorMessage}</p>
-                  <button
-                    onClick={handleSendEmail}
-                    className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
-                  >
-                    Try Again
-                  </button>
-                </div>
-              )}
 
               <button
                 onClick={handleCloseModal}

@@ -56,11 +56,11 @@ export default async function ReportPage({ params }: ReportPageProps) {
       />
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
-        <ReportContent report={report} reportId={id} customerEmail={customerEmail} />
+        <ReportContent report={report} />
       </main>
 
       {/* Sticky CTA Button */}
-      <StickyCtaButton reportId={id} customerEmail={customerEmail} />
+      <StickyCtaButton />
     </div>
   );
 }

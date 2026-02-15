@@ -173,7 +173,7 @@ function AreasToReviewAlert({ areas }: { areas: string[] }) {
   );
 }
 
-export function ReportContent({ report, reportId, customerEmail }: { report: PolicyReport; reportId?: string; customerEmail?: string | null }) {
+export function ReportContent({ report }: { report: PolicyReport }) {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
   const { homeGrade, autoGrade, autoGrades, rentersGrade, combinedGrade, carrierAnalysis, carriers } = report;
@@ -310,8 +310,7 @@ export function ReportContent({ report, reportId, customerEmail }: { report: Pol
                 score={allScores.score}
                 maxScore={allScores.maxScore}
                 analysis={homeGrade.summary}
-                reportId={reportId}
-                customerEmail={customerEmail}
+
               />
             </section>
           </div>
@@ -349,8 +348,7 @@ export function ReportContent({ report, reportId, customerEmail }: { report: Pol
                 score={calculateSectionScore(autoPolicy.standardCoverages).score}
                 maxScore={calculateSectionScore(autoPolicy.standardCoverages).maxScore}
                 analysis={autoPolicy.summary}
-                reportId={reportId}
-                customerEmail={customerEmail}
+
               />
             </section>
           ))}
@@ -389,8 +387,7 @@ export function ReportContent({ report, reportId, customerEmail }: { report: Pol
                 score={allScores.score}
                 maxScore={allScores.maxScore}
                 analysis={rentersGrade.summary}
-                reportId={reportId}
-                customerEmail={customerEmail}
+
               />
             </section>
           </div>

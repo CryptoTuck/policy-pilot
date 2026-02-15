@@ -14,6 +14,9 @@ import {
 } from '@/lib/supabase';
 import { getOpenAIClient } from '@/lib/openai';
 import { POLICY_GRADING_SYSTEM_PROMPT } from '@/lib/grading-prompt';
+import { sendReportEmail } from '@/lib/resend';
+import { generateReportPdf } from '@/lib/pdf-report';
+import type { PolicyReport } from '@/types/grading';
 
 /**
  * New Canopy Webhook Endpoint
@@ -382,6 +385,47 @@ export async function POST(request: NextRequest) {
     const reportUrl = `${baseUrl}/report/${submissionId}`;
 
     console.log('[Canopy Webhook] Success! Report URL:', reportUrl);
+
+    // Auto-send email with PDF report if customer email is available
+    if (customerEmail) {
+      try {
+        const report: PolicyReport = {
+          id: submissionId,
+          generatedAt: new Date().toISOString(),
+          homeGrade: gradeResult.homeGrade,
+          autoGrade: gradeResult.autoGrade,
+          autoGrades: gradeResult.autoGrades,
+          rentersGrade: gradeResult.rentersGrade,
+          combinedGrade: scoreToGrade(calculateOverallScore(gradeResult)),
+          combinedScore: calculateOverallScore(gradeResult),
+          carrierAnalysis: gradeResult.carrierAnalysis,
+          carriers: gradeResult.carriers,
+        };
+
+        let attachments: { filename: string; content: Buffer }[] | undefined;
+        try {
+          const pdfBuffer = await generateReportPdf(report);
+          attachments = [{ filename: 'PolicyPilot-Report.pdf', content: pdfBuffer }];
+        } catch (pdfError) {
+          console.error('[Canopy Webhook] PDF generation failed, sending email without attachment:', pdfError);
+        }
+
+        const emailResult = await sendReportEmail({
+          to: customerEmail,
+          customerName: customerFirstName || undefined,
+          reportUrl,
+          attachments,
+        });
+
+        if (emailResult.success) {
+          console.log('[Canopy Webhook] Report email sent to', customerEmail, 'emailId:', emailResult.emailId);
+        } else {
+          console.error('[Canopy Webhook] Failed to send report email:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('[Canopy Webhook] Email send error (non-fatal):', emailError);
+      }
+    }
 
     return NextResponse.json({
       success: true,
