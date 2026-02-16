@@ -30,24 +30,41 @@ interface Stats {
   gradeDF: number;
 }
 
-function getGradeColor(grade: string | null) {
+// Obsidian color tokens
+const c = {
+  base: '#0a0a0b',
+  panel: '#0f0f12',
+  card: '#14141a',
+  border: '#1e1e28',
+  text: '#e8e8ed',
+  muted: '#8a8a9a',
+  accent1: '#0ea5e9',
+  accent2: '#06b6d4',
+  gradient: 'linear-gradient(90deg, #0ea5e9, #06b6d4)',
+  glow: '0 0 0 1px rgba(14,165,233,0.35), 0 0 18px rgba(6,182,212,0.2)',
+  success: '#22c55e',
+  warning: '#f59e0b',
+  error: '#ef4444',
+};
+
+function getGradeColor(grade: string | null): { bg: string; text: string } {
   switch (grade) {
-    case 'A': return 'bg-green-100 text-green-700';
-    case 'B': return 'bg-blue-100 text-blue-700';
-    case 'C': return 'bg-amber-100 text-amber-700';
-    case 'D': return 'bg-orange-100 text-orange-700';
-    case 'F': return 'bg-red-100 text-red-700';
-    default: return 'bg-gray-100 text-gray-500';
+    case 'A': return { bg: 'rgba(34,197,94,0.15)', text: '#22c55e' };
+    case 'B': return { bg: 'rgba(14,165,233,0.15)', text: '#0ea5e9' };
+    case 'C': return { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b' };
+    case 'D': return { bg: 'rgba(249,115,22,0.15)', text: '#f97316' };
+    case 'F': return { bg: 'rgba(239,68,68,0.15)', text: '#ef4444' };
+    default: return { bg: 'rgba(138,138,154,0.1)', text: '#8a8a9a' };
   }
 }
 
-function getStatusColor(status: string) {
+function getStatusStyle(status: string): { bg: string; text: string } {
   switch (status) {
-    case 'completed': return 'bg-green-100 text-green-700';
-    case 'processing': return 'bg-blue-100 text-blue-700';
-    case 'pending': return 'bg-amber-100 text-amber-700';
-    case 'failed': return 'bg-red-100 text-red-700';
-    default: return 'bg-gray-100 text-gray-500';
+    case 'completed': return { bg: 'rgba(34,197,94,0.15)', text: '#22c55e' };
+    case 'processing': return { bg: 'rgba(14,165,233,0.15)', text: '#0ea5e9' };
+    case 'pending': return { bg: 'rgba(245,158,11,0.15)', text: '#f59e0b' };
+    case 'failed': return { bg: 'rgba(239,68,68,0.15)', text: '#ef4444' };
+    default: return { bg: 'rgba(138,138,154,0.1)', text: '#8a8a9a' };
   }
 }
 
@@ -55,14 +72,8 @@ export function AdminDashboardClient() {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<Stats>({
-    total: 0,
-    completed: 0,
-    pending: 0,
-    failed: 0,
-    gradeA: 0,
-    gradeB: 0,
-    gradeC: 0,
-    gradeDF: 0,
+    total: 0, completed: 0, pending: 0, failed: 0,
+    gradeA: 0, gradeB: 0, gradeC: 0, gradeDF: 0,
   });
 
   useEffect(() => {
@@ -73,10 +84,8 @@ export function AdminDashboardClient() {
     try {
       const res = await fetch('/api/admin/submissions?limit=100');
       const data = await res.json();
-      
       if (res.ok) {
         setSubmissions(data.submissions || []);
-        
         const subs = data.submissions || [];
         setStats({
           total: subs.length,
@@ -96,240 +105,191 @@ export function AdminDashboardClient() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
   const getCustomerName = (sub: Submission) => {
-    if (sub.customer_first_name || sub.customer_last_name) {
+    if (sub.customer_first_name || sub.customer_last_name)
       return `${sub.customer_first_name || ''} ${sub.customer_last_name || ''}`.trim();
-    }
     return sub.customer_email?.split('@')[0] || 'Unknown';
   };
 
+  const StatCard = ({ label, value, color }: { label: string; value: number; color: string }) => (
+    <div className="rounded-xl p-4 relative overflow-hidden transition-all" style={{ background: c.card, border: `1px solid ${c.border}` }}
+      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = c.glow; }}
+      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
+    >
+      <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: c.gradient, opacity: 0.6 }} />
+      <p className="text-3xl font-bold" style={{ color }}>{value}</p>
+      <p className="text-xs mt-1" style={{ color: c.muted }}>{label}</p>
+    </div>
+  );
+
+  const gradeBarData = [
+    { grade: 'A', count: stats.gradeA, color: '#22c55e' },
+    { grade: 'B', count: stats.gradeB, color: '#0ea5e9' },
+    { grade: 'C', count: stats.gradeC, color: '#f59e0b' },
+    { grade: 'D/F', count: stats.gradeDF, color: '#ef4444' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen" style={{ background: c.base, color: c.text }}>
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="Policy Pilot" className="w-10 h-10 rounded-xl shadow-lg shadow-blue-500/20" />
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">Policy Pilot</h1>
-                <p className="text-xs text-gray-500">Admin Dashboard</p>
-              </div>
+      <header className="sticky top-0 z-20 backdrop-blur-lg" style={{ background: 'rgba(15,15,18,0.85)', borderBottom: `1px solid ${c.border}` }}>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Policy Pilot" className="w-10 h-10 rounded-xl" style={{ boxShadow: '0 0 15px rgba(14,165,233,0.3)' }} />
+            <div>
+              <h1 className="text-lg font-bold" style={{ background: c.gradient, WebkitBackgroundClip: 'text', color: 'transparent' }}>Policy Pilot</h1>
+              <p className="text-xs" style={{ color: c.muted }}>Admin Dashboard</p>
             </div>
-            <button
-              onClick={() => {
-                document.cookie = 'admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                window.location.href = '/admin';
-              }}
-              className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-            >
-              Sign Out
-            </button>
           </div>
+          <button
+            onClick={() => { document.cookie = 'admin_session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; window.location.href = '/admin'; }}
+            className="text-sm px-3 py-2 rounded-lg transition-colors cursor-pointer"
+            style={{ color: c.muted }}
+            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = c.text; (e.target as HTMLElement).style.background = 'rgba(138,138,154,0.1)'; }}
+            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = c.muted; (e.target as HTMLElement).style.background = 'transparent'; }}
+          >
+            Sign Out
+          </button>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-                <p className="text-xs text-gray-500">Total Leads</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-                <p className="text-xs text-gray-500">Completed</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-amber-600">{stats.pending}</p>
-                <p className="text-xs text-gray-500">Pending</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div>
-                <p className="text-2xl font-bold text-red-600">{stats.failed}</p>
-                <p className="text-xs text-gray-500">Failed</p>
-              </div>
-            </div>
-          </div>
+          <StatCard label="Total Leads" value={stats.total} color={c.accent1} />
+          <StatCard label="Completed" value={stats.completed} color={c.success} />
+          <StatCard label="Pending" value={stats.pending} color={c.warning} />
+          <StatCard label="Failed" value={stats.failed} color={c.error} />
         </div>
 
         {/* Grade Distribution */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100/50 mb-6">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Grade Distribution</h2>
+        <div className="rounded-xl p-5 mb-6 relative overflow-hidden" style={{ background: c.card, border: `1px solid ${c.border}` }}>
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: c.gradient, opacity: 0.6 }} />
+          <h2 className="text-sm font-semibold mb-4" style={{ color: c.text }}>Grade Distribution</h2>
           <div className="flex gap-3">
-            {[
-              { grade: 'A', count: stats.gradeA, color: 'green' },
-              { grade: 'B', count: stats.gradeB, color: 'blue' },
-              { grade: 'C', count: stats.gradeC, color: 'amber' },
-              { grade: 'D/F', count: stats.gradeDF, color: 'red' },
-            ].map(({ grade, count, color }) => (
+            {gradeBarData.map(({ grade, count, color }) => (
               <div key={grade} className="flex-1 text-center">
-                <div className={`h-20 bg-${color}-50 rounded-xl flex items-end justify-center pb-2 relative overflow-hidden`}>
-                  <div 
-                    className={`absolute bottom-0 left-0 right-0 bg-${color}-500 transition-all duration-500`}
-                    style={{ height: `${stats.total ? Math.max((count / stats.total) * 100, count > 0 ? 10 : 0) : 0}%` }}
+                <div className="h-20 rounded-xl flex items-end justify-center pb-2 relative overflow-hidden" style={{ background: 'rgba(138,138,154,0.05)' }}>
+                  <div
+                    className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-xl"
+                    style={{ height: `${stats.total ? Math.max((count / stats.total) * 100, count > 0 ? 10 : 0) : 0}%`, background: color, opacity: 0.7 }}
                   />
-                  <span className={`relative z-10 font-bold text-${color}-700 text-lg`}>{count}</span>
+                  <span className="relative z-10 font-bold text-lg" style={{ color }}>{count}</span>
                 </div>
-                <p className="mt-2 font-semibold text-gray-700 text-sm">{grade}</p>
+                <p className="mt-2 font-semibold text-sm" style={{ color: c.muted }}>{grade}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Leads List */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-900">All Leads</h2>
+        {/* Leads Table */}
+        <div className="rounded-xl overflow-hidden relative" style={{ background: c.card, border: `1px solid ${c.border}` }}>
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: c.gradient, opacity: 0.6 }} />
+          <div className="px-5 py-4" style={{ borderBottom: `1px solid ${c.border}` }}>
+            <h2 className="text-sm font-semibold" style={{ color: c.text }}>All Leads</h2>
           </div>
 
           {loading ? (
             <div className="p-8 text-center">
-              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-gray-500 text-sm">Loading...</p>
+              <div className="w-8 h-8 border-2 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: c.accent1, borderTopColor: 'transparent' }} />
+              <p className="text-sm" style={{ color: c.muted }}>Loading...</p>
             </div>
           ) : submissions.length === 0 ? (
             <div className="p-8 text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-              </div>
-              <p className="text-gray-500">No leads yet</p>
+              <p style={{ color: c.muted }}>No leads yet</p>
             </div>
           ) : (
             <>
               {/* Desktop Table */}
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50/50">
-                    <tr>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Lead</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Carrier</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Grade</th>
-                      <th className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+                  <thead>
+                    <tr style={{ background: c.panel }}>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: c.muted }}>Lead</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: c.muted }}>Carrier</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: c.muted }}>Status</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: c.muted }}>Grade</th>
+                      <th className="px-5 py-3 text-left text-xs font-semibold uppercase" style={{ color: c.muted }}>Date</th>
                       <th className="px-5 py-3"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {submissions.map((sub) => (
-                      <tr key={sub.id} className="hover:bg-gray-50/50 transition-colors">
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-gray-900">{getCustomerName(sub)}</p>
-                          {sub.customer_email && (
-                            <p className="text-xs text-gray-500 mt-0.5">{sub.customer_email}</p>
-                          )}
-                        </td>
-                        <td className="px-5 py-4">
-                          <span className="text-sm text-gray-700">
-                            {sub.insurance_provider_friendly || sub.insurance_provider || '—'}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(sub.status)}`}>
-                            {sub.status}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4">
-                          <span className={`w-8 h-8 rounded-full text-sm font-bold inline-flex items-center justify-center ${getGradeColor(sub.overallGrade)}`}>
-                            {sub.overallGrade || '—'}
-                          </span>
-                        </td>
-                        <td className="px-5 py-4 text-sm text-gray-500">
-                          {formatDate(sub.created_at)}
-                        </td>
-                        <td className="px-5 py-4">
-                          <Link
-                            href={`/admin/dashboard/${sub.id}`}
-                            className="text-blue-600 hover:text-blue-700 font-medium text-sm inline-flex items-center gap-1"
-                          >
-                            View
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
+                  <tbody>
+                    {submissions.map((sub) => {
+                      const gradeStyle = getGradeColor(sub.overallGrade);
+                      const statusStyle = getStatusStyle(sub.status);
+                      return (
+                        <tr key={sub.id} className="transition-colors" style={{ borderBottom: `1px solid ${c.border}` }}
+                          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(138,138,154,0.04)'; }}
+                          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                        >
+                          <td className="px-5 py-4">
+                            <p className="font-medium" style={{ color: c.text }}>{getCustomerName(sub)}</p>
+                            {sub.customer_email && <p className="text-xs mt-0.5" style={{ color: c.muted }}>{sub.customer_email}</p>}
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="text-sm" style={{ color: c.muted }}>{sub.insurance_provider_friendly || sub.insurance_provider || '—'}</span>
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-medium" style={{ background: statusStyle.bg, color: statusStyle.text }}>{sub.status}</span>
+                          </td>
+                          <td className="px-5 py-4">
+                            <span className="w-8 h-8 rounded-full text-sm font-bold inline-flex items-center justify-center" style={{ background: gradeStyle.bg, color: gradeStyle.text }}>
+                              {sub.overallGrade || '—'}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 text-sm" style={{ color: c.muted }}>{formatDate(sub.created_at)}</td>
+                          <td className="px-5 py-4">
+                            <Link href={`/admin/dashboard/${sub.id}`} className="font-medium text-sm inline-flex items-center gap-1 transition-colors" style={{ color: c.accent1 }}
+                              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = c.accent2; }}
+                              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = c.accent1; }}
+                            >
+                              View
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
               {/* Mobile Cards */}
-              <div className="md:hidden divide-y divide-gray-100">
-                {submissions.map((sub) => (
-                  <Link
-                    key={sub.id}
-                    href={`/admin/dashboard/${sub.id}`}
-                    className="block p-4 hover:bg-gray-50/50 active:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-gray-900 truncate">{getCustomerName(sub)}</p>
-                          <span className={`w-7 h-7 rounded-full text-xs font-bold inline-flex items-center justify-center flex-shrink-0 ${getGradeColor(sub.overallGrade)}`}>
-                            {sub.overallGrade || '—'}
-                          </span>
+              <div className="md:hidden">
+                {submissions.map((sub) => {
+                  const gradeStyle = getGradeColor(sub.overallGrade);
+                  const statusStyle = getStatusStyle(sub.status);
+                  return (
+                    <Link key={sub.id} href={`/admin/dashboard/${sub.id}`} className="block p-4 transition-colors" style={{ borderBottom: `1px solid ${c.border}` }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'rgba(138,138,154,0.04)'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-semibold truncate" style={{ color: c.text }}>{getCustomerName(sub)}</p>
+                            <span className="w-7 h-7 rounded-full text-xs font-bold inline-flex items-center justify-center flex-shrink-0" style={{ background: gradeStyle.bg, color: gradeStyle.text }}>
+                              {sub.overallGrade || '—'}
+                            </span>
+                          </div>
+                          <p className="text-sm truncate" style={{ color: c.muted }}>{sub.insurance_provider_friendly || sub.insurance_provider || 'Unknown carrier'}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: statusStyle.bg, color: statusStyle.text }}>{sub.status}</span>
+                            <span className="text-xs" style={{ color: c.muted }}>{formatDate(sub.created_at)}</span>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-500 truncate">
-                          {sub.insurance_provider_friendly || sub.insurance_provider || 'Unknown carrier'}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(sub.status)}`}>
-                            {sub.status}
-                          </span>
-                          <span className="text-xs text-gray-400">{formatDate(sub.created_at)}</span>
-                        </div>
+                        <svg className="w-5 h-5 flex-shrink-0" style={{ color: c.muted }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </>
           )}
