@@ -4,7 +4,8 @@
  * Events:
  * - PageView: fires on every page (handled by pixel init)
  * - ViewContent: landing page load
- * - StartRegistration (custom): user clicks "See My Policy Pilot Score"
+ * - StartRegistration (custom): user clicks any CTA to /get-policy on the landing page
+ * - OpenedCanopyConnect (custom): user clicks "Get my policy" on the get-policy page
  * - Lead: AI report page loads
  * - Contact: user clicks any "Contact Agent" CTA button
  *
@@ -108,6 +109,11 @@ export function fbTrackLead(eventId?: string) {
       window.fbq('track', 'Lead');
     }
   }
+}
+
+/** User clicks "Get my policy" and opens Canopy Connect */
+export function fbTrackOpenedCanopyConnect() {
+  trackFbCustomEvent('OpenedCanopyConnect');
 }
 
 /** User clicks any "Contact Agent" CTA */

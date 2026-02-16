@@ -9,7 +9,7 @@ import {
   trackGetPolicyPageView,
   trackGetPolicyStarted,
 } from '@/lib/analytics';
-import { fbTrackStartRegistration } from '@/lib/facebook-pixel';
+import { fbTrackOpenedCanopyConnect } from '@/lib/facebook-pixel';
 
 type CanopyHandler = {
   open: () => void;
@@ -135,7 +135,7 @@ export default function GetPolicyPage() {
     }
 
     trackGetPolicyStarted();
-    fbTrackStartRegistration();
+    fbTrackOpenedCanopyConnect();
 
     // Generate a unique session token to correlate this user with their webhook report
     const token = crypto.randomUUID();

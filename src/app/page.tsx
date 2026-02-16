@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState, useEffect } from 'react';
-import { fbTrackViewContent } from '@/lib/facebook-pixel';
+import { fbTrackViewContent, fbTrackStartRegistration } from '@/lib/facebook-pixel';
 
 export default function Home() {
   useEffect(() => {
@@ -65,6 +65,7 @@ export default function Home() {
           </div>
           <Link
             href="/get-policy"
+            onClick={() => fbTrackStartRegistration()}
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
           >
             Get My Free Score
@@ -109,6 +110,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
                 href="/get-policy"
+                onClick={() => fbTrackStartRegistration()}
                 className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-7 py-3 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
               >
                 See My PolicyPilot Score &rarr;
@@ -541,6 +543,7 @@ export default function Home() {
           <div className="mt-12 text-center">
             <Link
               href="/get-policy"
+              onClick={() => fbTrackStartRegistration()}
               className="group inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
             >
               See Your Score
@@ -835,6 +838,7 @@ export default function Home() {
           <div className="mt-10">
             <Link
               href="/get-policy"
+              onClick={() => fbTrackStartRegistration()}
               className="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-base font-semibold text-slate-900 shadow-lg transition-all duration-200 hover:-translate-y-0.5"
             >
               Get My Free Score
