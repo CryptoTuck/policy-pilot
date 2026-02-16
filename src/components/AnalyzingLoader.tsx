@@ -17,7 +17,7 @@ const ANALYSIS_STEPS = [
 
 const TIPS = [
   'Did you know? Bundling home and auto can save 10-25% on premiums.',
-  'Tip: UM/UIM coverage should match your liability limits for best protection.',
+  'Tip: Uninsured Motorist/Underinsured Motorist coverage should match your liability limits for best protection.',
   'Fun fact: Most carriers consider $100k liability outdated by modern standards.',
   'Pro tip: A deductible over 2% of your home value may strain finances in a claim.',
 ];

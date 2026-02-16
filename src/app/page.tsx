@@ -435,7 +435,7 @@ export default function Home() {
               <div className="mt-3 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 p-4 text-white">
                 <p className="text-xs font-semibold uppercase tracking-wide">Section Analysis</p>
                 <p className="mt-1 text-sm font-bold">4 critical gaps found</p>
-                <p className="mt-1 text-xs text-white/90">Liability below carrier minimums, missing endorsements, and UM/UIM mismatch.</p>
+                <p className="mt-1 text-xs text-white/90">Liability below carrier minimums, missing endorsements, and Uninsured/Underinsured Motorist mismatch.</p>
               </div>
             </div>
             </div>
@@ -533,7 +533,7 @@ export default function Home() {
               <div className="mt-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 p-4 text-white">
                 <p className="text-xs font-semibold uppercase tracking-wide">Section Analysis</p>
                 <p className="mt-1 text-sm font-bold">All gaps resolved</p>
-                <p className="mt-1 text-xs text-white/90">Coverage aligned with carrier standards. Liability, UM/UIM, and endorsements optimized.</p>
+                <p className="mt-1 text-xs text-white/90">Coverage aligned with carrier standards. Liability, Uninsured/Underinsured Motorist, and endorsements optimized.</p>
               </div>
             </div>
             </div>

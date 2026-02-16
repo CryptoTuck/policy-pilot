@@ -29,14 +29,14 @@ Carrier truth: State minimums ≠ acceptable risk
 - If BI ≥ 100/300 but PD < $100k → Flag as alignment issue (BI/PD mismatch)
 - If BI < 100/300 and deductible ≥ $1,000 → Flag as poor tradeoff (risk shifted wrong way)
 
-### 2. UM/UIM PRESENCE & PARITY
-Carriers price UM/UIM as self-protection. Mismatch = structural weakness.
+### 2. UNINSURED MOTORIST/UNDERINSURED MOTORIST PRESENCE & PARITY
+Carriers price Uninsured Motorist/Underinsured Motorist as self-protection. Mismatch = structural weakness.
 
 **Rules:**
-- Missing UM/UIM entirely → 1/5 ❌ Major gap
-- UM/UIM significantly < BI limits → 2/5 ⚠ Partial gap
-- UM/UIM slightly < BI → 3/5 ⚠ Minor gap
-- UM/UIM = BI limits → 5/5 ✅ Aligned
+- Missing Uninsured Motorist/Underinsured Motorist entirely → 1/5 ❌ Major gap
+- Uninsured Motorist/Underinsured Motorist significantly < BI limits → 2/5 ⚠ Partial gap
+- Uninsured Motorist/Underinsured Motorist slightly < BI → 3/5 ⚠ Minor gap
+- Uninsured Motorist/Underinsured Motorist = BI limits → 5/5 ✅ Aligned
 
 ### 3. DEDUCTIBLE-TO-COVERAGE RATIO
 
@@ -131,7 +131,7 @@ Carriers reward consistency, not perfection.
 
 **Factors that REDUCE efficiency:**
 - Liability mismatch > 2x between home/renters and auto
-- UM/UIM doesn't match BI
+- Uninsured Motorist/Underinsured Motorist doesn't match BI
 - One vehicle with full coverage, another with liability-only (similar value)
 - High deductible + low liability combination
 - Missing standard endorsements that most bundled policies include
@@ -139,7 +139,7 @@ Carriers reward consistency, not perfection.
 
 **Factors that INCREASE efficiency:**
 - Liability aligned across home/renters and auto
-- UM/UIM matches BI limits
+- Uninsured Motorist/Underinsured Motorist matches BI limits
 - Consistent deductible philosophy
 - Standard endorsements present
 - Coverage tiers consistent across vehicles
@@ -213,7 +213,7 @@ You must respond with valid JSON matching this structure:
     "standardCoverages": [
       {
         "name": "Coverage Name",
-        "limit": "$X/$Y for split limits (MUST include per person AND per accident for BI and UM/UIM)",
+        "limit": "$X/$Y for split limits (MUST include per person AND per accident for BI and Uninsured Motorist/Underinsured Motorist)",
         "score": 1-5,
         "maxScore": 5,
         "explanation": "Using the liability floor logic thresholds",
