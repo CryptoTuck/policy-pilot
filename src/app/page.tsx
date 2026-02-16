@@ -104,7 +104,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 max-w-xl text-lg text-slate-300 sm:text-xl">
               Connect your policy to see your current coverage and get a clear, unbiased score. Understand
-              your existing coverage, what&apos;s missing, and whether you&apos;re overpaying&mdash;instantly.
+              your existing coverage, what&apos;s missing, and where you may have gaps&mdash;instantly.
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
@@ -657,8 +657,8 @@ export default function Home() {
                 desc: 'You authenticate directly with your carrier through Canopy Connect.',
               },
               {
-                title: 'Your data is never sold',
-                desc: 'We only use your information to generate your PolicyPilot Score.',
+                title: 'Your data stays protected',
+                desc: 'Your information is handled securely and in accordance with our privacy policy.',
               },
             ].map((item) => (
               <div key={item.title} className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
@@ -708,7 +708,7 @@ export default function Home() {
               {
                 quote:
                   "PolicyPilot made our coverage crystal clear. We dropped overlaps and saved hundreds without losing protection.",
-                name: 'Sarah M.',
+                name: 'Tucker G.',
                 title: 'Homeowner, Austin, TX',
                 rating: 5,
                 timeAgo: '2 weeks ago',
@@ -716,7 +716,7 @@ export default function Home() {
               {
                 quote:
                   "I finally understand what my renters policy does — and what it doesn't. The score was spot on.",
-                name: 'James K.',
+                name: 'Brandon P.',
                 title: 'Renter, Miami, FL',
                 rating: 5,
                 timeAgo: '1 month ago',
@@ -724,7 +724,7 @@ export default function Home() {
               {
                 quote:
                   'Our agent appreciated the report and used it immediately. The recommendations were the exact changes we needed.',
-                name: 'Michelle R.',
+                name: 'Tom D.',
                 title: 'Homeowner, Seattle, WA',
                 rating: 5,
                 timeAgo: '3 weeks ago',

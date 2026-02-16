@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
-import { DevButton } from '@/components/DevButton';
 import { AnalyzingLoader } from '@/components/AnalyzingLoader';
 import {
   trackGetPolicyPageView,
@@ -277,9 +276,6 @@ export default function GetPolicyPage() {
                 <span className="text-gray-600">Login to your carrier</span>
               </div>
             </div>
-
-            {/* Dev mode test button */}
-            <DevButton />
           </div>
         </div>
       </div>
