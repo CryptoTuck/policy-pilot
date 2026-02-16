@@ -62,9 +62,11 @@ export async function sendReportEmail(
 
     const subject = 'Your Policy Pilot Report is Ready!';
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
     const html = buildReportEmailHtml({
       customerName,
       reportUrl,
+      baseUrl,
     });
 
     const { data, error } = await resend.emails.send({
@@ -129,10 +131,11 @@ export async function sendNotificationEmail(
 interface EmailTemplateParams {
   customerName?: string;
   reportUrl: string;
+  baseUrl: string;
 }
 
 function buildReportEmailHtml(params: EmailTemplateParams): string {
-  const { customerName, reportUrl } = params;
+  const { customerName, reportUrl, baseUrl } = params;
   const greeting = customerName ? `Hi ${customerName},` : 'Hi there,';
 
   return `<!DOCTYPE html>
@@ -147,9 +150,7 @@ function buildReportEmailHtml(params: EmailTemplateParams): string {
 
     <!-- Header -->
     <div style="text-align: center; margin-bottom: 32px;">
-      <div style="display: inline-block; width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #06b6d4); border-radius: 10px; line-height: 40px; margin-bottom: 8px;">
-        <span style="color: white; font-size: 20px;">✈</span>
-      </div>
+      <img src="${baseUrl}/logo.png" alt="Policy Pilot" width="40" height="40" style="border-radius: 10px; margin-bottom: 8px;" />
       <h1 style="margin: 8px 0 0; font-size: 24px; font-weight: 700; color: #111827;">Policy Pilot</h1>
     </div>
 
