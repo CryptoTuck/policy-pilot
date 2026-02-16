@@ -60,6 +60,16 @@ export function initFacebookPixel() {
 }
 
 /**
+ * Fire a PageView event. Call on every client-side route change
+ * so Meta sees a PageView for each page in the SPA.
+ */
+export function fbTrackPageView() {
+  if (typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'PageView');
+  }
+}
+
+/**
  * Fire a standard Facebook Pixel event.
  */
 function trackFbEvent(eventName: string, params?: Record<string, unknown>) {
