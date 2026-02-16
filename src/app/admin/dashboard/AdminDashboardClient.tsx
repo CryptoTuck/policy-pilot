@@ -126,11 +126,13 @@ export function AdminDashboardClient() {
   );
 
   const gradeBarData = [
-    { grade: 'A', count: stats.gradeA, color: '#22c55e' },
-    { grade: 'B', count: stats.gradeB, color: '#0ea5e9' },
-    { grade: 'C', count: stats.gradeC, color: '#f59e0b' },
-    { grade: 'D/F', count: stats.gradeDF, color: '#ef4444' },
+    { grade: 'A', label: 'Excellent', count: stats.gradeA, color: '#22c55e', glow: 'rgba(34,197,94,0.4)', ring: 'rgba(34,197,94,0.15)' },
+    { grade: 'B', label: 'Good', count: stats.gradeB, color: '#0ea5e9', glow: 'rgba(14,165,233,0.4)', ring: 'rgba(14,165,233,0.15)' },
+    { grade: 'C', label: 'Fair', count: stats.gradeC, color: '#f59e0b', glow: 'rgba(245,158,11,0.4)', ring: 'rgba(245,158,11,0.15)' },
+    { grade: 'D/F', label: 'Poor', count: stats.gradeDF, color: '#ef4444', glow: 'rgba(239,68,68,0.4)', ring: 'rgba(239,68,68,0.15)' },
   ];
+  const maxGradeCount = Math.max(...gradeBarData.map(d => d.count), 1);
+  const totalGraded = gradeBarData.reduce((sum, d) => sum + d.count, 0);
 
   return (
     <div className="min-h-screen" style={{ background: c.base, color: c.text }}>
@@ -168,20 +170,61 @@ export function AdminDashboardClient() {
         {/* Grade Distribution */}
         <div className="rounded-xl p-5 mb-6 relative overflow-hidden" style={{ background: c.card, border: `1px solid ${c.border}` }}>
           <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: c.gradient, opacity: 0.6 }} />
-          <h2 className="text-sm font-semibold mb-4" style={{ color: c.text }}>Grade Distribution</h2>
-          <div className="flex gap-3">
-            {gradeBarData.map(({ grade, count, color }) => (
-              <div key={grade} className="flex-1 text-center">
-                <div className="h-20 rounded-xl flex items-end justify-center pb-2 relative overflow-hidden" style={{ background: 'rgba(138,138,154,0.05)' }}>
-                  <div
-                    className="absolute bottom-0 left-0 right-0 transition-all duration-500 rounded-b-xl"
-                    style={{ height: `${stats.total ? Math.max((count / stats.total) * 100, count > 0 ? 10 : 0) : 0}%`, background: color, opacity: 0.7 }}
-                  />
-                  <span className="relative z-10 font-bold text-lg" style={{ color }}>{count}</span>
+          {/* Subtle radial glow behind the section */}
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(14,165,233,0.04) 0%, transparent 60%)' }} />
+
+          <div className="flex items-center justify-between mb-6 relative">
+            <h2 className="text-sm font-semibold tracking-wide uppercase" style={{ color: c.muted, letterSpacing: '0.08em' }}>Grade Distribution</h2>
+            {totalGraded > 0 && (
+              <span className="text-xs px-2.5 py-1 rounded-full" style={{ background: 'rgba(14,165,233,0.1)', color: c.accent1 }}>
+                {totalGraded} graded
+              </span>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 relative">
+            {gradeBarData.map(({ grade, label, count, color, glow, ring }) => {
+              const pct = totalGraded > 0 ? Math.round((count / totalGraded) * 100) : 0;
+              const barWidth = maxGradeCount > 0 ? Math.max((count / maxGradeCount) * 100, count > 0 ? 8 : 0) : 0;
+              return (
+                <div
+                  key={grade}
+                  className="rounded-xl p-4 relative overflow-hidden transition-all duration-300 group"
+                  style={{ background: ring, border: `1px solid ${color}22` }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 1px ${color}44, 0 0 20px ${glow}`; (e.currentTarget as HTMLElement).style.borderColor = `${color}55`; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = 'none'; (e.currentTarget as HTMLElement).style.borderColor = `${color}22`; }}
+                >
+                  {/* Top row: grade badge + count */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2.5">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-lg transition-transform duration-300"
+                        style={{ background: `${color}22`, color, boxShadow: `inset 0 0 12px ${color}15` }}
+                      >
+                        {grade}
+                      </div>
+                      <div>
+                        <p className="text-[11px] font-medium uppercase tracking-wider" style={{ color: c.muted }}>{label}</p>
+                        <p className="text-xl font-bold leading-tight" style={{ color }}>{count}</p>
+                      </div>
+                    </div>
+                    <span className="text-lg font-bold tabular-nums" style={{ color: `${color}99` }}>{pct}%</span>
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${color}11` }}>
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out"
+                      style={{
+                        width: `${barWidth}%`,
+                        background: `linear-gradient(90deg, ${color}cc, ${color})`,
+                        boxShadow: `0 0 8px ${glow}`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <p className="mt-2 font-semibold text-sm" style={{ color: c.muted }}>{grade}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
