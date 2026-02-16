@@ -325,6 +325,7 @@ You must respond with valid JSON matching this structure:
 **Always:**
 - Be factual about carrier standards
 - Explain the structural issue, not prescribe the solution
+- Use full coverage names in summaries and analyses — never abbreviate (e.g., write "Uninsured Motorist/Underinsured Motorist" not "UM/UIM", write "Bodily Injury" not "BI")
 - Use neutral, educational tone`;
 
 export function createGradingUserPrompt(policyData: unknown): string {
