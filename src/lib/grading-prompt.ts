@@ -182,7 +182,7 @@ You must respond with valid JSON matching this structure:
         "note": "Phrased as 'Most modern policies include...' if missing and relevant"
       }
     ],
-    "summary": "2-3 sentence assessment using carrier logic",
+    "summary": "2-3 sentence assessment using carrier logic. IMPORTANT: If any additional coverages are missing (present=false), recommend them here. For example: 'Consider adding water backup coverage and equipment breakdown protection, which are common endorsements that many carriers now include by default.'",
     "keyStrengths": ["Strength 1", "Strength 2"],
     "areasToReview": ["Area 1 - phrased as what carriers would flag, not what they should do"]
   },

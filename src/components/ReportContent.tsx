@@ -277,18 +277,12 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Home Policy Section */}
       {showHome && homeGrade && (() => {
-        const allHomeCoverages = [
+        const scoredCoverages = [
           ...homeGrade.standardCoverages,
           homeGrade.deductibleGrade,
-          ...homeGrade.additionalCoverages.map(c => ({
-            name: c.name,
-            limit: c.limit || (c.present ? 'Included' : 'Not included'),
-            score: c.present ? 5 : 3,
-            maxScore: 5 as const,
-            explanation: c.note || '',
-          })),
         ];
-        const allScores = calculateSectionScore(allHomeCoverages);
+        const sectionScores = calculateSectionScore(scoredCoverages);
+        const presentAdditional = homeGrade.additionalCoverages.filter(c => c.present);
 
         return (
           <div id="home">
@@ -301,16 +295,23 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 Home Coverages
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                Standard coverages, deductibles, and endorsements
+                Standard coverages and deductibles
               </p>
-              <CoverageTable coverages={allHomeCoverages} />
+              <CoverageTable coverages={scoredCoverages} />
+
+              {presentAdditional.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold text-gray-900 mb-1">Additional Coverages</h4>
+                  <p className="text-sm text-gray-500 mb-3">Bonus coverages included on your policy</p>
+                  <AdditionalCoverageTable coverages={presentAdditional} />
+                </div>
+              )}
 
               <SectionAnalysis
                 title="Home Coverage"
-                score={allScores.score}
-                maxScore={allScores.maxScore}
+                score={sectionScores.score}
+                maxScore={sectionScores.maxScore}
                 analysis={homeGrade.summary}
-
               />
             </section>
           </div>
@@ -357,18 +358,12 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Renters Policy Section */}
       {showRenters && rentersGrade && (() => {
-        const allRentersCoverages = [
+        const scoredCoverages = [
           ...rentersGrade.standardCoverages,
           ...(rentersGrade.deductibleGrade ? [rentersGrade.deductibleGrade] : []),
-          ...(rentersGrade.additionalCoverages?.map(c => ({
-            name: c.name,
-            limit: c.limit || (c.present ? 'Included' : 'Not included'),
-            score: c.present ? 5 : 3,
-            maxScore: 5 as const,
-            explanation: c.note || '',
-          })) || []),
         ];
-        const allScores = calculateSectionScore(allRentersCoverages);
+        const sectionScores = calculateSectionScore(scoredCoverages);
+        const presentAdditional = (rentersGrade.additionalCoverages || []).filter(c => c.present);
 
         return (
           <div id="renters" className={(showHome || showAuto) ? 'mt-8' : ''}>
@@ -380,14 +375,21 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Renters Coverages
               </h3>
-              <CoverageTable coverages={allRentersCoverages} />
+              <CoverageTable coverages={scoredCoverages} />
+
+              {presentAdditional.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold text-gray-900 mb-1">Additional Coverages</h4>
+                  <p className="text-sm text-gray-500 mb-3">Bonus coverages included on your policy</p>
+                  <AdditionalCoverageTable coverages={presentAdditional} />
+                </div>
+              )}
 
               <SectionAnalysis
                 title="Renters Coverage"
-                score={allScores.score}
-                maxScore={allScores.maxScore}
+                score={sectionScores.score}
+                maxScore={sectionScores.maxScore}
                 analysis={rentersGrade.summary}
-
               />
             </section>
           </div>
