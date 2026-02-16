@@ -194,8 +194,7 @@ You must respond with valid JSON matching this structure:
   4. Loss of Use (Coverage D) - amount
   5. Personal Liability (Coverage E) - amount
   6. Medical Payments (Coverage F) - amount. If the data shows medical payments, report the amount. If not found, show "Not included"
-  7. All Other Perils Deductible - the deductible amount
-  8. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
+  7. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
 
   HOME additionalCoverages MUST always include ALL of these items:
   1. Water Backup and Sump Overflow - show amount if present, "Not included" if absent
