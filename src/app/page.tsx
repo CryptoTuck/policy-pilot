@@ -1,9 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { fbTrackViewContent } from '@/lib/facebook-pixel';
 
 export default function Home() {
+  useEffect(() => {
+    fbTrackViewContent();
+  }, []);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const faqs = useMemo(

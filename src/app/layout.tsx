@@ -66,6 +66,15 @@ export default function RootLayout({
         style={{ backgroundColor: "#f3f4f6" }}
       >
         <AnalyticsProvider>{children}</AnalyticsProvider>
+        <noscript>
+          <img
+            height="1"
+            width="1"
+            style={{ display: 'none' }}
+            src="https://www.facebook.com/tr?id=930447229423663&ev=PageView&noscript=1"
+            alt=""
+          />
+        </noscript>
       </body>
     </html>
   );

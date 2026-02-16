@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { trackCtaClicked } from '@/lib/analytics';
+import { fbTrackContact } from '@/lib/facebook-pixel';
 
 interface SectionAnalysisProps {
   title: string;
@@ -67,6 +68,7 @@ export function SectionAnalysis({ title, score, maxScore, analysis }: SectionAna
           onClick={() => {
             setShowModal(true);
             trackCtaClicked('section_analysis');
+            fbTrackContact();
           }}
           className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-2.5 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
         >

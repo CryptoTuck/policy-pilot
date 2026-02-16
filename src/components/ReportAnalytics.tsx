@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { trackReportPageView, identifyUser } from '@/lib/analytics';
+import { fbTrackLead } from '@/lib/facebook-pixel';
 
 interface ReportAnalyticsProps {
   reportId: string;
@@ -41,6 +42,7 @@ export function ReportAnalytics({
       hasHomePolicy,
       hasAutoPolicy,
     });
+    fbTrackLead();
   }, [reportId, overallGrade, hasHomePolicy, hasAutoPolicy, customerEmail, customerFirstName, customerLastName]);
 
   return null;

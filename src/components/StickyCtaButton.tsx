@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { trackCtaClicked } from '@/lib/analytics';
+import { fbTrackContact } from '@/lib/facebook-pixel';
 
 export function StickyCtaButton() {
   const [isVisible, setIsVisible] = useState(false);
@@ -35,6 +36,7 @@ export function StickyCtaButton() {
               onClick={() => {
                 setShowModal(true);
                 trackCtaClicked('sticky_bar');
+                fbTrackContact();
               }}
               className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
