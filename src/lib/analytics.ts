@@ -129,3 +129,36 @@ export function trackEmailReportSent(source: 'sticky_modal' | 'section_modal') {
 export function trackEmailReportFailed(source: 'sticky_modal' | 'section_modal', error?: string) {
   amplitude.track('Email Report Failed', { source, error });
 }
+
+// ─── Server-Side Tracking ───────────────────────────────────────────────────
+
+/**
+ * Track an event server-side via Amplitude's HTTP API.
+ * Use this for events that originate on the server (e.g. webhook handlers).
+ */
+export async function trackServerEvent(
+  eventType: string,
+  properties?: Record<string, unknown>,
+  userId?: string,
+) {
+  const apiKey = process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY;
+  if (!apiKey) return;
+
+  try {
+    await fetch('https://api2.amplitude.com/2/httpapi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: apiKey,
+        events: [{
+          event_type: eventType,
+          ...(userId ? { user_id: userId } : { device_id: 'server' }),
+          event_properties: properties,
+          time: Date.now(),
+        }],
+      }),
+    });
+  } catch (error) {
+    console.error('[Analytics] Server-side track failed:', error);
+  }
+}

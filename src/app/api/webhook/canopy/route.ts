@@ -16,6 +16,7 @@ import { getOpenAIClient } from '@/lib/openai';
 import { POLICY_GRADING_SYSTEM_PROMPT } from '@/lib/grading-prompt';
 import { sendReportEmail } from '@/lib/resend';
 import { generateReportPdf } from '@/lib/pdf-report';
+import { trackServerEvent } from '@/lib/analytics';
 import type { PolicyReport } from '@/types/grading';
 
 /**
@@ -379,6 +380,16 @@ export async function POST(request: NextRequest) {
       grading_result: gradeResult,
       formatted_output: formattedByType,
     });
+
+    // Track report generation
+    trackServerEvent('Report Generated', {
+      reportId: submissionId,
+      hasHomePolicy: homePolicies.length > 0,
+      hasAutoPolicy: autoPolicies.length > 0,
+      hasRentersPolicy: rentersPolicies.length > 0,
+      overallGrade: scoreToGrade(calculateOverallScore(gradeResult)),
+      overallScore: calculateOverallScore(gradeResult),
+    }, customerEmail || undefined);
 
     // Build response
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
