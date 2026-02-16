@@ -17,6 +17,7 @@ import { POLICY_GRADING_SYSTEM_PROMPT } from '@/lib/grading-prompt';
 import { sendReportEmail } from '@/lib/resend';
 import { generateReportPdf } from '@/lib/pdf-report';
 import { trackServerEvent } from '@/lib/analytics';
+import { trackFacebookLead } from '@/lib/facebook-conversions';
 import type { PolicyReport } from '@/types/grading';
 
 /**
@@ -390,6 +391,21 @@ export async function POST(request: NextRequest) {
       overallGrade: scoreToGrade(calculateOverallScore(gradeResult)),
       overallScore: calculateOverallScore(gradeResult),
     }, customerEmail || undefined);
+
+    // Send server-side Lead event to Facebook Conversions API
+    trackFacebookLead({
+      email: customerEmail,
+      phone: customerPhone,
+      firstName: customerFirstName,
+      lastName: customerLastName,
+      city: primaryAddress?.city as string | undefined,
+      state: primaryAddress?.state as string | undefined,
+      zip: primaryAddress?.zip as string | undefined,
+      submissionId,
+      insuranceProvider: insuranceProviderFriendly,
+      overallGrade: scoreToGrade(calculateOverallScore(gradeResult)),
+      overallScore: calculateOverallScore(gradeResult),
+    });
 
     // Build response
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';

@@ -100,8 +100,14 @@ export function fbTrackStartRegistration() {
 }
 
 /** AI report page loads */
-export function fbTrackLead() {
-  trackFbEvent('Lead');
+export function fbTrackLead(eventId?: string) {
+  if (typeof window !== 'undefined' && window.fbq) {
+    if (eventId) {
+      window.fbq('track', 'Lead', {}, { eventID: eventId });
+    } else {
+      window.fbq('track', 'Lead');
+    }
+  }
 }
 
 /** User clicks any "Contact Agent" CTA */

@@ -42,7 +42,7 @@ export function ReportAnalytics({
       hasHomePolicy,
       hasAutoPolicy,
     });
-    fbTrackLead();
+    fbTrackLead(`lead_${reportId}`);
   }, [reportId, overallGrade, hasHomePolicy, hasAutoPolicy, customerEmail, customerFirstName, customerLastName]);
 
   return null;
