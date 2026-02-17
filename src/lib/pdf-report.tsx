@@ -411,7 +411,7 @@ function HomeSection({ home, carrier }: { home: HomePolicyGrade; carrier?: strin
         Home Policy Analysis{carrier ? ` (${carrier})` : ''}
       </Text>
       <View style={s.sectionCard}>
-        <Text style={s.sectionCardTitle}>Home Coverages</Text>
+        <Text style={s.sectionCardTitle}>Your Home Coverages</Text>
         <Text style={s.sectionCardSubtitle}>Standard coverages, deductibles, and endorsements</Text>
         <CoverageTable coverages={allCoverages} />
         <SectionAnalysisBar title="Home Coverage" score={scores.score} maxScore={scores.maxScore} summary={home.summary} />
@@ -437,7 +437,7 @@ function AutoSection({ auto, index }: { auto: AutoPolicyGrade; index?: number })
           )}
         </View>
       )}
-      <Text style={s.sectionCardTitle}>{showVehicleHeader ? 'Coverages' : 'Auto Coverages'}</Text>
+      <Text style={s.sectionCardTitle}>{showVehicleHeader ? 'Your Coverages' : 'Your Auto Coverages'}</Text>
       <CoverageTable coverages={auto.standardCoverages} />
       <SectionAnalysisBar
         title={showVehicleHeader ? `${auto.vehicleInfo || `Policy ${(index ?? 0) + 1}`} Coverage` : 'Auto Coverage'}
@@ -461,7 +461,7 @@ function RentersSection({ renters, carrier }: { renters: RentersPolicyGrade; car
         Renters Policy Analysis{carrier ? ` (${carrier})` : ''}
       </Text>
       <View style={s.sectionCard}>
-        <Text style={s.sectionCardTitle}>Renters Coverages</Text>
+        <Text style={s.sectionCardTitle}>Your Renters Coverages</Text>
         <CoverageTable coverages={allCoverages} />
         <SectionAnalysisBar title="Renters Coverage" score={scores.score} maxScore={scores.maxScore} summary={renters.summary} />
       </View>

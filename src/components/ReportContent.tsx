@@ -292,7 +292,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
             <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
-                Home Coverages
+                Your Home Coverages
               </h3>
               <p className="text-sm text-gray-500 mb-4">
                 Standard coverages and deductibles
@@ -340,7 +340,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               )}
 
               <h4 className="text-xl font-bold text-gray-900 mb-4">
-                {autoPolicies.length > 1 ? 'Coverages' : 'Auto Coverages'}
+                {autoPolicies.length > 1 ? 'Your Coverages' : 'Your Auto Coverages'}
               </h4>
               <CoverageTable coverages={autoPolicy.standardCoverages} />
 
@@ -373,7 +373,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
             <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Renters Coverages
+                Your Renters Coverages
               </h3>
               <CoverageTable coverages={scoredCoverages} />
 
