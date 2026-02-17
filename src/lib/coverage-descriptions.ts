@@ -5,10 +5,11 @@ const coverageDescriptions: Record<string, string> = {
   'personal property': 'This helps replace your belongings — like clothes, furniture, and electronics — if they\'re stolen or damaged.',
   'loss of use': 'If your home is too damaged to live in, this pays for a place to stay and extra living costs while it\'s being fixed.',
   'personal liability': 'If someone gets hurt on your property or you accidentally damage someone else\'s stuff, this helps pay for it.',
-  'medical payments': 'This pays small medical bills if a guest gets hurt at your home, even if it wasn\'t your fault.',
+  'medical payments (coverage f)': 'This pays small medical bills if a guest gets hurt at your home, even if it wasn\'t your fault.',
   'medical payments to others': 'This pays small medical bills if a guest gets hurt at your home, even if it wasn\'t your fault.',
 
   // Auto coverages
+  'medical payments': 'Covers you, your passengers, and family members in your car during an accident. Helps pay for reasonable, necessary medical and funeral expenses for you, your passengers, or insured family members, regardless of fault.',
   'bodily injury': 'This pays for other people\'s medical bills if you cause a car accident that hurts someone.',
   'bodily injury liability': 'This pays for other people\'s medical bills if you cause a car accident that hurts someone.',
   'property damage': 'This pays to fix or replace someone else\'s car or property if you cause an accident.',
