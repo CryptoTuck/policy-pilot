@@ -12,10 +12,10 @@ export default function PrivacyPolicy() {
       {/* Top navigation */}
       <nav className="bg-slate-900 pt-4 sm:pt-4">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <img src="/logo.png" alt="PolicyPilot" className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-semibold tracking-tight text-white">PolicyPilot</span>
-          </div>
+          </Link>
           <div className="hidden items-center gap-8 text-[15px] font-semibold text-slate-100 md:flex">
             <Link href="/#how" className="transition-colors hover:text-white">
               How it works
