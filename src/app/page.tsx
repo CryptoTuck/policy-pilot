@@ -872,13 +872,13 @@ export default function Home() {
                   Contact
                 </Link>
               </div>
-              <div className="flex items-center justify-end gap-3 text-slate-500">
+              {/* <div className="flex items-center justify-end gap-3 text-slate-500">
                 {['X', 'LinkedIn', 'Facebook'].map((social) => (
                   <a key={social} href="#" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors hover:text-white">
                     {social}
                   </a>
                 ))}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
