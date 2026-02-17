@@ -22,12 +22,14 @@ export default async function ReportPage({ params }: ReportPageProps) {
   let customerEmail: string | null = null;
   let customerFirstName: string | null = null;
   let customerLastName: string | null = null;
+  let customerPhone: string | null = null;
   try {
     const { submission } = await getSubmissionWithDetails(id);
     if (submission) {
       customerEmail = submission.customer_email;
       customerFirstName = submission.customer_first_name;
       customerLastName = submission.customer_last_name;
+      customerPhone = submission.customer_phone;
     }
   } catch {
     // Continue without customer data
@@ -53,6 +55,7 @@ export default async function ReportPage({ params }: ReportPageProps) {
         customerEmail={customerEmail}
         customerFirstName={customerFirstName}
         customerLastName={customerLastName}
+        customerPhone={customerPhone}
       />
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">

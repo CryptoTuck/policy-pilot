@@ -88,6 +88,33 @@ function trackFbCustomEvent(eventName: string, params?: Record<string, unknown>)
   }
 }
 
+/**
+ * Set Advanced Matching user data on the pixel.
+ * Re-initializes the pixel with PII so Meta can improve match rates.
+ * Call when user data becomes available (e.g. report page).
+ */
+export function fbSetUserData(params: {
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+}) {
+  if (typeof window === 'undefined' || !window.fbq) return;
+
+  const userData: Record<string, string> = {};
+  if (params.email) userData.em = params.email.trim().toLowerCase();
+  if (params.firstName) userData.fn = params.firstName.trim().toLowerCase();
+  if (params.lastName) userData.ln = params.lastName.trim().toLowerCase();
+  if (params.phone) {
+    const digits = params.phone.replace(/\D/g, '');
+    userData.ph = digits.length === 10 ? `1${digits}` : digits;
+  }
+
+  if (Object.keys(userData).length > 0) {
+    window.fbq('init', FB_PIXEL_ID, userData);
+  }
+}
+
 // ─── Event helpers ──────────────────────────────────────────────────────────
 
 /** Landing page load */

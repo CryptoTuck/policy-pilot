@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { trackReportPageView, identifyUser } from '@/lib/analytics';
-import { fbTrackLead } from '@/lib/facebook-pixel';
+import { fbTrackLead, fbSetUserData } from '@/lib/facebook-pixel';
 
 interface ReportAnalyticsProps {
   reportId: string;
@@ -12,6 +12,7 @@ interface ReportAnalyticsProps {
   customerEmail?: string | null;
   customerFirstName?: string | null;
   customerLastName?: string | null;
+  customerPhone?: string | null;
 }
 
 /**
@@ -26,6 +27,7 @@ export function ReportAnalytics({
   customerEmail,
   customerFirstName,
   customerLastName,
+  customerPhone,
 }: ReportAnalyticsProps) {
   useEffect(() => {
     if (customerEmail) {
@@ -36,6 +38,14 @@ export function ReportAnalytics({
       });
     }
 
+    // Set Advanced Matching data on the pixel before firing Lead
+    fbSetUserData({
+      email: customerEmail,
+      firstName: customerFirstName,
+      lastName: customerLastName,
+      phone: customerPhone,
+    });
+
     trackReportPageView({
       reportId,
       overallGrade,
@@ -43,7 +53,7 @@ export function ReportAnalytics({
       hasAutoPolicy,
     });
     fbTrackLead(`lead_${reportId}`);
-  }, [reportId, overallGrade, hasHomePolicy, hasAutoPolicy, customerEmail, customerFirstName, customerLastName]);
+  }, [reportId, overallGrade, hasHomePolicy, hasAutoPolicy, customerEmail, customerFirstName, customerLastName, customerPhone]);
 
   return null;
 }
