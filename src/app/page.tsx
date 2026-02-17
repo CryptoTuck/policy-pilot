@@ -710,25 +710,25 @@ export default function Home() {
             {[
               {
                 quote:
-                  "PolicyPilot made our coverage crystal clear. We dropped overlaps and saved hundreds without losing protection.",
+                  "I was shocked to find out how underinsured I really was and the risks associated.",
                 name: 'Tucker G.',
-                title: 'Homeowner, Austin, TX',
+                title: 'Renter, Scottsdale, AZ',
                 rating: 5,
                 timeAgo: '2 weeks ago',
               },
               {
                 quote:
-                  "I finally understand what my renters policy does — and what it doesn't. The score was spot on.",
+                  "I had two auto policies and figured they were both fine. Policy Pilot showed me one was way underinsured — I had no idea until I saw the report.",
                 name: 'Brandon P.',
-                title: 'Renter, Miami, FL',
+                title: 'Auto Policy Holder, Scottsdale, AZ',
                 rating: 5,
                 timeAgo: '1 month ago',
               },
               {
                 quote:
-                  'Our agent appreciated the report and used it immediately. The recommendations were the exact changes we needed.',
+                  "Quick and easy. Now I actually know what my renters insurance covers.",
                 name: 'Tom D.',
-                title: 'Homeowner, Seattle, WA',
+                title: 'Renter, Scottsdale, AZ',
                 rating: 5,
                 timeAgo: '3 weeks ago',
               },
