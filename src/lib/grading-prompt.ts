@@ -49,8 +49,8 @@ Carriers price Uninsured Motorist/Underinsured Motorist as self-protection. Mism
 - < 1% of Coverage A → 5/5 (low risk, but higher premium)
 - 1-2% of Coverage A → 5/5 ✅ Optimal range
 - 2-3% of Coverage A → 4/5 ⚠ Acceptable
-- 3-5% of Coverage A → 3/5 ⚠ Potential strain
-- > 5% of Coverage A → 2/5 ❌ High out-of-pocket risk
+- 3-5% of Coverage A → 3/5 ⚠ "The deductible is high, representing a potential out-of-pocket strain if a loss occurs. When carrying a deductible amount this high on your policy, make sure you have enough cash on hand to pay this deductible amount at any time."
+- > 5% of Coverage A → 2/5 ❌ "The deductible is high, representing a potential out-of-pocket strain if a loss occurs. When carrying a deductible amount this high on your policy, make sure you have enough cash on hand to pay this deductible amount at any time."
 
 **Wind/Hail Deductible:**
 - If separate and high (>2%) → Flag as informational risk
