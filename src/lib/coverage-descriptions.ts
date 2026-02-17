@@ -33,11 +33,25 @@ const coverageDescriptions: Record<string, string> = {
   'uninsured motorist property damage': 'This pays to fix your car if you\'re hit by a driver who doesn\'t have insurance.',
   'underinsured motorist property damage': 'This helps pay to fix your car if the other driver\'s insurance isn\'t enough.',
 
+  'emergency roadside coverage': 'Covers services like towing, flat tire changes, jump-starts, and lockout assistance if your car breaks down on the road.',
+  'car rental coverage': 'Pays for a rental car while your vehicle is being repaired after a covered accident, so you can stay on the road.',
+  'loan or lease assistance': 'If your financed or leased vehicle is totaled, this covers the gap between what you owe and what your car is worth.',
+  'glass coverage': 'Covers the repair or replacement of your vehicle\'s windshield and windows, often with no deductible.',
+  'new car replacement': 'If your new car is totaled within the first few years, this pays for a brand new replacement vehicle of the same make and model instead of the depreciated value.',
+  'oem coverage': 'Ensures that original equipment manufacturer (OEM) parts are used when repairing your vehicle after an accident, rather than aftermarket parts.',
+
   // Renters coverages
   'contents coverage': 'This helps replace your belongings — like clothes, furniture, and electronics — if they\'re stolen or damaged.',
   'additional living expenses': 'If your rental is too damaged to live in, this pays for a place to stay while it\'s being fixed.',
   'renters liability': 'If someone gets hurt in your rental or you accidentally damage someone else\'s stuff, this helps pay for it.',
   'liability': 'If someone gets hurt on your property or you accidentally damage someone else\'s stuff, this helps pay for it.',
+
+  // Home additional coverages
+  'replacement cost on personal property': 'This means your personal belongings will be replaced at today\'s prices for brand new items, rather than being paid out at their depreciated value.',
+  'increased special limits': 'Provides higher coverage limits for valuable items like jewelry, electronics, or collectibles beyond the standard policy limits.',
+  'water backup & sump pump overflow': 'Covers damage if water backs up through your drains or sump pump and floods your home.',
+  'water backup and sump overflow': 'Covers damage if water backs up through your drains or sump pump and floods your home.',
+  'water backup and sump pump overflow': 'Covers damage if water backs up through your drains or sump pump and floods your home.',
 
   // Additional/optional coverages
   'water backup': 'This covers damage if water backs up through your drains or sump pump and floods your home.',
@@ -67,6 +81,7 @@ const coverageDescriptions: Record<string, string> = {
   'loss assessment': 'If you live in a condo or HOA and there\'s shared damage, this helps cover your share of the cost.',
   'loss assessment coverage': 'If you live in a condo or HOA and there\'s shared damage, this helps cover your share of the cost.',
   'mold coverage': 'This covers the cost to clean up and fix mold damage in your home.',
+  'debris removal': 'Covers the cost to clean up and haul away debris from your property after a covered loss, like a fallen tree or storm damage.',
 };
 
 export function getCoverageDescription(name: string): string | undefined {
