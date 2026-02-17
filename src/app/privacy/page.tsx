@@ -43,196 +43,241 @@ export default function PrivacyPolicy() {
       <main className="mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-3xl font-bold text-slate-900">Privacy Policy</h1>
         <p className="mt-2 text-sm text-slate-500">
-          Last updated: February 16, 2026
+          Effective Date: February 14, 2026
         </p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-slate-700">
           {/* Intro */}
           <section>
             <p>
-              Policy Pilot LLC (&ldquo;Policy Pilot,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the website{' '}
-              <a href="https://www.mypolicypilot.ai" className="text-blue-600 hover:underline">
-                www.mypolicypilot.ai
-              </a>{' '}
-              (the &ldquo;Service&rdquo;). This Privacy Policy explains how we collect, use, disclose, and protect your information when you use our Service.
+              PolicyPilot (&ldquo;PolicyPilot,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, share, and safeguard your information when you use our website, platform, and related services (collectively, the &ldquo;Services&rdquo;).
+            </p>
+            <p className="mt-3">
+              By using PolicyPilot, you consent to the practices described in this Privacy Policy.
             </p>
           </section>
 
-          {/* 1 */}
+          {/* Information We Collect */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">1. Information We Collect</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Information We Collect</h2>
 
-            <h3 className="mt-4 font-semibold text-slate-800">a. Information You Provide</h3>
+            <h3 className="mt-4 font-semibold text-slate-800">A. Information You Provide Directly</h3>
+            <p className="mt-2">We may collect personal information that you voluntarily provide, including but not limited to:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>
-                <strong>Contact information:</strong> Name, email address, and phone number when you request a report, email delivery, or agent callback.
-              </li>
-              <li>
-                <strong>Address:</strong> Your primary address as provided through the policy connection process.
-              </li>
+              <li>Name</li>
+              <li>Email address</li>
+              <li>Phone number</li>
+              <li>Property and/or vehicle information</li>
+              <li>Insurance-related preferences or questions</li>
             </ul>
 
-            <h3 className="mt-4 font-semibold text-slate-800">b. Insurance Policy Data</h3>
+            <h3 className="mt-4 font-semibold text-slate-800">B. Insurance Policy Data via Third-Party Connection</h3>
             <p className="mt-2">
-              When you connect your insurance account through our third-party partner, Canopy Connect, we receive structured policy data including coverage types, limits, deductibles, vehicle details, and carrier information. <strong>We never see, receive, or store your insurance carrier login credentials.</strong> You authenticate directly with your carrier through Canopy Connect&rsquo;s secure widget.
+              With your explicit consent, PolicyPilot may retrieve your existing insurance policy information through secure third-party integrations, including Canopy Connect.
+            </p>
+            <p className="mt-2">This information may include:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>Carrier name</li>
+              <li>Policy details and deductibles</li>
+              <li>Effective and expiration dates</li>
+              <li>Premium amounts</li>
+            </ul>
+            <p className="mt-3">
+              PolicyPilot does not access this information without your authorization, and you may revoke access at any time.
             </p>
 
-            <h3 className="mt-4 font-semibold text-slate-800">c. Automatically Collected Information</h3>
+            <h3 className="mt-4 font-semibold text-slate-800">C. Automatically Collected Information</h3>
+            <p className="mt-2">When you use our Services, we may automatically collect:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>
-                <strong>Usage data:</strong> Pages visited, actions taken (e.g., clicking buttons, viewing reports), session duration, and browser/device information collected via Amplitude Analytics.
-              </li>
-              <li>
-                <strong>Session replays:</strong> We use Amplitude Session Replay to record anonymized browsing sessions for product improvement purposes.
-              </li>
-              <li>
-                <strong>Cookies and tracking pixels:</strong> We use the Facebook Pixel and similar technologies to measure advertising effectiveness and deliver relevant ads. See Section 5 for details.
-              </li>
+              <li>IP address</li>
+              <li>Device and browser information</li>
+              <li>Usage data and interaction logs</li>
+              <li>Cookies and similar tracking technologies</li>
             </ul>
+            <p className="mt-2">This data is used for security, analytics, and platform improvement.</p>
           </section>
 
-          {/* 2 */}
+          {/* How We Use Your Information */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">2. How We Use Your Information</h2>
-            <p className="mt-2">We use the information we collect to:</p>
+            <h2 className="text-xl font-semibold text-slate-900">How We Use Your Information</h2>
+            <p className="mt-2">We use your information to:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Generate your personalized insurance policy report and grade.</li>
-              <li>Deliver your report via email when requested.</li>
-              <li>Connect you with an insurance agent when you explicitly request it.</li>
-              <li>Improve, personalize, and optimize our Service.</li>
-              <li>Measure the effectiveness of our marketing efforts.</li>
-              <li>Communicate with you about your report or our Service.</li>
-              <li>Comply with legal obligations.</li>
+              <li>Analyze and summarize your current insurance coverage</li>
+              <li>Generate educational insights and policy comparisons</li>
+              <li>Provide a PolicyPilot Score or coverage overview</li>
+              <li>Improve our platform, tools, and user experience</li>
+              <li>Respond to inquiries or support requests</li>
+              <li>Comply with legal and regulatory obligations</li>
             </ul>
+            <p className="mt-3 font-medium text-slate-800">
+              PolicyPilot does not provide insurance quotes or bind coverage.
+            </p>
           </section>
 
-          {/* 3 */}
+          {/* Connecting You With a Licensed Insurance Agency */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">3. How We Share Your Information</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Connecting You With a Licensed Insurance Agency</h2>
             <p className="mt-2">
-              <strong>We will never sell your personal information.</strong> We do not share your information with insurance agents or third parties unless you explicitly request it (e.g., by clicking &ldquo;Contact Agent&rdquo;). We share data with the following service providers who assist in operating our Service:
+              If you choose, PolicyPilot may facilitate an introduction to Atlantis Insurance Corp, a licensed insurance agency, to help you explore alternative insurance options.
             </p>
-            <ul className="mt-3 list-disc space-y-2 pl-6">
+            <p className="mt-3 font-medium text-slate-800">Important notes:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>Your information is only shared with Atlantis Insurance Corp after your affirmative consent</li>
+              <li>PolicyPilot does not sell consumer data</li>
               <li>
-                <strong>Canopy Connect</strong> — Secure policy data retrieval from your insurance carrier. Canopy acts as a data intermediary and is subject to its own privacy policy.
-              </li>
-              <li>
-                <strong>OpenAI</strong> — Your policy coverage data (not personal contact information) is processed by OpenAI&rsquo;s API to generate your coverage analysis and grade.
-              </li>
-              <li>
-                <strong>Supabase</strong> — Cloud database hosting for storing submissions and report data.
-              </li>
-              <li>
-                <strong>Resend</strong> — Email delivery service used to send your report when you provide your email address.
-              </li>
-              <li>
-                <strong>Amplitude</strong> — Analytics platform for understanding how users interact with our Service.
-              </li>
-              <li>
-                <strong>Meta (Facebook)</strong> — Advertising measurement via the Facebook Pixel and Conversions API. Personal data sent to Meta is hashed (SHA-256) before transmission.
-              </li>
-              <li>
-                <strong>Vercel</strong> — Cloud hosting and infrastructure provider.
+                Atlantis Insurance Corp operates independently and is responsible for:
+                <ul className="mt-1 list-disc space-y-1 pl-6">
+                  <li>Quoting</li>
+                  <li>Advising</li>
+                  <li>Binding coverage</li>
+                  <li>Regulatory compliance</li>
+                </ul>
               </li>
             </ul>
             <p className="mt-3">
-              We may also disclose your information if required by law, regulation, legal process, or governmental request.
+              Any insurance transaction occurs directly between you and Atlantis Insurance Corp.
             </p>
           </section>
 
-          {/* 4 */}
+          {/* How We Share Information */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">4. Data Security</h2>
-            <p className="mt-2">
-              We take reasonable measures to protect your information, including:
-            </p>
+            <h2 className="text-xl font-semibold text-slate-900">How We Share Information</h2>
+            <p className="mt-2">We may share your information only in the following circumstances:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>TLS encryption for all data in transit.</li>
-              <li>Encryption at rest for stored data.</li>
-              <li>Carrier credentials are never transmitted to or stored by Policy Pilot — authentication occurs directly between you and your carrier via Canopy Connect.</li>
-              <li>Admin access is restricted and authenticated.</li>
+              <li>With your consent, to connect you with Atlantis Insurance Corp</li>
+              <li>With service providers who help operate our platform (e.g., hosting, analytics), under strict confidentiality agreements</li>
+              <li>To comply with legal obligations, subpoenas, or regulatory requests</li>
+              <li>To protect the rights, security, or integrity of PolicyPilot and its users</li>
             </ul>
             <p className="mt-3">
-              No method of transmission or storage is 100% secure. While we strive to protect your information, we cannot guarantee absolute security.
+              We do not share your data with unrelated third parties for marketing purposes.
             </p>
           </section>
 
-          {/* 5 */}
+          {/* Data Security */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">5. Cookies and Tracking Technologies</h2>
-            <p className="mt-2">We use the following tracking technologies:</p>
-            <ul className="mt-2 list-disc space-y-2 pl-6">
-              <li>
-                <strong>Facebook Pixel:</strong> Tracks page views and conversion events (e.g., viewing a report) to measure ad performance. You can opt out via{' '}
-                <a
-                  href="https://www.facebook.com/settings/?tab=ads"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  Facebook Ad Settings
-                </a>.
-              </li>
-              <li>
-                <strong>Amplitude:</strong> Collects usage analytics and session replay data to help us understand user behavior and improve the Service.
-              </li>
-              <li>
-                <strong>Essential cookies:</strong> Used for admin authentication sessions. These are strictly necessary for the Service to function.
-              </li>
-            </ul>
-          </section>
-
-          {/* 6 */}
-          <section>
-            <h2 className="text-xl font-semibold text-slate-900">6. Data Retention</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Data Security</h2>
             <p className="mt-2">
-              We retain your report data and associated personal information for as long as necessary to provide the Service and fulfill the purposes described in this policy. Cached session data is automatically deleted after 7 days. You may request deletion of your data at any time by contacting us.
+              We implement commercially reasonable measures to protect your information, including:
+            </p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>Encrypted data transmission</li>
+              <li>Secure access controls</li>
+              <li>Limited internal access on a need-to-know basis</li>
+            </ul>
+            <p className="mt-3">
+              However, no system is 100% secure, and we cannot guarantee absolute security.
             </p>
           </section>
 
-          {/* 7 */}
+          {/* Your Rights and Choices */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">7. Your Rights</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Your Rights and Choices</h2>
             <p className="mt-2">Depending on your jurisdiction, you may have the right to:</p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
-              <li>Access the personal information we hold about you.</li>
-              <li>Request correction of inaccurate information.</li>
-              <li>Request deletion of your personal information.</li>
-              <li>Opt out of marketing communications.</li>
-              <li>Opt out of the sale or sharing of personal information (we do not sell your data).</li>
+              <li>Access your personal information</li>
+              <li>Request correction or deletion</li>
+              <li>Withdraw consent for third-party data connections</li>
+              <li>Opt out of certain communications</li>
             </ul>
             <p className="mt-3">
-              To exercise any of these rights, please contact us at the address below.
+              You can revoke Canopy Connect access at any time through their platform or by contacting us.
             </p>
           </section>
 
-          {/* 8 */}
+          {/* Data Retention */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">8. Children&rsquo;s Privacy</h2>
-            <p className="mt-2">
-              Our Service is not directed to individuals under the age of 18. We do not knowingly collect personal information from children. If you believe we have inadvertently collected such information, please contact us and we will promptly delete it.
+            <h2 className="text-xl font-semibold text-slate-900">Data Retention</h2>
+            <p className="mt-2">We retain personal information only as long as reasonably necessary to:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>Provide our Services</li>
+              <li>Meet legal and compliance requirements</li>
+              <li>Resolve disputes</li>
+              <li>Enforce agreements</li>
+            </ul>
+            <p className="mt-3">
+              When information is no longer needed, it is securely deleted or anonymized.
             </p>
           </section>
 
-          {/* 9 */}
+          {/* Cookies & Tracking Technologies */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">9. Changes to This Policy</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Cookies &amp; Tracking Technologies</h2>
+            <p className="mt-2">PolicyPilot may use cookies or similar technologies to:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>Maintain platform functionality</li>
+              <li>Analyze usage trends</li>
+              <li>Improve performance</li>
+            </ul>
+            <p className="mt-2">You may control cookies through your browser settings.</p>
+          </section>
+
+          {/* Children's Privacy */}
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900">Children&rsquo;s Privacy</h2>
             <p className="mt-2">
-              We may update this Privacy Policy from time to time. We will notify you of material changes by posting the updated policy on this page with a revised &ldquo;Last updated&rdquo; date. Your continued use of the Service after any changes constitutes your acceptance of the updated policy.
+              PolicyPilot is not intended for individuals under the age of 18. We do not knowingly collect personal information from children.
             </p>
           </section>
 
-          {/* 10 */}
+          {/* Third-Party Links */}
           <section>
-            <h2 className="text-xl font-semibold text-slate-900">10. Contact Us</h2>
+            <h2 className="text-xl font-semibold text-slate-900">Third-Party Links</h2>
             <p className="mt-2">
-              If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:
+              Our Services may include links to third-party websites or services. We are not responsible for their privacy practices or content.
+            </p>
+          </section>
+
+          {/* Third-Party Relationship Disclosure */}
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900">Third-Party Relationship Disclosure</h2>
+            <p className="mt-2 text-sm text-slate-500">Effective Date: February 14, 2026</p>
+            <p className="mt-2">
+              PolicyPilot is an independent technology platform and is not affiliated with any insurance carrier.
+            </p>
+            <p className="mt-2">
+              If you choose, PolicyPilot may facilitate a connection to Atlantis Insurance Corp, a licensed insurance agency, to assist you in exploring insurance options.
+            </p>
+            <p className="mt-3">You acknowledge and understand that:</p>
+            <ul className="mt-2 list-disc space-y-1 pl-6">
+              <li>PolicyPilot and Atlantis Insurance Corp are separate and independent entities</li>
+              <li>You are not required to work with Atlantis Insurance Corp</li>
+              <li>Any insurance advice, quotes, or policies are provided solely by Atlantis Insurance Corp</li>
+              <li>All insurance transactions occur directly between you and the licensed agency</li>
+            </ul>
+            <p className="mt-3">
+              PolicyPilot does not control insurance pricing, underwriting decisions, or policy terms.
+            </p>
+            <p className="mt-2">
+              PolicyPilot may receive compensation for referrals where permitted by applicable law.
+            </p>
+          </section>
+
+          {/* Changes to This Privacy Policy */}
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900">Changes to This Privacy Policy</h2>
+            <p className="mt-2">
+              We may update this Privacy Policy periodically. Any changes will be posted with an updated effective date. Continued use of the Services constitutes acceptance of the revised policy.
+            </p>
+          </section>
+
+          {/* Contact Us */}
+          <section>
+            <h2 className="text-xl font-semibold text-slate-900">Contact Us</h2>
+            <p className="mt-2">
+              If you have questions about this Privacy Policy or our data practices, contact us at:
             </p>
             <p className="mt-3 font-medium text-slate-900">
-              Policy Pilot LLC
+              PolicyPilot
               <br />
+              Email:{' '}
               <a href="mailto:admin@mypolicypilot.ai" className="text-blue-600 hover:underline">
                 admin@mypolicypilot.ai
+              </a>
+              <br />
+              Website:{' '}
+              <a href="https://www.mypolicypilot.ai" className="text-blue-600 hover:underline">
+                mypolicypilot.ai
               </a>
             </p>
           </section>
