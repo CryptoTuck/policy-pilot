@@ -229,7 +229,7 @@ You must respond with valid JSON matching this structure:
   1. Bodily Injury Liability - MUST show as "$per_person/$per_accident" (e.g., "$250,000/$500,000"). Both per-person and per-accident limits are required.
   2. Property Damage Liability - amount
   3. Uninsured/Underinsured Motorist - MUST show as "$per_person/$per_accident" (e.g., "$250,000/$500,000"). Both per-person and per-accident limits are required.
-  4. Medical Payments - amount. If the data shows medical payments, report the amount. If not found in data, show "Not included"
+  4. Medical Payments - amount. If the data shows medical payments, report the amount. If not found in data, show "Not included" and use this explanation: "Medical payments coverage is not included on your current policy. This is recommended by carriers to ensure you're fully protected."
   5. Collision Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
   6. Comprehensive Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
   7. Emergency Roadside Coverage - show "Included" or "Not included"
