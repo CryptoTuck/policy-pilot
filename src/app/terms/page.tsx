@@ -202,8 +202,8 @@ export default function TermsOfService() {
             <p className="mt-3 font-medium text-slate-900">
               Policy Pilot LLC
               <br />
-              <a href="mailto:support@mypolicypilot.ai" className="text-blue-600 hover:underline">
-                support@mypolicypilot.ai
+              <a href="mailto:admin@mypolicypilot.ai" className="text-blue-600 hover:underline">
+                admin@mypolicypilot.ai
               </a>
             </p>
           </section>
