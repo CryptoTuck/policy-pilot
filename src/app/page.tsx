@@ -868,9 +868,9 @@ export default function Home() {
                 <Link href="/terms" className="transition-colors hover:text-white">
                   Terms
                 </Link>
-                <Link href="/contact" className="transition-colors hover:text-white">
+                <a href="mailto:admin@mypolicypilot.ai" className="transition-colors hover:text-white">
                   Contact
-                </Link>
+                </a>
               </div>
               {/* <div className="flex items-center justify-end gap-3 text-slate-500">
                 {['X', 'LinkedIn', 'Facebook'].map((social) => (
