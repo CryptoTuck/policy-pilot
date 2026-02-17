@@ -87,10 +87,10 @@ export default function Home() {
               Free • 2 minutes • No credit card
             </div>
             <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-white leading-[1.1] text-center sm:text-left sm:text-5xl lg:text-6xl">
-              Know your insurance.{' '}
-              <span className="relative">
+              Does Your Policy Really Protect You?{' '}
+              <span className="relative inline-block">
                 <span className="bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
-                  Finally.
+                  Find Out
                 </span>
                 <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 12" fill="none">
                   <path d="M2 8.5C50 2 150 2 198 8.5" stroke="url(#underline-gradient)" strokeWidth="4" strokeLinecap="round"/>
