@@ -34,7 +34,7 @@ export default function Home() {
       },
       {
         q: 'Can I share my report with my agent?',
-        a: 'Yes. Download a PDF and share it with anyone—current agent, new agent, or yourself.',
+        a: 'Yes. We will email you a copy of your report allowing you to share it with anyone—current agent, new agent, or family members.',
       },
     ],
     []
