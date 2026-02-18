@@ -25,9 +25,9 @@ function getGradeDescription(grade: string): string {
   }
 }
 
-function calculateSectionScore(coverages: { score: number; maxScore: number }[]): { score: number; maxScore: number } {
-  const score = coverages.reduce((sum, c) => sum + c.score, 0);
-  const maxScore = coverages.reduce((sum, c) => sum + c.maxScore, 0);
+function calculateSectionScore(coverages: { score: number | 'bonus'; maxScore: number }[]): { score: number; maxScore: number } {
+  const score = coverages.reduce((sum, c) => sum + (typeof c.score === 'number' ? c.score : 0), 0);
+  const maxScore = coverages.reduce((sum, c) => sum + (typeof c.score === 'number' ? c.maxScore : 0), 0);
   return { score, maxScore };
 }
 
@@ -96,6 +96,42 @@ function getScoreGradient(score?: number): string {
 }
 
 type FilterType = 'all' | 'home' | 'auto' | 'renters';
+
+const AUTO_SECTION_COVERAGES = [
+  'bodily injury liability',
+  'property damage liability',
+  'uninsured/underinsured motorist',
+  'uninsured motorist/underinsured motorist',
+  'medical payments',
+  'collision deductible',
+  'collision',
+  'comprehensive deductible',
+  'comprehensive',
+];
+
+const HOME_SECTION_COVERAGES = [
+  'dwelling',
+  'other structures',
+  'personal property',
+  'loss of use',
+  'personal liability',
+  'medical payments',
+  'all perils deductible',
+  'wind or hail deductible',
+  'windstorm or hail deductible',
+  'wind hail deductible',
+  'windstorm hail deductible',
+];
+
+function normalizeCoverageName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function isCoreCoverage(name: string, coreNames: string[]): boolean {
+  const normalized = normalizeCoverageName(name);
+  return coreNames.some((core) => normalized.includes(normalizeCoverageName(core)));
+}
+
 
 function PolicyTabs({
   hasHome,
@@ -281,7 +317,12 @@ export function ReportContent({ report }: { report: PolicyReport }) {
           ...homeGrade.standardCoverages,
           homeGrade.deductibleGrade,
         ];
-        const sectionScores = calculateSectionScore(scoredCoverages);
+        const coveragesWithBonus = scoredCoverages.map((coverage) => (
+          isCoreCoverage(coverage.name, HOME_SECTION_COVERAGES)
+            ? coverage
+            : { ...coverage, score: 'bonus' as const }
+        ));
+        const sectionScores = calculateSectionScore(coveragesWithBonus);
         const presentAdditional = homeGrade.additionalCoverages.filter(c => c.present);
 
         return (
@@ -297,7 +338,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               <p className="text-sm text-gray-500 mb-4">
                 Standard coverages and deductibles
               </p>
-              <CoverageTable coverages={scoredCoverages} />
+              <CoverageTable coverages={coveragesWithBonus} />
 
               {presentAdditional.length > 0 && (
                 <div className="mt-6">
@@ -342,15 +383,27 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               <h4 className="text-xl font-bold text-gray-900 mb-4">
                 {autoPolicies.length > 1 ? 'Your Coverages' : 'Your Auto Coverages'}
               </h4>
-              <CoverageTable coverages={autoPolicy.standardCoverages} />
+              {(() => {
+                const coveragesWithBonus = autoPolicy.standardCoverages.map((coverage) => (
+                  isCoreCoverage(coverage.name, AUTO_SECTION_COVERAGES)
+                    ? coverage
+                    : { ...coverage, score: 'bonus' as const }
+                ));
+                const sectionScores = calculateSectionScore(coveragesWithBonus);
 
-              <SectionAnalysis
-                title={autoPolicies.length > 1 ? `${autoPolicy.vehicleInfo || `Policy ${idx + 1}`} Coverage` : 'Auto Coverage'}
-                score={calculateSectionScore(autoPolicy.standardCoverages).score}
-                maxScore={calculateSectionScore(autoPolicy.standardCoverages).maxScore}
-                analysis={autoPolicy.summary}
+                return (
+                  <>
+                    <CoverageTable coverages={coveragesWithBonus} />
 
-              />
+                    <SectionAnalysis
+                      title={autoPolicies.length > 1 ? `${autoPolicy.vehicleInfo || `Policy ${idx + 1}`} Coverage` : 'Auto Coverage'}
+                      score={sectionScores.score}
+                      maxScore={sectionScores.maxScore}
+                      analysis={autoPolicy.summary}
+                    />
+                  </>
+                );
+              })()}
             </section>
           ))}
         </div>
