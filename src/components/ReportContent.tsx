@@ -6,7 +6,7 @@ import { AdditionalCoverageTable } from '@/components/AdditionalCoverageTable';
 import { SectionAnalysis } from '@/components/SectionAnalysis';
 import { CarrierAnalysis } from '@/components/CarrierAnalysis';
 import { CoverageDescriptionProvider } from '@/components/CoverageDescriptionModal';
-import type { PolicyReport, AutoPolicyGrade } from '@/types/grading';
+import type { PolicyReport, AutoPolicyGrade, AdditionalCoverageAssessment, CoverageGrade } from '@/types/grading';
 
 function getGradeDescription(grade: string): string {
   switch (grade) {
@@ -93,6 +93,51 @@ function getScoreGradient(score?: number): string {
   if (score >= 70) return 'from-yellow-400 via-amber-400 to-amber-500';
   if (score >= 60) return 'from-orange-500 via-orange-600 to-red-400';
   return 'from-red-700 via-red-800 to-red-900';
+}
+
+const AUTO_OPTIONAL_COVERAGE_KEYS = ['roadside', 'rental', 'loan', 'lease', 'gap'];
+
+function isOptionalAutoCoverage(name: string): boolean {
+  const normalized = name.toLowerCase();
+  return AUTO_OPTIONAL_COVERAGE_KEYS.some((key) => normalized.includes(key));
+}
+
+function isCoverageMissing(limit?: string): boolean {
+  if (!limit) return false;
+  const normalized = limit.toLowerCase();
+  return normalized.includes('not included') || normalized.includes('declined');
+}
+
+function autoCoverageRelevance(name: string): AdditionalCoverageAssessment['relevance'] {
+  const normalized = name.toLowerCase();
+  if (normalized.includes('roadside') || normalized.includes('rental')) {
+    return 'low';
+  }
+  return 'often_worth_reviewing';
+}
+
+function splitAutoCoverages(coverages: CoverageGrade[]): {
+  includedCoverages: CoverageGrade[];
+  missingCoverages: AdditionalCoverageAssessment[];
+} {
+  const includedCoverages: CoverageGrade[] = [];
+  const missingCoverages: AdditionalCoverageAssessment[] = [];
+
+  coverages.forEach((coverage) => {
+    if (isOptionalAutoCoverage(coverage.name) && isCoverageMissing(coverage.limit)) {
+      missingCoverages.push({
+        name: coverage.name,
+        limit: coverage.limit,
+        present: false,
+        relevance: autoCoverageRelevance(coverage.name),
+        note: coverage.explanation,
+      });
+      return;
+    }
+    includedCoverages.push(coverage);
+  });
+
+  return { includedCoverages, missingCoverages };
 }
 
 type FilterType = 'all' | 'home' | 'auto' | 'renters';
@@ -283,6 +328,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
         ];
         const sectionScores = calculateSectionScore(scoredCoverages);
         const presentAdditional = homeGrade.additionalCoverages.filter(c => c.present);
+        const missingAdditional = homeGrade.additionalCoverages.filter(c => !c.present);
 
         return (
           <div id="home">
@@ -307,6 +353,14 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 </div>
               )}
 
+              {missingAdditional.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h4>
+                  <p className="text-sm text-gray-500 mb-3">Common add-ons not included in your current policy</p>
+                  <AdditionalCoverageTable coverages={missingAdditional} />
+                </div>
+              )}
+
               <SectionAnalysis
                 title="Home Coverage"
                 score={sectionScores.score}
@@ -325,34 +379,46 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             Auto Policy Analysis{carriers?.auto ? ` (${carriers.auto})` : ''}
           </h2>
 
-          {autoPolicies.map((autoPolicy, idx) => (
-            <section key={idx} className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
-              {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
-                <div className="mb-6">
-                  <p className="text-gray-500 text-sm">Vehicle</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                    {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
-                  </h3>
-                  {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
-                    <p className="text-gray-500 text-sm mt-1">Policy #{autoPolicy.policyNumber}</p>
-                  )}
-                </div>
-              )}
+          {autoPolicies.map((autoPolicy, idx) => {
+            const { includedCoverages, missingCoverages } = splitAutoCoverages(autoPolicy.standardCoverages);
 
-              <h4 className="text-xl font-bold text-gray-900 mb-4">
-                {autoPolicies.length > 1 ? 'Your Coverages' : 'Your Auto Coverages'}
-              </h4>
-              <CoverageTable coverages={autoPolicy.standardCoverages} />
+            return (
+              <section key={idx} className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+                {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
+                  <div className="mb-6">
+                    <p className="text-gray-500 text-sm">Vehicle</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mt-1">
+                      {autoPolicy.vehicleInfo || `Auto Policy ${idx + 1}`}
+                    </h3>
+                    {autoPolicy.policyNumber && autoPolicy.policyNumber !== 'N/A' && (
+                      <p className="text-gray-500 text-sm mt-1">Policy #{autoPolicy.policyNumber}</p>
+                    )}
+                  </div>
+                )}
 
-              <SectionAnalysis
-                title={autoPolicies.length > 1 ? `${autoPolicy.vehicleInfo || `Policy ${idx + 1}`} Coverage` : 'Auto Coverage'}
-                score={calculateSectionScore(autoPolicy.standardCoverages).score}
-                maxScore={calculateSectionScore(autoPolicy.standardCoverages).maxScore}
-                analysis={autoPolicy.summary}
+                <h4 className="text-xl font-bold text-gray-900 mb-4">
+                  {autoPolicies.length > 1 ? 'Your Coverages' : 'Your Auto Coverages'}
+                </h4>
+                <CoverageTable coverages={includedCoverages} />
 
-              />
-            </section>
-          ))}
+                {missingCoverages.length > 0 && (
+                  <div className="mt-6">
+                    <h5 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h5>
+                    <p className="text-sm text-gray-500 mb-3">Common add-ons not included in this policy</p>
+                    <AdditionalCoverageTable coverages={missingCoverages} />
+                  </div>
+                )}
+
+                <SectionAnalysis
+                  title={autoPolicies.length > 1 ? `${autoPolicy.vehicleInfo || `Policy ${idx + 1}`} Coverage` : 'Auto Coverage'}
+                  score={calculateSectionScore(autoPolicy.standardCoverages).score}
+                  maxScore={calculateSectionScore(autoPolicy.standardCoverages).maxScore}
+                  analysis={autoPolicy.summary}
+
+                />
+              </section>
+            );
+          })}
         </div>
       )}
 
@@ -364,6 +430,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
         ];
         const sectionScores = calculateSectionScore(scoredCoverages);
         const presentAdditional = (rentersGrade.additionalCoverages || []).filter(c => c.present);
+        const missingAdditional = (rentersGrade.additionalCoverages || []).filter(c => !c.present);
 
         return (
           <div id="renters" className={(showHome || showAuto) ? 'mt-8' : ''}>
@@ -382,6 +449,14 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Additional Coverages</h4>
                   <p className="text-sm text-gray-500 mb-3">Bonus coverages included on your policy</p>
                   <AdditionalCoverageTable coverages={presentAdditional} />
+                </div>
+              )}
+
+              {missingAdditional.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h4>
+                  <p className="text-sm text-gray-500 mb-3">Common add-ons not included in your current policy</p>
+                  <AdditionalCoverageTable coverages={missingAdditional} />
                 </div>
               )}
 
