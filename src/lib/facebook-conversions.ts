@@ -47,6 +47,12 @@ interface FacebookUserData {
   ct?: string;  // hashed city
   st?: string;  // hashed state (2-letter code)
   zp?: string;  // hashed zip
+  country?: string; // hashed country code
+  fbc?: string; // Facebook click ID cookie (_fbc) — NOT hashed
+  fbp?: string; // Facebook browser ID cookie (_fbp) — NOT hashed
+  external_id?: string; // hashed external ID
+  client_ip_address?: string; // user's IP — NOT hashed
+  client_user_agent?: string; // user's browser UA — NOT hashed
 }
 
 interface FacebookConversionParams {
@@ -123,6 +129,10 @@ interface TrackFacebookLeadParams {
   insuranceProvider?: string | null;
   overallGrade?: string;
   overallScore?: number;
+  fbc?: string;
+  fbp?: string;
+  clientIpAddress?: string;
+  clientUserAgent?: string;
 }
 
 /**
@@ -139,6 +149,12 @@ export function trackFacebookLead(params: TrackFacebookLeadParams) {
   if (params.city) userData.ct = hashForMeta(params.city);
   if (params.state) userData.st = hashForMeta(params.state);
   if (params.zip) userData.zp = hashForMeta(params.zip);
+  userData.country = hashForMeta('us');
+  userData.external_id = hashForMeta(params.submissionId);
+  if (params.fbc) userData.fbc = params.fbc;
+  if (params.fbp) userData.fbp = params.fbp;
+  if (params.clientIpAddress) userData.client_ip_address = params.clientIpAddress;
+  if (params.clientUserAgent) userData.client_user_agent = params.clientUserAgent;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
