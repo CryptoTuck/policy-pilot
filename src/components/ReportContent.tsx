@@ -406,7 +406,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 <div className="mt-6">
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h4>
                   <p className="text-sm text-gray-500 mb-3">Common add-ons not included in your current policy</p>
-                  <AdditionalCoverageTable coverages={missingAdditional} />
+                  <AdditionalCoverageTable coverages={missingAdditional} variant="consider" />
                 </div>
               )}
 
@@ -458,7 +458,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 <div className="mt-6">
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h4>
                   <p className="text-sm text-gray-500 mb-3">Common add-ons not included in your current policy</p>
-                  <AdditionalCoverageTable coverages={missingAdditional} />
+                  <AdditionalCoverageTable coverages={missingAdditional} variant="consider" />
                 </div>
               )}
 
@@ -523,7 +523,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                   <div className="mt-6">
                     <h5 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h5>
                     <p className="text-sm text-gray-500 mb-3">Common add-ons not included in this policy</p>
-                    <AdditionalCoverageTable coverages={missingAdditional} />
+                    <AdditionalCoverageTable coverages={missingAdditional} variant="consider" />
                   </div>
                 )}
 
@@ -574,7 +574,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                 <div className="mt-6">
                   <h4 className="text-lg font-bold text-gray-900 mb-1">Coverages to Consider</h4>
                   <p className="text-sm text-gray-500 mb-3">Common add-ons not included in your current policy</p>
-                  <AdditionalCoverageTable coverages={missingAdditional} />
+                  <AdditionalCoverageTable coverages={missingAdditional} variant="consider" />
                 </div>
               )}
 

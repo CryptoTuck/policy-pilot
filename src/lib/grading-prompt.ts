@@ -204,6 +204,7 @@ You must respond with valid JSON matching this structure:
   5. Service Line Coverage - show "Included" or "Not included"
   6. Equipment Breakdown - show "Included" or "Not included"
   7. Increased Special Limits / Scheduled Personal Property - show amount if present, "Not included" if absent
+  8. Identity Theft Coverage - show "Included" or "Not included"
 
   "autoGrade": {
     "overallGrade": "A|B|C|D|F",
