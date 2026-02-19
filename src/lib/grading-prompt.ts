@@ -199,14 +199,12 @@ You must respond with valid JSON matching this structure:
   7. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
 
   HOME additionalCoverages MUST always include ALL of these items:
-  1. Extended Replacement Cost (Dwelling - Coverage A) - show amount/percentage if present, "Not included" if absent
-  2. Ordinance or Law Coverage - show "Included" or "Not included"
-  3. Replacement Cost on Personal Property - show "Included" or "Not included"
-  4. Water Backup & Sump Overflow - show amount if present, "Not included" if absent
-  5. Service Line Coverage - show "Included" or "Not included"
-  6. Equipment Breakdown - show "Included" or "Not included"
-  7. Increased Special Limits / Scheduled Personal Property - show amount if present, "Not included" if absent
-  8. Identity Theft Coverage - show "Included" or "Not included"
+  1. Ordinance or Law Coverage - show "Included" or "Not included"
+  2. Replacement Cost on Personal Property - show "Included" or "Not included"
+  3. Water Backup & Sump Overflow - show amount if present, "Not included" if absent
+  4. Service Line Coverage - show "Included" or "Not included"
+  5. Equipment Breakdown - show "Included" or "Not included"
+  6. Identity Theft Coverage - show "Included" or "Not included"
 
   "autoGrade": {
     "overallGrade": "A|B|C|D|F",
@@ -253,7 +251,6 @@ You must respond with valid JSON matching this structure:
   4. Glass Coverage - show "Included" or "Not included"
   5. Personal Injury Protection (PIP) - show amount or "Not included"
   6. New Car Replacement - show "Included" or "Not included"
-  7. OEM Coverage - show "Included" or "Not included"
 
   "autoGrades": [
     // REQUIRED if multiple vehicles. Each vehicle gets its own entry with:
