@@ -155,7 +155,12 @@ export default function GetPolicyPage() {
 
     const canopyHandler = window.CanopyConnect.create({
       publicAlias,
-      pullMetaData: { sessionToken: token },
+      pullMetaData: {
+        sessionToken: token,
+        clientUserAgent: navigator.userAgent,
+        ...(document.cookie.match(/(?:^|;\s*)_fbc=([^;]*)/)?.[1] && { fbc: document.cookie.match(/(?:^|;\s*)_fbc=([^;]*)/)?.[1] ?? '' }),
+        ...(document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/)?.[1] && { fbp: document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/)?.[1] ?? '' }),
+      },
       onSuccess: () => {
         completedRef.current = true;
         setExitTriggered(false);

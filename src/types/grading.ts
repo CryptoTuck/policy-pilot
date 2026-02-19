@@ -36,6 +36,7 @@ export interface AutoPolicyGrade {
   overallScore: number; // 0-100
   riskTier: RiskTier; // internal, not displayed
   standardCoverages: CoverageGrade[];
+  additionalCoverages?: AdditionalCoverageAssessment[];
   summary: string;
   keyStrengths: string[];
   areasToReview: string[];
@@ -43,6 +44,8 @@ export interface AutoPolicyGrade {
   vehicleInfo?: string; // e.g., "2024 TESLA Model Y"
   policyNumber?: string;
 }
+
+export type CondoPolicyGrade = HomePolicyGrade;
 
 export interface RentersPolicyGrade {
   overallGrade: string; // A, B, C, D, F
@@ -76,6 +79,7 @@ export interface PolicyReport {
   id: string;
   generatedAt: string;
   homeGrade?: HomePolicyGrade;
+  condoGrade?: CondoPolicyGrade;
   autoGrade?: AutoPolicyGrade;
   autoGrades?: AutoPolicyGrade[]; // For multiple auto policies
   rentersGrade?: RentersPolicyGrade;

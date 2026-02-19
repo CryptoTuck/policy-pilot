@@ -211,12 +211,12 @@ You must respond with valid JSON matching this structure:
   - Any additional home coverages beyond the list above must use "score": "bonus" and still include "maxScore": 5.
 
   HOME additionalCoverages MUST always include ALL of these items:
-  1. Water Backup and Sump Overflow - show amount if present, "Not included" if absent
-  2. Service Line Coverage
-  3. Equipment Breakdown
-  4. Ordinance or Law
-  5. Identity Theft
-  6. Debris Removal
+  1. Ordinance or Law Coverage - show "Included" or "Not included"
+  2. Replacement Cost on Personal Property - show "Included" or "Not included"
+  3. Water Backup & Sump Overflow - show amount if present, "Not included" if absent
+  4. Service Line Coverage - show "Included" or "Not included"
+  5. Equipment Breakdown - show "Included" or "Not included"
+  6. Identity Theft Coverage - show "Included" or "Not included"
 
   "autoGrade": {
     "overallGrade": "A|B|C|D|F",
@@ -234,6 +234,15 @@ You must respond with valid JSON matching this structure:
         "recommendation": "Optional - phrased as carrier standard, not personal advice"
       }
     ],
+    "additionalCoverages": [
+      {
+        "name": "Coverage Name",
+        "limit": "$X if present, 'Not included' if absent",
+        "present": true|false,
+        "relevance": "low|situational|often_worth_reviewing",
+        "note": "Phrased as 'Most modern policies include...' if missing and relevant"
+      }
+    ],
     "summary": "2-3 sentence assessment",
     "keyStrengths": ["Strength 1", "Strength 2"],
     "areasToReview": ["Area 1"]
@@ -246,9 +255,14 @@ You must respond with valid JSON matching this structure:
   4. Medical Payments - amount. If the data shows medical payments, report the amount. If not found in data, show "Not included" and use this explanation: "Medical payments coverage is not included on your current policy. This is recommended by carriers to ensure you're fully protected."
   5. Collision Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
   6. Comprehensive Deductible - show the deductible amount (e.g., "$1,000"). If declined, show "Not included"
-  7. Emergency Roadside Coverage - show "Included" or "Not included"
-  8. Car Rental Coverage - show amount or "Not included"
-  9. Loan or Lease Assistance - show "Included" or "Not included" (only if vehicle is financed)
+
+  AUTO additionalCoverages MUST always include ALL of these items:
+  1. Emergency Roadside Coverage - show "Included" or "Not included"
+  2. Car Rental Coverage - show amount or "Not included"
+  3. Loan or Lease Assistance - show "Included" or "Not included"
+  4. Glass Coverage - show "Included" or "Not included"
+  5. Personal Injury Protection (PIP) - show amount or "Not included"
+  6. New Car Replacement - show "Included" or "Not included"
 
   AUTO SECTION ANALYSIS SCORE (CRITICAL):
   - Only these 6 items count toward the Auto Section Analysis Score (0-5 each, 30 pts total):
@@ -289,8 +303,65 @@ You must respond with valid JSON matching this structure:
   - The deductible amount
 
   RENTERS additionalCoverages MUST always include ALL of these items:
-  1. Water Backup and Sump Overflow - show amount if present, "Not included" if absent
-  2. Damage to Property of Others - show amount if present, "Not included" if absent
+  1. Water Backup & Sump Overflow - show amount if present, "Not included" if absent
+  2. Replacement Cost on Personal Property - show "Included" or "Not included"
+  3. Increased Special Limits / Scheduled Personal Property - show amount if present, "Not included" if absent
+
+  "condoGrade": {
+    "overallGrade": "A|B|C|D|F",
+    "overallScore": 0-100,
+    "riskTier": "low|moderate|elevated",
+    "standardCoverages": [
+      {
+        "name": "Coverage Name",
+        "limit": "$X or percentage - the actual coverage limit from the policy",
+        "score": 1-5,
+        "maxScore": 5,
+        "explanation": "Plain English explanation using carrier logic, not fear-based language",
+        "recommendation": "Optional - only if score < 4, phrased as 'Most carriers recommend...'"
+      }
+    ],
+    "deductibleGrade": {
+      "name": "All Perils Deductible",
+      "limit": "$X or percentage",
+      "score": 1-5,
+      "maxScore": 5,
+      "explanation": "Deductible as % of Coverage A and what that means"
+    },
+    "additionalCoverages": [
+      {
+        "name": "Coverage Name",
+        "limit": "$X if present, 'Not included' if absent",
+        "present": true|false,
+        "relevance": "low|situational|often_worth_reviewing",
+        "note": "Phrased as 'Most modern policies include...' if missing and relevant"
+      }
+    ],
+    "summary": "2-3 sentence assessment using carrier logic. IMPORTANT: If any additional coverages are missing (present=false), recommend them here.",
+    "keyStrengths": ["Strength 1", "Strength 2"],
+    "areasToReview": ["Area 1 - phrased as what carriers would flag, not what they should do"]
+  },
+  IMPORTANT - If the home policy type is HO-6/Condo, use condoGrade instead of homeGrade.
+
+  IMPORTANT - CONDO (HO-6) standardCoverages MUST always include ALL of these items (in this order):
+  1. Dwelling / Unit Coverage (Coverage A) - walls-in / improvements & betterments
+  2. Personal Property (Coverage C) - amount
+  3. Loss of Use (Coverage D) - amount
+  4. Personal Liability (Coverage E) - amount
+  5. Medical Payments (Coverage F) - amount. If the data shows medical payments, report the amount. If not found, show "Not included"
+  6. All Perils Deductible - include in deductibleGrade (deductible amount)
+  7. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
+
+  CONDO additionalCoverages MUST always include ALL of these items:
+  1. Increased Dwelling / Unit Coverage (Coverage A) - show amount if present, "Not included" if absent
+  2. Ordinance or Law Coverage - show "Included" or "Not included"
+  3. Loss Assessment Coverage - show amount if present, "Not included" if absent
+  4. Replacement Cost on Personal Property - show "Included" or "Not included"
+  5. Water Backup & Sump Overflow - show amount if present, "Not included" if absent
+  6. Equipment Breakdown - show "Included" or "Not included"
+  7. Increased Special Limits / Scheduled Personal Property - show amount if present, "Not included" if absent
+  8. Building Additions & Alterations (Expanded Walls-In Coverage) - show amount if present, "Not included" if absent
+
   "carrierAnalysis": {
     "findings": [
       {
