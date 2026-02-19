@@ -69,9 +69,11 @@ export function CoverageTable({
           </thead>
           <tbody>
             {coverages.map((coverage, index) => {
-              const hasIssue = coverage.score <= 3 || !!coverage.recommendation;
-              const colors = getScoreColor(coverage.score, !!coverage.recommendation);
-              const buttonVariant = (coverage.score <= 2 || !!coverage.recommendation) ? 'red' as const : coverage.score <= 3 ? 'amber' as const : 'default' as const;
+              const isBonus = coverage.score === 'bonus';
+              const numericScore = typeof coverage.score === 'number' ? coverage.score : undefined;
+              const hasIssue = !isBonus && ((numericScore ?? 0) <= 3 || !!coverage.recommendation);
+              const colors = isBonus ? { bg: '', text: '', border: '' } : getScoreColor(numericScore ?? 0, !!coverage.recommendation);
+              const buttonVariant = isBonus ? 'default' as const : (numericScore ?? 0) <= 2 || !!coverage.recommendation ? 'red' as const : (numericScore ?? 0) <= 3 ? 'amber' as const : 'default' as const;
 
               return (
                 <tr
@@ -91,15 +93,21 @@ export function CoverageTable({
                   </td>
                   {showScore && (
                     <td className="py-4 px-4 text-sm">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-                        coverage.score <= 2 || coverage.recommendation
-                          ? 'bg-red-100 text-red-800'
-                          : coverage.score <= 3
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-green-100 text-green-800'
-                      }`}>
-                        {coverage.score}/{coverage.maxScore}
-                      </span>
+                      {isBonus ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
+                          Bonus
+                        </span>
+                      ) : (
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          (numericScore ?? 0) <= 2 || coverage.recommendation
+                            ? 'bg-red-100 text-red-800'
+                            : (numericScore ?? 0) <= 3
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {numericScore}/{coverage.maxScore}
+                        </span>
+                      )}
                     </td>
                   )}
                   <td className={`py-4 px-4 text-sm ${hasIssue ? colors.text : 'text-gray-600'}`}>
@@ -123,10 +131,12 @@ export function CoverageTable({
       {/* Mobile Cards - Shown only on mobile */}
       <div className="sm:hidden space-y-3">
         {coverages.map((coverage) => {
-          const hasIssue = coverage.score <= 3 || !!coverage.recommendation;
-          const colors = getScoreColor(coverage.score, !!coverage.recommendation);
-          const badgeColor = getScoreBadgeColor(coverage.score, !!coverage.recommendation);
-          const buttonVariant = (coverage.score <= 2 || !!coverage.recommendation) ? 'red' as const : coverage.score <= 3 ? 'amber' as const : 'default' as const;
+          const isBonus = coverage.score === 'bonus';
+          const numericScore = typeof coverage.score === 'number' ? coverage.score : undefined;
+          const hasIssue = !isBonus && ((numericScore ?? 0) <= 3 || !!coverage.recommendation);
+          const colors = isBonus ? { bg: '', text: '', border: '' } : getScoreColor(numericScore ?? 0, !!coverage.recommendation);
+          const badgeColor = isBonus ? 'bg-slate-500' : getScoreBadgeColor(numericScore ?? 0, !!coverage.recommendation);
+          const buttonVariant = isBonus ? 'default' as const : (numericScore ?? 0) <= 2 || !!coverage.recommendation ? 'red' as const : (numericScore ?? 0) <= 3 ? 'amber' as const : 'default' as const;
 
           return (
             <div
@@ -146,7 +156,7 @@ export function CoverageTable({
                 </div>
                 {showScore && (
                   <span className={`${badgeColor} text-white text-xs font-semibold px-2 py-1 rounded-full`}>
-                    {coverage.score}/{coverage.maxScore}
+                    {isBonus ? 'Bonus' : `${numericScore}/${coverage.maxScore}`}
                   </span>
                 )}
               </div>

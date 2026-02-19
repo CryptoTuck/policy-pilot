@@ -1,9 +1,11 @@
 export type RiskTier = 'low' | 'moderate' | 'elevated';
 
+export type CoverageScore = number | 'bonus';
+
 export interface CoverageGrade {
   name: string;
   limit?: string; // e.g., "$350,000", "2% of Dwelling"
-  score: number; // 1-5
+  score: CoverageScore; // 1-5, or "bonus" for non-scored coverages
   maxScore: 5;
   explanation: string;
   recommendation?: string;
@@ -34,6 +36,7 @@ export interface AutoPolicyGrade {
   overallScore: number; // 0-100
   riskTier: RiskTier; // internal, not displayed
   standardCoverages: CoverageGrade[];
+  additionalCoverages?: AdditionalCoverageAssessment[];
   summary: string;
   keyStrengths: string[];
   areasToReview: string[];
@@ -41,6 +44,8 @@ export interface AutoPolicyGrade {
   vehicleInfo?: string; // e.g., "2024 TESLA Model Y"
   policyNumber?: string;
 }
+
+export type CondoPolicyGrade = HomePolicyGrade;
 
 export interface RentersPolicyGrade {
   overallGrade: string; // A, B, C, D, F
@@ -74,6 +79,7 @@ export interface PolicyReport {
   id: string;
   generatedAt: string;
   homeGrade?: HomePolicyGrade;
+  condoGrade?: CondoPolicyGrade;
   autoGrade?: AutoPolicyGrade;
   autoGrades?: AutoPolicyGrade[]; // For multiple auto policies
   rentersGrade?: RentersPolicyGrade;

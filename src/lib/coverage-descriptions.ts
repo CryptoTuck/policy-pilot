@@ -84,6 +84,37 @@ const coverageDescriptions: Record<string, string> = {
   'debris removal': 'Covers the cost to clean up and haul away debris from your property after a covered loss, like a fallen tree or storm damage.',
 };
 
+const coverageBenefitExplanations: Record<string, string> = {
+  // Home additional coverages
+  'Ordinance or Law Coverage': 'Pays for the extra cost to rebuild or repair your home to current building codes after a covered loss. This is important because older homes often don\'t meet today\'s requirements.',
+  'Replacement Cost on Personal Property': 'Reimburses you for the cost to replace your belongings with new items, not their depreciated value. This helps you recover fully after a loss instead of settling for less.',
+  'Water Backup & Sump Overflow': 'Covers damage caused by water backing up through drains or sump pump failures. These losses are typically excluded from standard homeowners policies.',
+  'Service Line Coverage': 'Covers repair or replacement of underground utility lines like water, sewer, or electric that run from the street to your home. Repairs can be expensive and are usually the homeowner\'s responsibility.',
+  'Equipment Breakdown': 'Covers sudden mechanical or electrical failure of major home systems and appliances. It helps pay for repairs or replacement not caused by wear and tear or age alone.',
+  'Identity Theft Coverage': 'Helps cover expenses related to restoring your identity after fraud, such as legal fees, lost wages, and credit monitoring. It provides support and reimbursement during a stressful and time-consuming recovery process.',
+
+  // Auto additional coverages
+  'Emergency Roadside Coverage': 'Helps cover towing, lockouts, jump-starts, and flat tires if your car breaks down. It saves you from paying out-of-pocket when you\'re stuck on the side of the road.',
+  'Car Rental Coverage': 'Pays for a rental car while your vehicle is being repaired after a covered claim. This keeps you mobile without disrupting your daily routine.',
+  'Loan or Lease Assistance': 'Covers the gap between what your car is worth and what you still owe if it\'s totaled. This prevents you from making payments on a vehicle you no longer have.',
+  'Glass Coverage': 'Covers repair or replacement of cracked or shattered glass, often with little to no deductible. It\'s especially useful since windshield damage is common and can worsen quickly.',
+  'Personal Injury Protection (PIP)': 'Helps pay for medical bills, lost wages, and essential services after an accident, regardless of fault. It provides fast access to benefits when you need them most.',
+  'New Car Replacement': 'Replaces your totaled vehicle with a brand-new one of the same make and model instead of paying depreciated value. This is valuable in the first few years of ownership when depreciation hits hardest.',
+};
+
+function normalizeCoverageKey(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+const normalizedBenefitEntries = Object.entries(coverageBenefitExplanations).map(([key, description]) => ({
+  key: normalizeCoverageKey(key),
+  description,
+}));
+
 export function getCoverageDescription(name: string): string | undefined {
   const lower = name.toLowerCase().trim();
 
@@ -100,4 +131,18 @@ export function getCoverageDescription(name: string): string | undefined {
   }
 
   return undefined;
+}
+
+export function getCoverageBenefitExplanation(name: string): string | undefined {
+  const normalized = normalizeCoverageKey(name);
+
+  const exactMatch = normalizedBenefitEntries.find((entry) => entry.key === normalized);
+  if (exactMatch) {
+    return exactMatch.description;
+  }
+
+  const fuzzyMatch = normalizedBenefitEntries.find((entry) =>
+    normalized.includes(entry.key) || entry.key.includes(normalized),
+  );
+  return fuzzyMatch?.description;
 }

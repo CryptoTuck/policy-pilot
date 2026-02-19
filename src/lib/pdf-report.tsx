@@ -72,11 +72,47 @@ function getGradeDescription(grade: string): string {
 
 // ─── Score calculation (mirrors ReportContent.tsx) ────────────────────────────
 
-function calculateSectionScore(coverages: { score: number; maxScore: number }[]): { score: number; maxScore: number } {
-  const score = coverages.reduce((sum, c) => sum + c.score, 0);
-  const maxScore = coverages.reduce((sum, c) => sum + c.maxScore, 0);
+function calculateSectionScore(coverages: { score: number | 'bonus'; maxScore: number }[]): { score: number; maxScore: number } {
+  const score = coverages.reduce((sum, c) => sum + (typeof c.score === 'number' ? c.score : 0), 0);
+  const maxScore = coverages.reduce((sum, c) => sum + (typeof c.score === 'number' ? c.maxScore : 0), 0);
   return { score, maxScore };
 }
+
+const AUTO_SECTION_COVERAGES = [
+  'bodily injury liability',
+  'property damage liability',
+  'uninsured/underinsured motorist',
+  'uninsured motorist/underinsured motorist',
+  'medical payments',
+  'collision deductible',
+  'collision',
+  'comprehensive deductible',
+  'comprehensive',
+];
+
+const HOME_SECTION_COVERAGES = [
+  'dwelling',
+  'other structures',
+  'personal property',
+  'loss of use',
+  'personal liability',
+  'medical payments',
+  'all perils deductible',
+  'wind or hail deductible',
+  'windstorm or hail deductible',
+  'wind hail deductible',
+  'windstorm hail deductible',
+];
+
+function normalizeCoverageName(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function isCoreCoverage(name: string, coreNames: string[]): boolean {
+  const normalized = normalizeCoverageName(name);
+  return coreNames.some((core) => normalized.includes(normalizeCoverageName(core)));
+}
+
 
 function gradeToScore(grade?: string): number | undefined {
   if (!grade) return undefined;
@@ -337,8 +373,12 @@ function CoverageTable({ coverages }: { coverages: CoverageGrade[] }) {
         <Text style={[s.tableHeaderText, s.colExplanation]}>What It Means</Text>
       </View>
       {coverages.map((c, i) => {
-        const flagged = c.score <= 3 || !!c.recommendation;
-        const colors = getCoverageScoreColors(c.score, !!c.recommendation);
+        const isBonus = c.score === 'bonus';
+        const numericScore = typeof c.score === 'number' ? c.score : undefined;
+        const flagged = !isBonus && ((numericScore ?? 0) <= 3 || !!c.recommendation);
+        const colors = isBonus
+          ? { bg: '#ffffff', text: '#374151', badgeBg: '#e2e8f0', badgeText: '#475569' }
+          : getCoverageScoreColors(numericScore ?? 0, !!c.recommendation);
         return (
           <View
             style={[
@@ -357,7 +397,7 @@ function CoverageTable({ coverages }: { coverages: CoverageGrade[] }) {
             </View>
             <View style={s.colScore}>
               <Text style={[s.scoreBadge, { backgroundColor: colors.badgeBg, color: colors.badgeText }]}>
-                {c.score}/{c.maxScore}
+                {isBonus ? 'Bonus' : `${numericScore}/${c.maxScore}`}
               </Text>
             </View>
             <View style={s.colExplanation}>
@@ -403,7 +443,12 @@ function AreasToReviewAlert({ items }: { items: string[] }) {
 
 function HomeSection({ home, carrier }: { home: HomePolicyGrade; carrier?: string }) {
   const allCoverages = [...home.standardCoverages, home.deductibleGrade];
-  const scores = calculateSectionScore(allCoverages);
+  const coveragesWithBonus = allCoverages.map((coverage) => (
+    isCoreCoverage(coverage.name, HOME_SECTION_COVERAGES)
+      ? coverage
+      : { ...coverage, score: 'bonus' as const }
+  ));
+  const scores = calculateSectionScore(coveragesWithBonus);
 
   return (
     <View>
@@ -413,7 +458,7 @@ function HomeSection({ home, carrier }: { home: HomePolicyGrade; carrier?: strin
       <View style={s.sectionCard}>
         <Text style={s.sectionCardTitle}>Your Home Coverages</Text>
         <Text style={s.sectionCardSubtitle}>Standard coverages, deductibles, and endorsements</Text>
-        <CoverageTable coverages={allCoverages} />
+        <CoverageTable coverages={coveragesWithBonus} />
         <SectionAnalysisBar title="Home Coverage" score={scores.score} maxScore={scores.maxScore} summary={home.summary} />
       </View>
     </View>
@@ -421,7 +466,12 @@ function HomeSection({ home, carrier }: { home: HomePolicyGrade; carrier?: strin
 }
 
 function AutoSection({ auto, index }: { auto: AutoPolicyGrade; index?: number }) {
-  const scores = calculateSectionScore(auto.standardCoverages);
+  const coveragesWithBonus = auto.standardCoverages.map((coverage) => (
+    isCoreCoverage(coverage.name, AUTO_SECTION_COVERAGES)
+      ? coverage
+      : { ...coverage, score: 'bonus' as const }
+  ));
+  const scores = calculateSectionScore(coveragesWithBonus);
   const showVehicleHeader = auto.vehicleInfo || (index !== undefined && index > 0);
 
   return (
@@ -438,7 +488,7 @@ function AutoSection({ auto, index }: { auto: AutoPolicyGrade; index?: number })
         </View>
       )}
       <Text style={s.sectionCardTitle}>{showVehicleHeader ? 'Your Coverages' : 'Your Auto Coverages'}</Text>
-      <CoverageTable coverages={auto.standardCoverages} />
+      <CoverageTable coverages={coveragesWithBonus} />
       <SectionAnalysisBar
         title={showVehicleHeader ? `${auto.vehicleInfo || `Policy ${(index ?? 0) + 1}`} Coverage` : 'Auto Coverage'}
         score={scores.score}
