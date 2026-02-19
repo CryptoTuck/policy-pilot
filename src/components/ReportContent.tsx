@@ -349,8 +349,8 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             <p className="text-4xl sm:text-5xl font-bold mt-2">{formatPercent(displayedScore)}</p>
           </div>
           {activeFilter === 'all' && (
-            <div className="w-full sm:w-auto">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+            <div className="w-full sm:w-auto sm:ml-auto">
+              <div className="flex flex-wrap justify-end gap-2 sm:gap-3">
                 {scoreCards.map(({ label, score }) => (
                   <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-4 sm:py-3 text-center">
                     <div className="text-lg sm:text-xl font-bold">{formatPercent(score)}</div>
