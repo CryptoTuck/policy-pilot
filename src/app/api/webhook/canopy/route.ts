@@ -106,6 +106,15 @@ export async function POST(request: NextRequest) {
       extractMetadata(rawData, 'sessionToken') ||
       extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'sessionToken');
     
+    // Facebook cookie IDs and client info for Conversions API
+    const fbc = extractMetadata(rawData, 'fbc') ||
+      extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'fbc');
+    const fbp = extractMetadata(rawData, 'fbp') ||
+      extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'fbp');
+    const clientUserAgent = extractMetadata(rawData, 'clientUserAgent') ||
+      extractMetadata(rawData.pullMetaData as Record<string, unknown> || {}, 'clientUserAgent');
+    const clientIpAddress = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || undefined;
+
     // Insurance provider
     const insuranceProvider = pull?.insurance_provider_name as string | undefined;
     const insuranceProviderFriendly = pull?.insurance_provider_friendly_name as string | undefined;
@@ -405,6 +414,10 @@ export async function POST(request: NextRequest) {
       insuranceProvider: insuranceProviderFriendly,
       overallGrade: scoreToGrade(calculateOverallScore(gradeResult)),
       overallScore: calculateOverallScore(gradeResult),
+      fbc: fbc || undefined,
+      fbp: fbp || undefined,
+      clientUserAgent: clientUserAgent || undefined,
+      clientIpAddress,
     });
 
     // Build response
