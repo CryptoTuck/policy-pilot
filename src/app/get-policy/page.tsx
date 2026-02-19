@@ -10,7 +10,7 @@ import {
   trackGetPolicyStarted,
 } from '@/lib/analytics';
 import { fbTrackOpenedCanopyConnect } from '@/lib/facebook-pixel';
-import { DevButton } from '@/components/DevButton';
+// import { DevButton } from '@/components/DevButton';
 
 type CanopyHandler = {
   open: () => void;
@@ -268,7 +268,7 @@ export default function GetPolicyPage() {
             </button>
 
             {/* Dev Button */}
-            <DevButton />
+            {/* <DevButton /> */}
 
             {/* Instructions */}
             <div className="mt-8 text-left w-full space-y-3">
