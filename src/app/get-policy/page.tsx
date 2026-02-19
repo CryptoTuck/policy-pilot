@@ -10,7 +10,7 @@ import {
   trackGetPolicyStarted,
 } from '@/lib/analytics';
 import { fbTrackOpenedCanopyConnect } from '@/lib/facebook-pixel';
-// import { DevButton } from '@/components/DevButton';
+import { DevButton } from '@/components/DevButton';
 
 type CanopyHandler = {
   open: () => void;
@@ -155,7 +155,12 @@ export default function GetPolicyPage() {
 
     const canopyHandler = window.CanopyConnect.create({
       publicAlias,
-      pullMetaData: { sessionToken: token },
+      pullMetaData: {
+        sessionToken: token,
+        clientUserAgent: navigator.userAgent,
+        ...(document.cookie.match(/(?:^|;\s*)_fbc=([^;]*)/)?.[1] && { fbc: document.cookie.match(/(?:^|;\s*)_fbc=([^;]*)/)?.[1] ?? '' }),
+        ...(document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/)?.[1] && { fbp: document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/)?.[1] ?? '' }),
+      },
       onSuccess: () => {
         completedRef.current = true;
         setExitTriggered(false);
@@ -263,7 +268,7 @@ export default function GetPolicyPage() {
             </button>
 
             {/* Dev Button */}
-            {/* <DevButton /> */}
+            <DevButton />
 
             {/* Instructions */}
             <div className="mt-8 text-left w-full space-y-3">
