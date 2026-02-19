@@ -78,10 +78,12 @@ Even without rebuild estimates, you can detect underinsurance signals.
 - 10-20% of Coverage A → 4/5
 - < 10% of Coverage A → 3/5
 
-**Medical Payments (Coverage F):**
-- $5k-$10k → 5/5
-- $1k-$5k → 4/5
-- < $1k → 3/5
+**Medical Payments (Coverage F) / Auto Medical Payments:**
+- $0 or not included → 0/5
+- $1,000 → 2/5
+- $2,000-$4,999 → 3/5
+- $5,000 → 4/5
+- Greater than $5,000 → 5/5
 
 ### 5. MISSING STANDARD PROTECTION (Binary Flags)
 You can't assume exposure—but you can say what's standard.
