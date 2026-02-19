@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { getCoverageDescription } from '@/lib/coverage-descriptions';
+import { getCoverageDescription, getCoverageImagePath } from '@/lib/coverage-descriptions';
 
 interface CoverageDescriptionContextValue {
   showDescription: (name: string) => void;
@@ -19,6 +20,7 @@ export function CoverageDescriptionProvider({ children }: { children: ReactNode 
   }, []);
 
   const description = getCoverageDescription(coverageName);
+  const imagePath = getCoverageImagePath(coverageName);
 
   return (
     <CoverageDescriptionContext.Provider value={{ showDescription }}>
@@ -33,7 +35,7 @@ export function CoverageDescriptionProvider({ children }: { children: ReactNode 
           />
 
           {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 cursor-pointer"
@@ -42,6 +44,18 @@ export function CoverageDescriptionProvider({ children }: { children: ReactNode 
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
+
+            {imagePath ? (
+              <div className="mb-4 max-h-[60vh] overflow-y-auto rounded-xl border border-gray-100">
+                <Image
+                  src={imagePath}
+                  alt={`${coverageName} infographic`}
+                  width={900}
+                  height={1200}
+                  className="w-full h-auto rounded-xl"
+                />
+              </div>
+            ) : null}
 
             <h3 className="text-lg font-bold text-gray-900 mb-3 pr-8">{coverageName}</h3>
             <p className="text-gray-600 text-sm leading-relaxed">

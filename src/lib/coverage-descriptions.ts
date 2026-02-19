@@ -84,6 +84,70 @@ const coverageDescriptions: Record<string, string> = {
   'debris removal': 'Covers the cost to clean up and haul away debris from your property after a covered loss, like a fallen tree or storm damage.',
 };
 
+function normalizeCoverageKey(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+const coverageImageMap: Record<string, string> = {
+  [normalizeCoverageKey('Dwelling')]: 'dwelling.png',
+  [normalizeCoverageKey('Dwelling (Coverage A)')]: 'dwelling.png',
+  [normalizeCoverageKey('Other Structures')]: 'other-structures.png',
+  [normalizeCoverageKey('Other Structures (Coverage B)')]: 'other-structures.png',
+  [normalizeCoverageKey('Personal Property')]: 'personal-property.png',
+  [normalizeCoverageKey('Personal Property (Coverage C)')]: 'personal-property.png',
+  [normalizeCoverageKey('Loss of Use')]: 'loss-of-use.png',
+  [normalizeCoverageKey('Loss of Use (Coverage D)')]: 'loss-of-use.png',
+  [normalizeCoverageKey('Personal Liability')]: 'personal-liability.png',
+  [normalizeCoverageKey('Personal Liability (Coverage E)')]: 'personal-liability.png',
+  [normalizeCoverageKey('Medical Payments (Coverage F)')]: 'medical-payments-home.png',
+  [normalizeCoverageKey('Medical Payments to Others')]: 'medical-payments-home.png',
+  [normalizeCoverageKey('Medical Payments')]: 'medical-payments-auto.png',
+  [normalizeCoverageKey('All Perils Deductible')]: 'all-perils-deductible.png',
+  [normalizeCoverageKey('Windstorm or Hail Deductible')]: 'windstorm-hail-deductible.png',
+  [normalizeCoverageKey('Extended Replacement Cost')]: 'extended-replacement-cost.png',
+  [normalizeCoverageKey('Ordinance or Law Coverage')]: 'ordinance-or-law.png',
+  [normalizeCoverageKey('Ordinance or Law')]: 'ordinance-or-law.png',
+  [normalizeCoverageKey('Replacement Cost on Personal Property')]: 'replacement-cost-personal-property.png',
+  [normalizeCoverageKey('Water Backup & Sump Overflow')]: 'water-backup.png',
+  [normalizeCoverageKey('Water Backup and Sump Overflow')]: 'water-backup.png',
+  [normalizeCoverageKey('Service Line Coverage')]: 'service-line.png',
+  [normalizeCoverageKey('Equipment Breakdown')]: 'equipment-breakdown.png',
+  [normalizeCoverageKey('Increased Special Limits')]: 'increased-special-limits.png',
+  [normalizeCoverageKey('Scheduled Personal Property')]: 'increased-special-limits.png',
+  [normalizeCoverageKey('Identity Theft Coverage')]: 'identity-theft.png',
+  [normalizeCoverageKey('Identity Theft')]: 'identity-theft.png',
+  [normalizeCoverageKey('Bodily Injury Liability')]: 'bodily-injury-liability.png',
+  [normalizeCoverageKey('Bodily Injury')]: 'bodily-injury-liability.png',
+  [normalizeCoverageKey('Property Damage Liability')]: 'property-damage-liability.png',
+  [normalizeCoverageKey('Property Damage')]: 'property-damage-liability.png',
+  [normalizeCoverageKey('Uninsured/Underinsured Motorist')]: 'uninsured-underinsured.png',
+  [normalizeCoverageKey('Uninsured Motorist')]: 'uninsured-underinsured.png',
+  [normalizeCoverageKey('Underinsured Motorist')]: 'uninsured-underinsured.png',
+  [normalizeCoverageKey('Collision Deductible')]: 'collision-deductible.png',
+  [normalizeCoverageKey('Collision')]: 'collision-deductible.png',
+  [normalizeCoverageKey('Comprehensive Deductible')]: 'comprehensive-deductible.png',
+  [normalizeCoverageKey('Comprehensive')]: 'comprehensive-deductible.png',
+  [normalizeCoverageKey('Emergency Roadside Coverage')]: 'emergency-roadside.png',
+  [normalizeCoverageKey('Roadside Assistance')]: 'emergency-roadside.png',
+  [normalizeCoverageKey('Car Rental Coverage')]: 'car-rental.png',
+  [normalizeCoverageKey('Rental Reimbursement')]: 'car-rental.png',
+  [normalizeCoverageKey('Loan or Lease Assistance')]: 'loan-lease-assistance.png',
+  [normalizeCoverageKey('Gap Coverage')]: 'loan-lease-assistance.png',
+  [normalizeCoverageKey('Glass Coverage')]: 'glass-coverage.png',
+  [normalizeCoverageKey('Personal Injury Protection')]: 'pip.png',
+  [normalizeCoverageKey('PIP')]: 'pip.png',
+  [normalizeCoverageKey('New Car Replacement')]: 'new-car-replacement.png',
+  [normalizeCoverageKey('OEM Coverage')]: 'oem-coverage.png',
+  [normalizeCoverageKey('Loss Assessment Coverage')]: 'loss-assessment.png',
+  [normalizeCoverageKey('Loss Assessment')]: 'loss-assessment.png',
+  [normalizeCoverageKey('Building Additions & Alterations')]: 'building-additions.png',
+  [normalizeCoverageKey('Building Additions')]: 'building-additions.png',
+};
+
 const coverageBenefitExplanations: Record<string, string> = {
   // Home additional coverages
   'Ordinance or Law Coverage': 'Pays for the extra cost to rebuild or repair your home to current building codes after a covered loss. This is important because older homes often don\'t meet today\'s requirements.',
@@ -101,14 +165,6 @@ const coverageBenefitExplanations: Record<string, string> = {
   'Personal Injury Protection (PIP)': 'Helps pay for medical bills, lost wages, and essential services after an accident, regardless of fault. It provides fast access to benefits when you need them most.',
   'New Car Replacement': 'Replaces your totaled vehicle with a brand-new one of the same make and model instead of paying depreciated value. This is valuable in the first few years of ownership when depreciation hits hardest.',
 };
-
-function normalizeCoverageKey(value: string): string {
-  return value
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, ' ')
-    .trim();
-}
 
 const normalizedBenefitEntries = Object.entries(coverageBenefitExplanations).map(([key, description]) => ({
   key: normalizeCoverageKey(key),
@@ -145,4 +201,20 @@ export function getCoverageBenefitExplanation(name: string): string | undefined 
     normalized.includes(entry.key) || entry.key.includes(normalized),
   );
   return fuzzyMatch?.description;
+}
+
+export function getCoverageImagePath(name: string): string | undefined {
+  const normalized = normalizeCoverageKey(name);
+
+  if (coverageImageMap[normalized]) {
+    return `/images/coverages/${coverageImageMap[normalized]}`;
+  }
+
+  for (const [key, filename] of Object.entries(coverageImageMap)) {
+    if (normalized.includes(key) || key.includes(normalized)) {
+      return `/images/coverages/${filename}`;
+    }
+  }
+
+  return undefined;
 }
