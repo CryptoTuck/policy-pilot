@@ -1,9 +1,11 @@
 export type RiskTier = 'low' | 'moderate' | 'elevated';
 
+export type CoverageScore = number | 'bonus';
+
 export interface CoverageGrade {
   name: string;
   limit?: string; // e.g., "$350,000", "2% of Dwelling"
-  score: number; // 1-5
+  score: CoverageScore; // 1-5, or "bonus" for non-scored coverages
   maxScore: 5;
   explanation: string;
   recommendation?: string;

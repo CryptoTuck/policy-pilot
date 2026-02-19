@@ -162,7 +162,7 @@ You must respond with valid JSON matching this structure:
       {
         "name": "Coverage Name",
         "limit": "$X or percentage - the actual coverage limit from the policy",
-        "score": 1-5,
+        "score": "1-5 OR \"bonus\" for non-scored coverages",
         "maxScore": 5,
         "explanation": "Plain English explanation using carrier logic, not fear-based language",
         "recommendation": "Optional - only if score < 4, phrased as 'Most carriers recommend...'"
@@ -197,6 +197,18 @@ You must respond with valid JSON matching this structure:
   5. Personal Liability (Coverage E) - amount
   6. Medical Payments (Coverage F) - amount. If the data shows medical payments, report the amount. If not found, show "Not included"
   7. Windstorm or Hail Deductible - the deductible amount (if separate, otherwise note "Included in All Perils")
+
+  HOME SECTION ANALYSIS SCORE (CRITICAL):
+  - Only these 8 items count toward the Home Section Analysis Score (0-5 each, 40 pts total):
+    1) Dwelling
+    2) Other Structures
+    3) Personal Property
+    4) Loss of Use
+    5) Personal Liability
+    6) Medical Payments
+    7) All Perils Deductible (from deductibleGrade)
+    8) Wind or Hail Deductible (same as "Windstorm or Hail Deductible")
+  - Any additional home coverages beyond the list above must use "score": "bonus" and still include "maxScore": 5.
 
   HOME additionalCoverages MUST always include ALL of these items:
   1. Ordinance or Law Coverage - show "Included" or "Not included"
@@ -251,6 +263,16 @@ You must respond with valid JSON matching this structure:
   4. Glass Coverage - show "Included" or "Not included"
   5. Personal Injury Protection (PIP) - show amount or "Not included"
   6. New Car Replacement - show "Included" or "Not included"
+
+  AUTO SECTION ANALYSIS SCORE (CRITICAL):
+  - Only these 6 items count toward the Auto Section Analysis Score (0-5 each, 30 pts total):
+    1) Bodily Injury Liability
+    2) Property Damage Liability
+    3) Uninsured/Underinsured Motorist
+    4) Medical Payments
+    5) Collision Deductible
+    6) Comprehensive Deductible
+  - For items 7-9 above (and any other auto coverages beyond the 6 core items), use "score": "bonus" and still include "maxScore": 5.
 
   "autoGrades": [
     // REQUIRED if multiple vehicles. Each vehicle gets its own entry with:

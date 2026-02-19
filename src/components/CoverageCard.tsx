@@ -27,12 +27,21 @@ function ScoreBar({ score, maxScore }: { score: number; maxScore: number }) {
 }
 
 export function CoverageCard({ coverage }: CoverageCardProps) {
+  const isBonus = coverage.score === 'bonus';
+  const numericScore = typeof coverage.score === 'number' ? coverage.score : 0;
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-3 sm:p-4 shadow-sm">
       <div className="flex justify-between items-start mb-2 sm:mb-3">
         <h4 className="font-medium text-gray-900 text-sm sm:text-base">{coverage.name}</h4>
       </div>
-      <ScoreBar score={coverage.score} maxScore={coverage.maxScore} />
+      {isBonus ? (
+        <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">
+          Bonus
+        </div>
+      ) : (
+        <ScoreBar score={numericScore} maxScore={coverage.maxScore} />
+      )}
       <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-gray-600 leading-relaxed">
         {coverage.explanation}
       </p>
