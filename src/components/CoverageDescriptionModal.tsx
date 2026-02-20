@@ -35,7 +35,7 @@ export function CoverageDescriptionProvider({ children }: { children: ReactNode 
           />
 
           {/* Modal Content */}
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-[280px] sm:max-w-md w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
             <button
               onClick={() => setIsOpen(false)}
               className="absolute top-3 right-3 text-white/80 hover:text-white bg-black/30 hover:bg-black/50 rounded-full p-1 cursor-pointer z-10 transition-colors"
