@@ -56,9 +56,9 @@ function ScoreRing({ score, maxScore }: { score: number; maxScore: number }) {
           fill="none"
         />
       </svg>
-      <div className={`absolute flex flex-col items-center leading-none ${tone.text}`}>
-        <span className="text-sm font-semibold">{score}</span>
-        <span className="text-[10px]">/{maxScore}</span>
+      <div className={`absolute flex items-baseline leading-none ${tone.text}`}>
+        <span className="text-sm font-bold">{score}</span>
+        <span className="text-[9px] font-medium">/{maxScore}</span>
       </div>
     </div>
   );

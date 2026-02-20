@@ -143,9 +143,9 @@ function ScoreRing({
       <svg width={size} height={size} className="rotate-[-90deg]">
         <defs>
           <linearGradient id="score-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="0%" stopColor="#10b981" />
             <stop offset="50%" stopColor="#f59e0b" />
-            <stop offset="100%" stopColor="#10b981" />
+            <stop offset="100%" stopColor="#ef4444" />
           </linearGradient>
         </defs>
         <circle
@@ -370,33 +370,6 @@ function PolicyTabs({
   );
 }
 
-function AreasToReviewAlert({ areas }: { areas: string[] }) {
-  if (areas.length === 0) return null;
-
-  return (
-    <div className="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-red-500 rounded-r-lg p-4 mb-6">
-      <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">
-          <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <h3 className="text-red-800 font-semibold text-base mb-2">Areas That Need Your Attention</h3>
-          <ul className="space-y-1">
-            {areas.map((area, index) => (
-              <li key={index} className="text-red-700 text-sm flex items-start gap-2">
-                <span className="text-red-400 mt-0.5">•</span>
-                {area}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ReportContent({ report }: { report: PolicyReport }) {
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
 
@@ -541,8 +514,8 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               score={displayedScore}
               label={activeFilter === 'all' ? 'Overall' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}`}
             />
-            {activeFilter === 'all' && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {activeFilter === 'all' && scoreCards.length > 1 && (
+              <div className="flex justify-center gap-4">
                 {scoreCards.map(({ label, score }) => (
                   <MiniScoreRing key={label} score={score} label={label} />
                 ))}
@@ -569,17 +542,19 @@ export function ReportContent({ report }: { report: PolicyReport }) {
                   style={{ left: '68%' }}
                 />
                 <div
-                  className="absolute -top-6 text-[10px] font-semibold text-gray-500"
+                  className="absolute -top-10 text-[10px] font-semibold text-gray-500"
                   style={{ left: '68%', transform: 'translateX(-50%)' }}
                 >
                   Avg: 68%
                 </div>
                 <div
-                  className="absolute -top-5"
+                  className="absolute -top-4 flex flex-col items-center"
                   style={{ left: `${Math.max(0, Math.min(100, displayedScore ?? 0))}%`, transform: 'translateX(-50%)' }}
                 >
-                  <div className="h-6 w-0.5 bg-blue-600 mx-auto rounded-full shadow-md" />
-                  <div className="h-3 w-3 rounded-full bg-white border-2 border-blue-600 shadow-md mx-auto -mt-1" />
+                  <div className="px-1.5 py-0.5 rounded bg-gray-900 text-[9px] font-bold text-white leading-none shadow">
+                    {typeof displayedScore === 'number' ? `${displayedScore}%` : '--'}
+                  </div>
+                  <div className="w-0 h-0 border-l-[4px] border-r-[4px] border-t-[4px] border-l-transparent border-r-transparent border-t-gray-900" />
                 </div>
               </div>
               <div className="flex justify-between text-[11px] text-gray-500 uppercase tracking-wide">
@@ -603,6 +578,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Key Findings Summary */}
@@ -645,9 +621,6 @@ export function ReportContent({ report }: { report: PolicyReport }) {
           </ul>
         </div>
       </div>
-
-      {/* Areas to Review Alert */}
-      <AreasToReviewAlert areas={areasToReview} />
 
       {/* Carrier-Aligned Analysis */}
       {activeFilter === 'all' && carrierAnalysis && <CarrierAnalysis analysis={carrierAnalysis} />}
@@ -877,7 +850,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       })()}
 
       {/* Footer Disclaimer */}
-      <div className="text-center text-xs sm:text-sm text-gray-500 mt-12 p-5 bg-gray-50 rounded-lg mb-24 animate-fade-up">
+      <div className="text-center text-xs sm:text-sm text-gray-500 mt-12 p-5 bg-gray-50 rounded-lg mb-24">
         <p>
           This report is for educational purposes only and does not constitute professional insurance advice.
           Consult with a licensed insurance agent for personalized recommendations.
