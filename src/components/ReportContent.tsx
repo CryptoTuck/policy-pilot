@@ -504,7 +504,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       </div>
 
       {/* Score Overview Card */}
-      <div className="mb-8 rounded-3xl bg-white shadow-xl border border-white/70 p-6 sm:p-8 relative overflow-hidden animate-fade-up">
+      <div className="mb-8 rounded-3xl bg-white shadow-xl border border-white/70 p-4 sm:p-8 relative overflow-hidden animate-fade-up">
         <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-400/20 blur-3xl" />
         <div className="absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-gradient-to-br from-emerald-400/20 to-blue-400/10 blur-3xl" />
 
@@ -536,25 +536,33 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
             <div className="space-y-3">
               <p className="text-sm font-medium text-gray-600">{populationLabel}</p>
-              <div className="relative h-3 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-emerald-500 shadow-inner">
+              <div className="relative pt-6 pb-5">
+                {/* Score tooltip — above the bar */}
                 <div
-                  className="absolute top-0 bottom-0 border-l-2 border-dashed border-white/80"
-                  style={{ left: '68%' }}
-                />
-                <div
-                  className="absolute -top-10 text-[10px] font-semibold text-gray-500"
-                  style={{ left: '68%', transform: 'translateX(-50%)' }}
-                >
-                  Avg: 68%
-                </div>
-                <div
-                  className="absolute -top-4 flex flex-col items-center"
-                  style={{ left: `${Math.max(0, Math.min(100, displayedScore ?? 0))}%`, transform: 'translateX(-50%)' }}
+                  className="absolute top-0 flex flex-col items-center"
+                  style={{ left: `clamp(12px, ${Math.max(0, Math.min(100, displayedScore ?? 0))}%, calc(100% - 12px))`, transform: 'translateX(-50%)' }}
                 >
                   <div className="px-1.5 py-0.5 rounded bg-gray-900 text-[9px] font-bold text-white leading-none shadow">
                     {typeof displayedScore === 'number' ? `${displayedScore}%` : '--'}
                   </div>
                   <div className="w-0 h-0 border-l-[4px] border-r-[4px] border-t-[4px] border-l-transparent border-r-transparent border-t-gray-900" />
+                </div>
+
+                {/* Bar */}
+                <div className="relative h-3 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-emerald-500 shadow-inner">
+                  {/* Avg dashed line */}
+                  <div
+                    className="absolute top-0 bottom-0 border-l-2 border-dashed border-white/80"
+                    style={{ left: '68%' }}
+                  />
+                </div>
+
+                {/* Avg label — below the bar */}
+                <div
+                  className="absolute bottom-0 text-[10px] font-semibold text-gray-500"
+                  style={{ left: '68%', transform: 'translateX(-50%)' }}
+                >
+                  Avg: 68%
                 </div>
               </div>
               <div className="flex justify-between text-[11px] text-gray-500 uppercase tracking-wide">
@@ -583,7 +591,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
       {/* Key Findings Summary */}
       <div className="mb-8 grid gap-4 lg:grid-cols-2 animate-fade-up" style={{ animationDelay: '80ms' }}>
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 sm:p-6 shadow-sm">
+        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-4 sm:p-6 shadow-sm">
           <h3 className="text-lg font-bold text-emerald-900 mb-4">Strengths</h3>
           <ul className="space-y-2 text-sm text-emerald-900">
             {keyStrengths.length === 0 && (
@@ -602,7 +610,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-amber-100 bg-amber-50/80 p-5 sm:p-6 shadow-sm">
+        <div className="rounded-2xl border border-amber-100 bg-amber-50/80 p-4 sm:p-6 shadow-sm">
           <h3 className="text-lg font-bold text-amber-900 mb-4">Areas to Improve</h3>
           <ul className="space-y-2 text-sm text-amber-900">
             {areasToReview.length === 0 && (
@@ -646,7 +654,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
             </h2>
 
-            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-fade-up">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                 Your Home Coverages
               </h3>
@@ -698,7 +706,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               Condo Policy Analysis
             </h2>
 
-            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-fade-up">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                 Your Condo Coverages
               </h3>
@@ -754,7 +762,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               : missingCoverages;
 
             return (
-              <section key={idx} className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
+              <section key={idx} className="mb-10 bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-fade-up">
                 {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
                   <div className="mb-6">
                     <p className="text-gray-500 text-sm">Vehicle</p>
@@ -816,7 +824,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               Renters Policy Analysis{carriers?.renters ? ` (${carriers.renters})` : ''}
             </h2>
 
-            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-4 sm:p-6 animate-fade-up">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Your Renters Coverages
               </h3>

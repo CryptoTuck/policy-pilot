@@ -13,7 +13,7 @@ export function AdditionalCoverageTable({ coverages, variant = 'bonus' }: Additi
   const isConsider = variant === 'consider';
 
   return (
-    <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+    <div className="grid gap-3 sm:gap-5 sm:grid-cols-2">
       {coverages.map((coverage) => {
         const benefitExplanation = isConsider
           ? getCoverageBenefitExplanation(coverage.name)
@@ -27,8 +27,8 @@ export function AdditionalCoverageTable({ coverages, variant = 'bonus' }: Additi
             key={coverage.name}
             className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-5 shadow-sm"
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Coverage</p>
                 <h4 className="mt-1 text-base font-semibold text-gray-900">
                   <CoverageNameButton name={coverage.name} />
