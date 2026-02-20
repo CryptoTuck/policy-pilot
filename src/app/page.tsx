@@ -87,11 +87,10 @@ export default function Home() {
             </a>
           </div>
           <Link
-            href="/get-policy"
-            onClick={() => fbTrackStartRegistration()}
+            href="/report/demo-home"
             className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition-all duration-200 hover:-translate-y-0.5"
           >
-            Get My Free Score
+            See Example Report
           </Link>
         </div>
       </nav>
