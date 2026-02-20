@@ -13,90 +13,61 @@ export function AdditionalCoverageTable({ coverages, variant = 'bonus' }: Additi
   const isConsider = variant === 'consider';
 
   return (
-    <>
-      {/* Desktop Table - Hidden on mobile */}
-      <div className="hidden sm:block overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-slate-800/80 text-white text-sm">
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide rounded-tl-2xl">Coverage</th>
-              {!isConsider && (
-                <th className="text-left py-3 px-4 font-medium uppercase tracking-wide">Limit</th>
-              )}
-              <th className="text-left py-3 px-4 font-medium uppercase tracking-wide rounded-tr-2xl">
-                {isConsider ? 'Why It Might Be Beneficial' : 'What It Means'}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {coverages.map((coverage, index) => {
-              const benefitExplanation = isConsider
-                ? getCoverageBenefitExplanation(coverage.name)
-                : undefined;
-              const noteText = isConsider
-                ? (benefitExplanation || coverage.note || '—')
-                : (coverage.note || '—');
+    <div className="grid gap-4 sm:gap-5 sm:grid-cols-2">
+      {coverages.map((coverage) => {
+        const benefitExplanation = isConsider
+          ? getCoverageBenefitExplanation(coverage.name)
+          : undefined;
+        const noteText = isConsider
+          ? (benefitExplanation || coverage.note || '—')
+          : (coverage.note || '—');
 
-              return (
-                <tr
-                  key={coverage.name}
-                  className={`border-b border-gray-100 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
-                >
-                  <td className="py-4 px-4 text-gray-900 font-medium text-sm">
-                    <CoverageNameButton name={coverage.name} />
-                  </td>
-                  {!isConsider && (
-                    <td className="py-4 px-4 text-gray-700 text-sm">
-                      {coverage.limit || (coverage.present ? 'Included' : 'None')}
-                    </td>
-                  )}
-                  <td className="py-4 px-4 text-gray-600 text-sm">
-                    {noteText}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Cards - Shown only on mobile */}
-      <div className="sm:hidden space-y-3">
-        {coverages.map((coverage, index) => {
-          const benefitExplanation = isConsider
-            ? getCoverageBenefitExplanation(coverage.name)
-            : undefined;
-          const noteText = isConsider
-            ? (benefitExplanation || coverage.note || '—')
-            : (coverage.note || '—');
-
-          return (
-            <div
-              key={coverage.name}
-              className={`rounded-lg p-4 ${index % 2 === 0 ? 'bg-white border border-gray-100' : 'bg-gray-50'}`}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold text-gray-900 text-sm"><CoverageNameButton name={coverage.name} /></h4>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                  coverage.present
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-500'
-                }`}>
-                  {coverage.present ? 'Included' : 'Not Included'}
-                </span>
+        return (
+          <div
+            key={coverage.name}
+            className="rounded-2xl border border-gray-100 bg-white p-4 sm:p-5 shadow-sm"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Coverage</p>
+                <h4 className="mt-1 text-base font-semibold text-gray-900">
+                  <CoverageNameButton name={coverage.name} />
+                </h4>
               </div>
-              {!isConsider && (
-                <div className="text-blue-600 font-medium text-sm mb-2">
-                  {coverage.limit || (coverage.present ? 'Included' : '—')}
-                </div>
-              )}
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {noteText}
-              </p>
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${
+                  isConsider
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'bg-emerald-50 text-emerald-700'
+                }`}
+              >
+                {!isConsider && (
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+                {isConsider ? 'Consider' : 'Included'}
+              </span>
             </div>
-          );
-        })}
-      </div>
-    </>
+
+            {!isConsider && (
+              <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Your Coverage</p>
+                <p className="mt-1 text-lg font-semibold text-emerald-700">
+                  {coverage.limit || (coverage.present ? 'Included' : '—')}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                {isConsider ? 'Why It Might Be Beneficial' : 'What It Means'}
+              </p>
+              <p className="mt-1 text-sm text-gray-600 leading-relaxed">{noteText}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { CoverageTable } from '@/components/CoverageTable';
 import { AdditionalCoverageTable } from '@/components/AdditionalCoverageTable';
 import { SectionAnalysis } from '@/components/SectionAnalysis';
@@ -102,6 +102,126 @@ function getScoreGradient(score?: number): string {
   if (score >= 70) return 'from-yellow-400 via-amber-400 to-amber-500';
   if (score >= 60) return 'from-orange-500 via-orange-600 to-red-400';
   return 'from-red-700 via-red-800 to-red-900';
+}
+
+function getScoreTone(score?: number): { ring: string; text: string; glow: string } {
+  if (score === undefined) return { ring: 'stroke-slate-400', text: 'text-slate-600', glow: 'shadow-slate-200/60' };
+  if (score >= 85) return { ring: 'stroke-emerald-500', text: 'text-emerald-600', glow: 'shadow-emerald-200/60' };
+  if (score >= 70) return { ring: 'stroke-amber-500', text: 'text-amber-600', glow: 'shadow-amber-200/60' };
+  return { ring: 'stroke-red-500', text: 'text-red-600', glow: 'shadow-red-200/60' };
+}
+
+function getPopulationPercentile(score?: number): number | undefined {
+  if (score === undefined) return undefined;
+  const clamped = Math.max(0, Math.min(100, score));
+  const percentile = 1 / (1 + Math.exp(-0.02 * (clamped - 50)));
+  return Math.round(percentile * 100);
+}
+
+function ScoreRing({
+  score,
+  size = 180,
+  strokeWidth = 14,
+  label,
+}: {
+  score?: number;
+  size?: number;
+  strokeWidth?: number;
+  label: string;
+}) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const percent = typeof score === 'number' ? Math.max(0, Math.min(100, score)) : 0;
+  const offset = circumference - (percent / 100) * circumference;
+  const ringStyle = {
+    '--ring-circ': circumference,
+    '--ring-offset': offset,
+  } as CSSProperties;
+
+  return (
+    <div className="relative flex items-center justify-center">
+      <svg width={size} height={size} className="rotate-[-90deg]">
+        <defs>
+          <linearGradient id="score-ring-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="50%" stopColor="#f59e0b" />
+            <stop offset="100%" stopColor="#10b981" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="#e2e8f0"
+          strokeWidth={strokeWidth}
+          fill="none"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="url(#score-ring-gradient)"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          fill="none"
+          className="score-ring"
+          style={ringStyle}
+        />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div className="text-4xl sm:text-5xl font-bold text-gray-900">
+          {typeof score === 'number' ? `${score}%` : '--'}
+        </div>
+        <div className="text-xs sm:text-sm text-gray-500 uppercase tracking-[0.2em] mt-1">
+          {label}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniScoreRing({ score, label }: { score?: number; label: string }) {
+  const size = 64;
+  const strokeWidth = 6;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const percent = typeof score === 'number' ? Math.max(0, Math.min(100, score)) : 0;
+  const offset = circumference - (percent / 100) * circumference;
+  const tone = getScoreTone(score);
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className={`relative flex items-center justify-center rounded-full shadow-lg ${tone.glow}`}>
+        <svg width={size} height={size} className="rotate-[-90deg]">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="#e2e8f0"
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            className={`${tone.ring}`}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            fill="none"
+          />
+        </svg>
+        <span className={`absolute text-sm font-semibold ${tone.text}`}>
+          {typeof score === 'number' ? `${score}%` : '--'}
+        </span>
+      </div>
+      <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">{label}</span>
+    </div>
+  );
 }
 
 const AUTO_OPTIONAL_COVERAGE_KEYS = [
@@ -328,6 +448,13 @@ export function ReportContent({ report }: { report: PolicyReport }) {
     ...(showRenters ? (rentersGrade?.areasToReview || []).map(a => activeFilter === 'all' ? `Renters: ${a}` : a) : []),
   ];
 
+  const keyStrengths = [
+    ...(showHome ? (homeGrade?.keyStrengths || []).map(s => activeFilter === 'all' ? `Home: ${s}` : s) : []),
+    ...(showCondo ? (condoGrade?.keyStrengths || []).map(s => activeFilter === 'all' ? `Condo: ${s}` : s) : []),
+    ...(showAuto ? autoPolicies.flatMap(a => (a.keyStrengths || []).map(s => activeFilter === 'all' ? `Auto: ${s}` : s)) : []),
+    ...(showRenters ? (rentersGrade?.keyStrengths || []).map(s => activeFilter === 'all' ? `Renters: ${s}` : s) : []),
+  ];
+
   // Determine displayed score based on filter
   let displayedScore: number | undefined;
   let displayedGradient: string;
@@ -355,6 +482,34 @@ export function ReportContent({ report }: { report: PolicyReport }) {
     ...(hasRenters ? [{ label: 'Renters', score: rentersScore }] : []),
   ];
 
+  const insightScores: number[] = [
+    ...(showHome && homeGrade ? [
+      ...homeGrade.standardCoverages,
+      homeGrade.deductibleGrade,
+    ] : []),
+    ...(showCondo && condoGrade ? [
+      ...condoGrade.standardCoverages,
+      condoGrade.deductibleGrade,
+    ] : []),
+    ...(showAuto ? autoPolicies.flatMap((policy) => policy.standardCoverages) : []),
+    ...(showRenters && rentersGrade ? [
+      ...rentersGrade.standardCoverages,
+      ...(rentersGrade.deductibleGrade ? [rentersGrade.deductibleGrade] : []),
+    ] : []),
+  ]
+    .filter((coverage): coverage is CoverageGrade => !!coverage)
+    .map((coverage) => (typeof coverage.score === 'number' ? coverage.score : undefined))
+    .filter((score): score is number => typeof score === 'number');
+
+  const gapsCount = insightScores.filter((score) => score <= 2).length;
+  const strongCount = insightScores.filter((score) => score >= 4).length;
+  const populationPercentile = getPopulationPercentile(displayedScore);
+  const populationLabel = populationPercentile !== undefined
+    ? (populationPercentile >= 50
+      ? `Your score is higher than ${populationPercentile}% of policyholders`
+      : `Your score is lower than ${100 - populationPercentile}% of policyholders`)
+    : 'Population comparison unavailable';
+
   return (
     <CoverageDescriptionProvider>
       {/* Policy Type Tabs */}
@@ -368,7 +523,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       />
 
       {/* Overall Grade Header */}
-      <div className="mb-4">
+      <div className="mb-6 animate-fade-up">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
           {activeFilter === 'all' ? 'Overall Policy Grade' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Policy Grade`}
         </h1>
@@ -376,26 +531,118 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       </div>
 
       {/* Score Overview Card */}
-      <div className={`mb-6 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r transition-all duration-300 ${displayedGradient}`}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <div>
-            <p className="text-sm uppercase tracking-wide text-white">
-              {activeFilter === 'all' ? 'Overall Score' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Score`}
-            </p>
-            <p className="text-4xl sm:text-5xl font-bold mt-2">{formatPercent(displayedScore)}</p>
-          </div>
-          {activeFilter === 'all' && (
-            <div className="w-full sm:w-auto sm:ml-auto">
-              <div className="flex flex-wrap justify-end gap-2 sm:gap-3">
+      <div className="mb-8 rounded-3xl bg-white shadow-xl border border-white/70 p-6 sm:p-8 relative overflow-hidden animate-fade-up">
+        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-400/20 blur-3xl" />
+        <div className="absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-gradient-to-br from-emerald-400/20 to-blue-400/10 blur-3xl" />
+
+        <div className="relative grid gap-8 lg:grid-cols-[minmax(220px,260px)_1fr] items-center">
+          <div className="flex flex-col items-center gap-6">
+            <ScoreRing
+              score={displayedScore}
+              label={activeFilter === 'all' ? 'Overall' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)}`}
+            />
+            {activeFilter === 'all' && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {scoreCards.map(({ label, score }) => (
-                  <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-4 sm:py-3 text-center">
-                    <div className="text-lg sm:text-xl font-bold">{formatPercent(score)}</div>
-                    <div className="text-[10px] sm:text-xs uppercase tracking-wide text-white mt-0.5 sm:mt-1">{label}</div>
-                  </div>
+                  <MiniScoreRing key={label} score={score} label={label} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div>
+              <span className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white shadow-sm bg-gradient-to-r ${displayedGradient}`}>
+                {activeFilter === 'all' ? 'Overall Score' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Score`}
+              </span>
+              <p className="mt-3 text-lg font-semibold text-gray-900">
+                {formatPercent(displayedScore)} coverage strength
+              </p>
+              <p className="text-sm text-gray-500">A clear snapshot of how well your coverage protects you today.</p>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-gray-600">{populationLabel}</p>
+              <div className="relative h-3 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-emerald-500 shadow-inner">
+                <div
+                  className="absolute top-0 bottom-0 border-l-2 border-dashed border-white/80"
+                  style={{ left: '68%' }}
+                />
+                <div
+                  className="absolute -top-6 text-[10px] font-semibold text-gray-500"
+                  style={{ left: '68%', transform: 'translateX(-50%)' }}
+                >
+                  Avg: 68%
+                </div>
+                <div
+                  className="absolute -top-5"
+                  style={{ left: `${Math.max(0, Math.min(100, displayedScore ?? 0))}%`, transform: 'translateX(-50%)' }}
+                >
+                  <div className="h-6 w-0.5 bg-blue-600 mx-auto rounded-full shadow-md" />
+                  <div className="h-3 w-3 rounded-full bg-white border-2 border-blue-600 shadow-md mx-auto -mt-1" />
+                </div>
+              </div>
+              <div className="flex justify-between text-[11px] text-gray-500 uppercase tracking-wide">
+                {['Poor', 'Below Avg', 'Average', 'Good', 'Excellent'].map((label) => (
+                  <span key={label} className="flex-1 text-center">
+                    {label}
+                  </span>
                 ))}
               </div>
             </div>
-          )}
+
+            <div className="flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                {gapsCount} Gaps Found
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                {strongCount} Strong Areas
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Key Findings Summary */}
+      <div className="mb-8 grid gap-4 lg:grid-cols-2 animate-fade-up" style={{ animationDelay: '80ms' }}>
+        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5 sm:p-6 shadow-sm">
+          <h3 className="text-lg font-bold text-emerald-900 mb-4">Strengths</h3>
+          <ul className="space-y-2 text-sm text-emerald-900">
+            {keyStrengths.length === 0 && (
+              <li className="text-emerald-700">No standout strengths were identified yet.</li>
+            )}
+            {keyStrengths.map((strength, index) => (
+              <li key={`${strength}-${index}`} className="flex items-start gap-2">
+                <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white">
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+                <span>{strength}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-2xl border border-amber-100 bg-amber-50/80 p-5 sm:p-6 shadow-sm">
+          <h3 className="text-lg font-bold text-amber-900 mb-4">Areas to Improve</h3>
+          <ul className="space-y-2 text-sm text-amber-900">
+            {areasToReview.length === 0 && (
+              <li className="text-amber-700">No immediate gaps detected in this view.</li>
+            )}
+            {areasToReview.map((area, index) => (
+              <li key={`${area}-${index}`} className="flex items-start gap-2">
+                <span className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
+                  <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 4h.01M10.29 3.86L1.82 18a1 1 0 00.86 1.5h18.64a1 1 0 00.86-1.5L13.71 3.86a1 1 0 00-1.72 0z" />
+                  </svg>
+                </span>
+                <span>{area}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -422,11 +669,11 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
         return (
           <div id="home">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
               Home Policy Analysis{carriers?.home ? ` (${carriers.home})` : ''}
             </h2>
 
-            <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                 Your Home Coverages
               </h3>
@@ -474,11 +721,11 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
         return (
           <div id="condo" className={showHome ? 'mt-8' : ''}>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
               Condo Policy Analysis
             </h2>
 
-            <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
               <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
                 Your Condo Coverages
               </h3>
@@ -517,7 +764,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       {/* Auto Policy Section(s) */}
       {showAuto && (
         <div id="auto" className={(showHome || showCondo) ? 'mt-8' : ''}>
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
             Auto Policy Analysis{carriers?.auto ? ` (${carriers.auto})` : ''}
           </h2>
 
@@ -534,7 +781,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
               : missingCoverages;
 
             return (
-              <section key={idx} className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+              <section key={idx} className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
                 {(autoPolicies.length > 1 || autoPolicy.vehicleInfo) && (
                   <div className="mb-6">
                     <p className="text-gray-500 text-sm">Vehicle</p>
@@ -592,11 +839,11 @@ export function ReportContent({ report }: { report: PolicyReport }) {
 
         return (
           <div id="renters" className={(showHome || showCondo || showAuto) ? 'mt-8' : ''}>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-8">
               Renters Policy Analysis{carriers?.renters ? ` (${carriers.renters})` : ''}
             </h2>
 
-            <section className="mb-6 bg-white rounded-2xl shadow-sm p-5 sm:p-6">
+            <section className="mb-10 bg-white rounded-2xl shadow-sm p-5 sm:p-6 animate-fade-up">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Your Renters Coverages
               </h3>
@@ -630,7 +877,7 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       })()}
 
       {/* Footer Disclaimer */}
-      <div className="text-center text-xs sm:text-sm text-gray-500 mt-8 p-4 bg-gray-50 rounded-lg mb-24">
+      <div className="text-center text-xs sm:text-sm text-gray-500 mt-12 p-5 bg-gray-50 rounded-lg mb-24 animate-fade-up">
         <p>
           This report is for educational purposes only and does not constitute professional insurance advice.
           Consult with a licensed insurance agent for personalized recommendations.
