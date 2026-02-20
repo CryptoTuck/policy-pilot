@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getReport } from '@/lib/storage';
+import { getDemoReport } from '@/lib/demo-reports';
 import { getSubmissionWithDetails } from '@/lib/supabase';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
 import { ReportContent } from '@/components/ReportContent';
@@ -12,27 +13,30 @@ interface ReportPageProps {
 
 export default async function ReportPage({ params }: ReportPageProps) {
   const { id } = await params;
-  const report = await getReport(id);
+  const isDemo = id.startsWith('demo-');
+  const report = isDemo ? getDemoReport(id) : await getReport(id);
 
   if (!report) {
     notFound();
   }
 
-  // Fetch customer info for email + analytics
+  // Fetch customer info for email + analytics (skip for demo reports)
   let customerEmail: string | null = null;
   let customerFirstName: string | null = null;
   let customerLastName: string | null = null;
   let customerPhone: string | null = null;
-  try {
-    const { submission } = await getSubmissionWithDetails(id);
-    if (submission) {
-      customerEmail = submission.customer_email;
-      customerFirstName = submission.customer_first_name;
-      customerLastName = submission.customer_last_name;
-      customerPhone = submission.customer_phone;
+  if (!isDemo) {
+    try {
+      const { submission } = await getSubmissionWithDetails(id);
+      if (submission) {
+        customerEmail = submission.customer_email;
+        customerFirstName = submission.customer_first_name;
+        customerLastName = submission.customer_last_name;
+        customerPhone = submission.customer_phone;
+      }
+    } catch {
+      // Continue without customer data
     }
-  } catch {
-    // Continue without customer data
   }
 
   return (
