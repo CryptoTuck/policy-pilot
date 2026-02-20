@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, type MouseEvent } from 'react';
 import { fbTrackViewContent, fbTrackStartRegistration } from '@/lib/facebook-pixel';
 
 export default function Home() {
@@ -9,6 +9,13 @@ export default function Home() {
     fbTrackViewContent();
   }, []);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    event.preventDefault();
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const faqs = useMemo(
     () => [
@@ -43,23 +50,39 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
       {/* Top navigation */}
-      <nav className="absolute top-0 left-0 right-0 z-50 pt-4 sm:pt-4">
+      <nav className="nav-slide-down absolute top-0 left-0 right-0 z-50 pt-4 sm:pt-4">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
             <img src="/logo.png" alt="PolicyPilot" className="h-9 w-9 rounded-xl" />
             <span className="text-lg font-semibold tracking-tight text-white">PolicyPilot</span>
           </div>
           <div className="hidden items-center gap-8 text-[15px] font-semibold text-slate-100 md:flex">
-            <a href="#how" className="transition-colors hover:text-white">
+            <a
+              href="#how"
+              onClick={(event) => handleNavClick(event, 'how')}
+              className="transition-colors hover:text-white"
+            >
               How it works
             </a>
-            <a href="#score" className="transition-colors hover:text-white">
+            <a
+              href="#score"
+              onClick={(event) => handleNavClick(event, 'score')}
+              className="transition-colors hover:text-white"
+            >
               The score
             </a>
-            <a href="#security" className="transition-colors hover:text-white">
+            <a
+              href="#security"
+              onClick={(event) => handleNavClick(event, 'security')}
+              className="transition-colors hover:text-white"
+            >
               Security
             </a>
-            <a href="#faq" className="transition-colors hover:text-white">
+            <a
+              href="#faq"
+              onClick={(event) => handleNavClick(event, 'faq')}
+              className="transition-colors hover:text-white"
+            >
               FAQ
             </a>
           </div>
