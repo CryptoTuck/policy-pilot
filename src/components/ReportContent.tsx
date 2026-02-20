@@ -348,11 +348,10 @@ export function ReportContent({ report }: { report: PolicyReport }) {
     displayedGradient = getScoreGradient(rentersScore);
   }
 
-  const scoreCards = [
-    ...(hasHome ? [{ label: 'Home', score: homeScore }] : []),
-    ...(hasCondo ? [{ label: 'Condo', score: condoScore }] : []),
-    ...(hasAuto ? [{ label: 'Auto', score: autoScore }] : []),
-    ...(hasRenters ? [{ label: 'Renters', score: rentersScore }] : []),
+  const policyCards = [
+    { label: hasCondo ? 'Condo' : 'Home', score: hasCondo ? condoScore : homeScore, exists: hasHome || hasCondo },
+    { label: 'Auto', score: autoScore, exists: hasAuto },
+    { label: 'Renters', score: rentersScore, exists: hasRenters },
   ];
 
   return (
@@ -379,24 +378,56 @@ export function ReportContent({ report }: { report: PolicyReport }) {
       <div className={`mb-6 rounded-2xl p-6 sm:p-8 text-white shadow-lg bg-gradient-to-r transition-all duration-300 ${displayedGradient}`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
-            <p className="text-sm uppercase tracking-wide text-white">
+            <p className="text-sm uppercase tracking-wide text-white/90">
               {activeFilter === 'all' ? 'Overall Score' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Score`}
             </p>
             <p className="text-4xl sm:text-5xl font-bold mt-2">{formatPercent(displayedScore)}</p>
           </div>
+          {/* Desktop: small cards to the right */}
           {activeFilter === 'all' && (
-            <div className="w-full sm:w-auto sm:ml-auto">
-              <div className="flex flex-wrap justify-end gap-2 sm:gap-3">
-                {scoreCards.map(({ label, score }) => (
-                  <div key={label} className="rounded-xl bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-2 sm:px-4 sm:py-3 text-center">
-                    <div className="text-lg sm:text-xl font-bold">{formatPercent(score)}</div>
-                    <div className="text-[10px] sm:text-xs uppercase tracking-wide text-white mt-0.5 sm:mt-1">{label}</div>
+            <div className="hidden sm:flex flex-wrap justify-end gap-3">
+              {policyCards.map(({ label, score, exists }) => (
+                <div
+                  key={label}
+                  className={`rounded-xl w-24 py-3 text-center ${
+                    exists
+                      ? 'bg-white/20 backdrop-blur-sm border border-white/20'
+                      : 'border-2 border-dashed border-white/30'
+                  }`}
+                >
+                  <div className={`text-xl font-bold ${exists ? 'text-white' : 'text-white/30'}`}>
+                    {exists ? formatPercent(score) : '--'}
                   </div>
-                ))}
-              </div>
+                  <div className={`text-[10px] uppercase tracking-wide mt-1 ${exists ? 'text-white/90' : 'text-white/30'}`}>
+                    {label}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </div>
+        {/* Mobile: full-width grid below the score */}
+        {activeFilter === 'all' && (
+          <div className="sm:hidden grid grid-cols-3 gap-2 mt-5">
+            {policyCards.map(({ label, score, exists }) => (
+              <div
+                key={label}
+                className={`rounded-xl py-3 text-center ${
+                  exists
+                    ? 'bg-white/20 backdrop-blur-sm border border-white/20'
+                    : 'border-2 border-dashed border-white/30'
+                }`}
+              >
+                <div className={`text-lg font-bold ${exists ? 'text-white' : 'text-white/30'}`}>
+                  {exists ? formatPercent(score) : '--'}
+                </div>
+                <div className={`text-[10px] uppercase tracking-wide mt-1 ${exists ? 'text-white/90' : 'text-white/30'}`}>
+                  {label}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Areas to Review Alert */}

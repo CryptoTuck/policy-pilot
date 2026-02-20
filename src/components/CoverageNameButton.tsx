@@ -30,7 +30,7 @@ export function CoverageNameButton({ name, className, variant = 'default' }: Cov
     <button
       type="button"
       onClick={() => context.showDescription(name)}
-      className={`inline whitespace-nowrap text-left border-b border-dashed ${styles.border} cursor-pointer transition-colors ${className ?? ''}`}
+      className={`inline text-left border-b border-dashed ${styles.border} cursor-pointer transition-colors ${className ?? ''}`}
     >
       {name}
       <svg

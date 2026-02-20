@@ -147,15 +147,15 @@ export function CoverageTable({
                   : 'bg-white border border-gray-100'
               }`}
             >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <div className="flex items-center gap-2 min-w-0">
                   {hasIssue && <WarningIcon className={`w-4 h-4 flex-shrink-0 ${colors.text}`} />}
                   <h4 className={`font-semibold text-sm ${hasIssue ? colors.text : 'text-gray-900'}`}>
                     <CoverageNameButton name={coverage.name} variant={buttonVariant} />
                   </h4>
                 </div>
                 {showScore && (
-                  <span className={`${badgeColor} text-white text-xs font-semibold px-2 py-1 rounded-full`}>
+                  <span className={`flex-shrink-0 ${badgeColor} text-white text-xs font-semibold px-2 py-1 rounded-full`}>
                     {isBonus ? 'Bonus' : `${numericScore}/${coverage.maxScore}`}
                   </span>
                 )}

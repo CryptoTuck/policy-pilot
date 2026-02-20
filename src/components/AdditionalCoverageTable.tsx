@@ -75,9 +75,9 @@ export function AdditionalCoverageTable({ coverages, variant = 'bonus' }: Additi
               key={coverage.name}
               className={`rounded-lg p-4 ${index % 2 === 0 ? 'bg-white border border-gray-100' : 'bg-gray-50'}`}
             >
-              <div className="flex justify-between items-start mb-2">
-                <h4 className="font-semibold text-gray-900 text-sm"><CoverageNameButton name={coverage.name} /></h4>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+              <div className="flex justify-between items-start gap-2 mb-2">
+                <h4 className="font-semibold text-gray-900 text-sm min-w-0"><CoverageNameButton name={coverage.name} /></h4>
+                <span className={`flex-shrink-0 whitespace-nowrap text-xs font-semibold px-2 py-1 rounded-full ${
                   coverage.present
                     ? 'bg-green-100 text-green-700'
                     : 'bg-gray-100 text-gray-500'
