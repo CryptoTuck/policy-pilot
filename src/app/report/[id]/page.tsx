@@ -1,10 +1,12 @@
 import { notFound } from 'next/navigation';
 import { getReport } from '@/lib/storage';
 import { getDemoReport } from '@/lib/demo-reports';
-import { getSubmissionWithDetails } from '@/lib/supabase';
+import { getSubmissionWithDetails, getEzlynxQuotes, EzlynxQuote, Policy } from '@/lib/supabase';
 import { StickyCtaButton } from '@/components/StickyCtaButton';
 import { ReportContent } from '@/components/ReportContent';
 import { ReportAnalytics } from '@/components/ReportAnalytics';
+import { QuoteComparison } from '@/components/QuoteComparison';
+import { ReportSection } from '@/components/ReportSection';
 import Link from 'next/link';
 
 interface ReportPageProps {
@@ -25,17 +27,32 @@ export default async function ReportPage({ params }: ReportPageProps) {
   let customerFirstName: string | null = null;
   let customerLastName: string | null = null;
   let customerPhone: string | null = null;
+  let currentAnnualPremiumCents: number | null = null;
+  let quotes: EzlynxQuote[] = [];
   if (!isDemo) {
     try {
-      const { submission } = await getSubmissionWithDetails(id);
+      const { submission, policies } = await getSubmissionWithDetails(id);
       if (submission) {
         customerEmail = submission.customer_email;
         customerFirstName = submission.customer_first_name;
         customerLastName = submission.customer_last_name;
         customerPhone = submission.customer_phone;
       }
+
+      const premiumValues = (policies as Policy[])
+        .map((policy) => policy.premium_cents)
+        .filter((premium): premium is number => typeof premium === 'number');
+      if (premiumValues.length > 0) {
+        currentAnnualPremiumCents = premiumValues.reduce((sum, premium) => sum + premium, 0);
+      }
     } catch {
       // Continue without customer data
+    }
+
+    try {
+      quotes = await getEzlynxQuotes(id);
+    } catch {
+      // Continue without quotes
     }
   }
 
@@ -64,6 +81,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
       <main className="max-w-5xl mx-auto px-4 py-6 sm:py-8">
         <ReportContent report={report} />
+        <ReportSection title="Competitive Quotes">
+          <QuoteComparison quotes={quotes} currentAnnualPremiumCents={currentAnnualPremiumCents} />
+        </ReportSection>
       </main>
 
       {/* Sticky CTA Button */}

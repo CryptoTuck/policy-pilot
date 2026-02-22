@@ -155,6 +155,41 @@ export interface GradingResult {
   openai_response: Record<string, unknown> | null;
 }
 
+export interface EzlynxQuote {
+  id: string;
+  submission_id: string;
+  created_at: string;
+  carrier_name: string;
+  carrier_logo_url: string | null;
+  policy_type: 'home' | 'auto' | 'bundle';
+  monthly_premium_cents: number | null;
+  annual_premium_cents: number;
+  coverage_summary: Record<string, unknown> | null;
+  deductibles: Record<string, unknown> | null;
+  is_recommended: boolean;
+  recommendation_reason: string | null;
+  bind_url: string | null;
+  ezlynx_quote_id: string | null;
+  source: string | null;
+  expires_at: string | null;
+}
+
+export interface EzlynxQuoteInput {
+  carrier_name: string;
+  carrier_logo_url?: string | null;
+  policy_type: 'home' | 'auto' | 'bundle';
+  monthly_premium_cents?: number | null;
+  annual_premium_cents: number;
+  coverage_summary?: Record<string, unknown> | null;
+  deductibles?: Record<string, unknown> | null;
+  is_recommended?: boolean;
+  recommendation_reason?: string | null;
+  bind_url?: string | null;
+  ezlynx_quote_id?: string | null;
+  source?: string;
+  expires_at?: string | null;
+}
+
 // Helper functions for database operations
 
 export interface CreateSubmissionParams {
@@ -446,6 +481,50 @@ export async function getSubmissionBySessionToken(token: string): Promise<Submis
 
   if (error && error.code !== 'PGRST116') throw error;
   return data as Submission | null;
+}
+
+export async function createEzlynxQuotes(
+  submissionId: string,
+  quotes: EzlynxQuoteInput[]
+): Promise<EzlynxQuote[]> {
+  const supabase = getSupabaseClient();
+
+  const inserts = quotes.map((quote) => ({
+    submission_id: submissionId,
+    carrier_name: quote.carrier_name,
+    carrier_logo_url: quote.carrier_logo_url ?? null,
+    policy_type: quote.policy_type,
+    monthly_premium_cents: quote.monthly_premium_cents ?? null,
+    annual_premium_cents: quote.annual_premium_cents,
+    coverage_summary: quote.coverage_summary ?? null,
+    deductibles: quote.deductibles ?? null,
+    is_recommended: quote.is_recommended ?? false,
+    recommendation_reason: quote.recommendation_reason ?? null,
+    bind_url: quote.bind_url ?? null,
+    ezlynx_quote_id: quote.ezlynx_quote_id ?? null,
+    source: quote.source ?? 'manual',
+    expires_at: quote.expires_at ?? null,
+  }));
+
+  const { data, error } = await supabase
+    .from('ezlynx_quotes')
+    .insert(inserts)
+    .select();
+
+  if (error) throw error;
+  return data as EzlynxQuote[];
+}
+
+export async function getEzlynxQuotes(submissionId: string): Promise<EzlynxQuote[]> {
+  const supabase = getSupabaseClient();
+
+  const { data, error } = await supabase
+    .from('ezlynx_quotes')
+    .select('*')
+    .eq('submission_id', submissionId);
+
+  if (error) throw error;
+  return (data ?? []) as EzlynxQuote[];
 }
 
 // Create drivers for a submission/policy
